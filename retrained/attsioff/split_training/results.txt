@@ -1,0 +1,20 @@
+TRAIN/VAL/TEST SPLIT RESULTS
+========================================
+
+Training setup:
+- Train file: siRBench_train_90_min.csv
+- Val file: siRBench_val_10_min.csv
+- Test file: siRBench_test_min.csv
+- Learning rate: 0.005
+- Batch size: 128
+- Patience: 20
+- Early stopping on: SPCC
+
+Final test results:
+Test PCC:  0.4560
+Test SPCC: 0.3767
+Test AUC:  0.7328
+
+Best model: ./output/split_training/best_model.pth.tar
+Predictions CSV: ./output/split_training/test_predictions.csv
+Epoch metrics CSV: ./output/split_training/epoch_metrics.csv

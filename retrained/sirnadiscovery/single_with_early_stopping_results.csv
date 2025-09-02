@@ -1,0 +1,2 @@
+final_training_loss,final_validation_pcc,training_samples,validation_samples,epochs_trained,max_epochs,early_stopping_patience,training_method,hp_dmodel,hp_sirna_length,hp_max_mrna_len,hp_batch_size,hp_epochs,hp_hinsage_layer_sizes,hp_hop_samples,hp_dropout,hp_lr,hp_loss
+0.0014437143690884113,0.6558125058512831,3068,340,51,200,30,single_run_with_early_stopping,6,19,57,64,200,"[64, 32]","[12, 6]",0.1,0.001,mse
