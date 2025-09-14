@@ -6,25 +6,6 @@ efficacy,Knockdown efficacy,Scalar efficacy label for the siRNA–target pair
 binary,Binary label,Classification label derived from efficacy
 source,Dataset source,Source study or dataset of the interaction
 cell_line,Cell line,Experimental cell line used for measurement
-DG_sum_f1,Total duplex free energy (folder 1),Sum of 18 dinucleotide ΔG plus initiation (+4.09) + symmetry (+0.43) + terminal bonuses (+0.45 for 5' A and +0.45 for 3' U) in kcal/mol
-DG_pos1,Dinucleotide ΔG at position 1,Nearest-neighbor ΔG for siRNA positions 1–2 (kcal/mol)
-DG_pos2,Dinucleotide ΔG at position 2,Nearest-neighbor ΔG for siRNA positions 2–3 (kcal/mol)
-DG_pos3,Dinucleotide ΔG at position 3,Nearest-neighbor ΔG for siRNA positions 3–4 (kcal/mol)
-DG_pos4,Dinucleotide ΔG at position 4,Nearest-neighbor ΔG for siRNA positions 4–5 (kcal/mol)
-DG_pos5,Dinucleotide ΔG at position 5,Nearest-neighbor ΔG for siRNA positions 5–6 (kcal/mol)
-DG_pos6,Dinucleotide ΔG at position 6,Nearest-neighbor ΔG for siRNA positions 6–7 (kcal/mol)
-DG_pos7,Dinucleotide ΔG at position 7,Nearest-neighbor ΔG for siRNA positions 7–8 (kcal/mol)
-DG_pos8,Dinucleotide ΔG at position 8,Nearest-neighbor ΔG for siRNA positions 8–9 (kcal/mol)
-DG_pos9,Dinucleotide ΔG at position 9,Nearest-neighbor ΔG for siRNA positions 9–10 (kcal/mol)
-DG_pos10,Dinucleotide ΔG at position 10,Nearest-neighbor ΔG for siRNA positions 10–11 (kcal/mol)
-DG_pos11,Dinucleotide ΔG at position 11,Nearest-neighbor ΔG for siRNA positions 11–12 (kcal/mol)
-DG_pos12,Dinucleotide ΔG at position 12,Nearest-neighbor ΔG for siRNA positions 12–13 (kcal/mol)
-DG_pos13,Dinucleotide ΔG at position 13,Nearest-neighbor ΔG for siRNA positions 13–14 (kcal/mol)
-DG_pos14,Dinucleotide ΔG at position 14,Nearest-neighbor ΔG for siRNA positions 14–15 (kcal/mol)
-DG_pos15,Dinucleotide ΔG at position 15,Nearest-neighbor ΔG for siRNA positions 15–16 (kcal/mol)
-DG_pos16,Dinucleotide ΔG at position 16,Nearest-neighbor ΔG for siRNA positions 16–17 (kcal/mol)
-DG_pos17,Dinucleotide ΔG at position 17,Nearest-neighbor ΔG for siRNA positions 17–18 (kcal/mol)
-DG_pos18,Dinucleotide ΔG at position 18,Nearest-neighbor ΔG for siRNA positions 18–19 (kcal/mol)
 ends,End stability difference,5'−3' end ΔG difference with end-type adjustment (kcal/mol)
 DH_1,First dinucleotide enthalpy,Nearest-neighbor ΔH for siRNA positions 1–2 (kcal/mol)
 U_1,U at position 1,Indicator 1 if siRNA base 1 is U; else 0
@@ -45,7 +26,14 @@ GC_all,GC dinucleotide fraction,Fraction of GC dinucleotides across 18 sliding w
 CG_1,CG at positions 1–2,Indicator 1 if dinucleotide 1–2 is CG; else 0
 UU_all,UU dinucleotide fraction,Fraction of UU dinucleotides across 18 sliding windows (count/18)
 A_19,A at position 19,Indicator 1 if siRNA base 19 is A; else 0
+single_energy_total,Single-strand total MFE,Minimum free energy of siRNA single-strand folding (kcal/mol)
+single_energy_pos*,Single-strand position energies (19 features),Energy contribution of each siRNA base to single-strand folding (kcal/mol); positions 1-19 (single_energy_pos1 to single_energy_pos19)
+duplex_energy_total,Duplex total energy,Total duplex formation energy between siRNA and target (kcal/mol)
+duplex_energy_sirna_pos*,Duplex siRNA position energies (19 features),Energy contribution of each siRNA base to duplex formation (kcal/mol); positions 1-19 (duplex_energy_sirna_pos1 to duplex_energy_sirna_pos19)
+duplex_energy_target_pos*,Duplex target position energies (19 features),Energy contribution of each target base to duplex formation (kcal/mol); positions 1-19 (duplex_energy_target_pos1 to duplex_energy_target_pos19)
 duplex_cofold_dG,RNAcofold duplex MFE,Minimum free energy of siRNA–target duplex (kcal/mol); more negative implies stronger pairing
 RNAup_open_dG,RNAup opening energy,Energy to unpair target region to make it accessible (kcal/mol)
 RNAup_interaction_dG,RNAup interaction energy,Hybridization energy between accessible regions (kcal/mol)
 RNAup_total_dG,RNAup total energy,Sum of opening and interaction energies (kcal/mol)
+single_emb_*,Single sequence embeddings (640 features),RNA-FM T12 transformer embeddings for siRNA sequence; 640 dimensions (single_emb_0 to single_emb_639)
+duplex_emb_*,Duplex sequence embeddings (640 features),RNA-FM T12 transformer embeddings for siRNA+target concatenated sequence; 640 dimensions (duplex_emb_0 to duplex_emb_639)
