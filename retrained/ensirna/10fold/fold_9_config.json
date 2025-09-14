@@ -1,0 +1,17 @@
+{
+      "train_set": "/app/ENsiRNA-main/ENsiRNA/fold_9_train_ensirna.json",
+      "valid_set": "/app/ENsiRNA-main/ENsiRNA/fold_9_val_ensirna.json",
+      "save_dir": "cv_model_fold_9",
+      "max_epoch": 200,
+      "patience": 30,
+      "batch_size": 16,
+      "model_type": "RNAmaskModel",
+      "embed_dim": 128,
+      "hidden_size": 256,
+      "k_neighbors": 9,
+      "n_layers": 2,
+      "lr": 1e-4,
+      "final_lr": 1e-5,
+      "shuffle": true,
+      "save_topk": 5
+}

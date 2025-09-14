@@ -1,0 +1,5 @@
+-0.6724062274772686: my_model_optimized/version_0/checkpoint/epoch26_step5184.ckpt
+-0.6636356891499404: my_model_optimized/version_0/checkpoint/epoch23_step4608.ckpt
+-0.6572746799436435: my_model_optimized/version_0/checkpoint/epoch18_step3648.ckpt
+-0.6507066402774767: my_model_optimized/version_0/checkpoint/epoch17_step3456.ckpt
+-0.6413150826435898: my_model_optimized/version_0/checkpoint/epoch16_step3264.ckpt

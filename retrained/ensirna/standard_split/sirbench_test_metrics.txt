@@ -1,0 +1,10 @@
+Test Set Performance Metrics
+========================================
+Pearson Correlation Coefficient (PCC): 0.544280
+Mean Square Error (MSE): 0.052395
+Root Mean Square Error (RMSE): 0.228899
+Mean Absolute Error (MAE): 0.198928
+R-squared (R²): 0.089827
+
+Test samples: 690
+Predictions saved to: test_results_sirbench/sirbench_test_result.csv

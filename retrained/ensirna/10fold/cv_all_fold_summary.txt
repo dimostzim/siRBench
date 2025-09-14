@@ -1,0 +1,10 @@
+Fold 0: PCC=0.6547387799033487, Epoch=28, Model=cv_model_fold_0
+Fold 1: PCC=0.5841464405029514, Epoch=35, Model=cv_model_fold_1
+Fold 2: PCC=0.6644363750011977, Epoch=47, Model=cv_model_fold_2
+Fold 3: PCC=0.60888316721269, Epoch=50, Model=cv_model_fold_3
+Fold 4: PCC=0.5837848381001123, Epoch=36, Model=cv_model_fold_4
+Fold 5: PCC=0.6511425915729534, Epoch=23, Model=cv_model_fold_5
+Fold 6: PCC=0.6919192278207353, Epoch=32, Model=cv_model_fold_6
+Fold 7: PCC=0.63839094063439, Epoch=36, Model=cv_model_fold_7
+Fold 8: PCC=0.623097983088467, Epoch=56, Model=cv_model_fold_8
+Fold 9: PCC=0.701022822481224, Epoch=47, Model=cv_model_fold_9

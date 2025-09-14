@@ -1,0 +1,19 @@
+10-Fold Cross-Validation Training Results
+Started: Sat Sep 13 13:51:01 UTC 2025
+Folds: 0 to 9
+
+Fold 0: Duration=1h2m, Best_PCC=0.6547387799033487
+Fold 1: Duration=1h4m, Best_PCC=0.5841464405029514
+Fold 2: Duration=1h25m, Best_PCC=0.6644363750011977
+Fold 3: Duration=1h39m, Best_PCC=0.60888316721269
+Fold 4: Duration=1h24m, Best_PCC=0.5837848381001123
+Fold 5: Duration=1h5m, Best_PCC=0.6511425915729534
+Fold 6: Duration=0h58m, Best_PCC=0.6919192278207353
+Fold 7: Duration=0h59m, Best_PCC=0.63839094063439
+Fold 8: Duration=1h9m, Best_PCC=0.623097983088467
+Fold 9: Duration=1h4m, Best_PCC=0.701022822481224
+
+Completed: Sun Sep 14 01:46:00 UTC 2025
+Total duration: 11h 54m
+Summary: 10 successful, 0
+0 failed
