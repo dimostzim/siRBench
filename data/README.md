@@ -5,12 +5,29 @@ Process siRNA datasets with feature calculation, harmonization, and splitting ut
 ## Usage
 
 ### Feature Calculation
+Builds the enhanced feature set combining composition, constraint‑based energies, and RNAup.
+
 ```bash
-python data/scripts/add_features.py input.csv --output results.csv
+# Default: reads data/siRBench_base.csv and writes data/siRBench_enhanced.csv
+python data/scripts/make_all_features.py
+
+# Explicit paths
+python data/scripts/make_all_features.py data/siRBench_base.csv -o data/siRBench_full.csv
+
+# Performance/ablation toggles
+python data/scripts/make_all_features.py \
+  [--no-advanced-energies] \
+  [--no-rnaup] \
+  [--no-cofold] \
+  [--with-std-seqs]
 ```
 
-- Input must contain `siRNA` and `mRNA` (or `target`) columns. Case-insensitive; `T` is converted to `U`.
-- Adds 24 thermodynamic features and `duplex_folding_dG` to the CSV.
+- Input must contain exact `siRNA` and `mRNA` columns (19 nt expected; `T`→`U`, truncated to 19).
+- Outputs include:
+  - Composition/NN: `ends`, `DH_all`, base fractions (`U_all`, `G_all`) and dinucleotide fractions (`UU_all`, `GG_all`, `GC_all`, `CC_all`, `UA_all`).
+  - Constraint energies (RNAfold/RNAcofold): `single_energy_total`, `single_energy_pos1..19`, `duplex_energy_total`, `duplex_energy_sirna_pos1..19`, `duplex_energy_target_pos1..19`.
+  - RNAup: `RNAup_open_dG` (opening siRNA+target), `RNAup_interaction_dG` (hybridization).
+  - All numeric columns are rounded to 2 decimals. Optional standardized sequences with `--with-std-seqs`.
 
 ### Train/Validation Split (siRBench)
 Create a 90/10 split from `data/siRBench_train.csv` while preserving distributions across cell line, binary label, and binned efficacy.
@@ -31,6 +48,6 @@ python data/scripts/stratified_split.py \
 
 ## Scripts
 
-- `data/scripts/features_calculator.py`: Core feature calculations.
-- `data/scripts/add_features.py`: Process CSV files with siRNA/target data.
+- `data/scripts/features_calculator.py`: Core composition ("oligoformer") feature calculations.
+- `data/scripts/make_all_features.py`: Build enhanced feature tables.
 - `data/scripts/stratified_split.py`: Stratified 90/10 train/val split for siRBench.

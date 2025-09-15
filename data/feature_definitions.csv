@@ -7,33 +7,18 @@ binary,Binary label,Classification label derived from efficacy
 source,Dataset source,Source study or dataset of the interaction
 cell_line,Cell line,Experimental cell line used for measurement
 ends,End stability difference,5'−3' end ΔG difference with end-type adjustment (kcal/mol)
-DH_1,First dinucleotide enthalpy,Nearest-neighbor ΔH for siRNA positions 1–2 (kcal/mol)
-U_1,U at position 1,Indicator 1 if siRNA base 1 is U; else 0
-G_1,G at position 1,Indicator 1 if siRNA base 1 is G; else 0
 DH_all,Total enthalpy,Sum of 18 dinucleotide ΔH plus initiation (+3.61) and AU-end bonuses (+3.72 each if end is A or U) in kcal/mol
 U_all,U content fraction,Fraction of U bases in siRNA (count/19)
-UU_1,UU at positions 1–2,Indicator 1 if dinucleotide 1–2 is UU; else 0
 G_all,G content fraction,Fraction of G bases in siRNA (count/19)
-GG_1,GG at positions 1–2,Indicator 1 if dinucleotide 1–2 is GG; else 0
-GC_1,GC at positions 1–2,Indicator 1 if dinucleotide 1–2 is GC; else 0
 GG_all,GG dinucleotide fraction,Fraction of GG dinucleotides across 18 sliding windows (count/18)
-UA_all,UA dinucleotide fraction,Fraction of UA dinucleotides across 18 sliding windows (count/18)
-U_2,U at position 2,Indicator 1 if siRNA base 2 is U; else 0
-C_1,C at position 1,Indicator 1 if siRNA base 1 is C; else 0
-CC_all,CC dinucleotide fraction,Fraction of CC dinucleotides across 18 sliding windows (count/18)
-CC_1,CC at positions 1–2,Indicator 1 if dinucleotide 1–2 is CC; else 0
 GC_all,GC dinucleotide fraction,Fraction of GC dinucleotides across 18 sliding windows (count/18)
-CG_1,CG at positions 1–2,Indicator 1 if dinucleotide 1–2 is CG; else 0
+CC_all,CC dinucleotide fraction,Fraction of CC dinucleotides across 18 sliding windows (count/18)
+UA_all,UA dinucleotide fraction,Fraction of UA dinucleotides across 18 sliding windows (count/18)
 UU_all,UU dinucleotide fraction,Fraction of UU dinucleotides across 18 sliding windows (count/18)
-A_19,A at position 19,Indicator 1 if siRNA base 19 is A; else 0
 single_energy_total,Single-strand total MFE,Minimum free energy of siRNA single-strand folding (kcal/mol)
-single_energy_pos*,Single-strand position energies (19 features),Energy contribution of each siRNA base to single-strand folding (kcal/mol); positions 1-19 (single_energy_pos1 to single_energy_pos19)
+single_energy_pos*,Single-strand position effects (19 features),Δ contribution when forcing base unpaired via constraint (kcal/mol); positions 1–19 (single_energy_pos1..19)
 duplex_energy_total,Duplex total energy,Total duplex formation energy between siRNA and target (kcal/mol)
-duplex_energy_sirna_pos*,Duplex siRNA position energies (19 features),Energy contribution of each siRNA base to duplex formation (kcal/mol); positions 1-19 (duplex_energy_sirna_pos1 to duplex_energy_sirna_pos19)
-duplex_energy_target_pos*,Duplex target position energies (19 features),Energy contribution of each target base to duplex formation (kcal/mol); positions 1-19 (duplex_energy_target_pos1 to duplex_energy_target_pos19)
-duplex_cofold_dG,RNAcofold duplex MFE,Minimum free energy of siRNA–target duplex (kcal/mol); more negative implies stronger pairing
-RNAup_open_dG,RNAup opening energy,Energy to unpair target region to make it accessible (kcal/mol)
+duplex_energy_sirna_pos*,Duplex siRNA position effects (19 features),Δ contribution when forcing siRNA base unpaired in cofold (kcal/mol); positions 1–19
+duplex_energy_target_pos*,Duplex target position effects (19 features),Δ contribution when forcing target base unpaired in cofold (kcal/mol); positions 1–19
+RNAup_open_dG,RNAup opening energy,Sum of opening energies for both RNAs (siRNA + target) to make the interaction accessible (kcal/mol)
 RNAup_interaction_dG,RNAup interaction energy,Hybridization energy between accessible regions (kcal/mol)
-RNAup_total_dG,RNAup total energy,Sum of opening and interaction energies (kcal/mol)
-single_emb_*,Single sequence embeddings (640 features),RNA-FM T12 transformer embeddings for siRNA sequence; 640 dimensions (single_emb_0 to single_emb_639)
-duplex_emb_*,Duplex sequence embeddings (640 features),RNA-FM T12 transformer embeddings for siRNA+target concatenated sequence; 640 dimensions (duplex_emb_0 to duplex_emb_639)
