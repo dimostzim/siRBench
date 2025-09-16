@@ -36,59 +36,41 @@ def calculate_end_diff(sirna_seq):
 def calculate_dgh(sirna_seq):
     total_dg = DELTA_G['init']
     total_dh = DELTA_H['init']
-    
+
     if sirna_seq[0] in ['A', 'U']:
         total_dg += DELTA_G['endAU']
         total_dh += DELTA_H['endAU']
     if sirna_seq[18] in ['A', 'U']:
         total_dg += DELTA_G['endAU']
         total_dh += DELTA_H['endAU']
-    
+
     if sirna_seq == sirna_seq[::-1]:
         total_dg += DELTA_G['sym']
         total_dh += DELTA_H['sym']
-    
+
+    step_dg = []
+    step_dh = []
     for i in range(18):
         dinuc = sirna_seq[i:i+2]
-        total_dg += DELTA_G.get(dinuc, 0.0)
-        total_dh += DELTA_H.get(dinuc, 0.0)
-    
-    return total_dg, total_dh
+        dg = DELTA_G.get(dinuc, 0.0)
+        dh = DELTA_H.get(dinuc, 0.0)
+        total_dg += dg
+        total_dh += dh
+        step_dg.append(dg)
+        step_dh.append(dh)
+
+    return total_dg, total_dh, step_dg, step_dh
 
 def calculate_oligoformer_features_exact(sirna_seq):
     seq = sirna_seq.upper()
     features = []
     
     features.append(calculate_end_diff(seq))
-    features.append(DELTA_G.get(seq[0:2], 0.0))
-    features.append(DELTA_H.get(seq[0:2], 0.0))
-    features.append(float(seq[0] == 'U'))
-    features.append(float(seq[0] == 'G'))
-    _, total_dh = calculate_dgh(seq)
+    total_dg, total_dh, step_dg, step_dh = calculate_dgh(seq)
+    features.append(total_dg)
     features.append(total_dh)
-    features.append(seq.count('U') / 19)
-    features.append(float(seq[0:2] == 'UU'))
-    features.append(seq.count('G') / 19)
-    features.append(float(seq[0:2] == 'GG'))
-    features.append(float(seq[0:2] == 'GC'))
-    gg_count = sum(1 for i in range(18) if seq[i:i+2] == 'GG')
-    features.append(gg_count / 18)
-    features.append(DELTA_G.get(seq[1:3], 0.0))
-    ua_count = sum(1 for i in range(18) if seq[i:i+2] == 'UA')
-    features.append(ua_count / 18)
-    features.append(float(seq[1] == 'U'))
-    features.append(float(seq[0] == 'C'))
-    cc_count = sum(1 for i in range(18) if seq[i:i+2] == 'CC')
-    features.append(cc_count / 18)
-    features.append(DELTA_G.get(seq[17:19], 0.0))
-    features.append(float(seq[0:2] == 'CC'))
-    gc_count = sum(1 for i in range(18) if seq[i:i+2] == 'GC')
-    features.append(gc_count / 18)
-    features.append(float(seq[0:2] == 'CG'))
-    features.append(DELTA_G.get(seq[12:14], 0.0))
-    uu_count = sum(1 for i in range(18) if seq[i:i+2] == 'UU')
-    features.append(uu_count / 18)
-    features.append(float(seq[18] == 'A'))
+    features.extend(step_dg)
+    features.extend(step_dh)
     
     return features
 
@@ -115,8 +97,7 @@ def calculate_duplex_folding_energy(sirna_seq, target_seq):
     return None
 
 def get_feature_names():
-    return [
-        'ends', 'DG_1', 'DH_1', 'U_1', 'G_1', 'DH_all', 'U_all', 'UU_1', 
-        'G_all', 'GG_1', 'GC_1', 'GG_all', 'DG_2', 'UA_all', 'U_2', 'C_1', 
-        'CC_all', 'DG_18', 'CC_1', 'GC_all', 'CG_1', 'DG_13', 'UU_all', 'A_19'
-    ]
+    names = ['ends', 'DG_total', 'DH_total']
+    names += [f'DG_pos{i}' for i in range(1, 19)]
+    names += [f'DH_pos{i}' for i in range(1, 19)]
+    return names

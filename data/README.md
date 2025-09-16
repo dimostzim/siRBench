@@ -8,26 +8,19 @@ Process siRNA datasets with feature calculation, harmonization, and splitting ut
 Builds the enhanced feature set combining composition, constraint‑based energies, and RNAup.
 
 ```bash
-# Default: reads data/siRBench_base.csv and writes data/siRBench_enhanced.csv
+# Default: reads data/siRBench_base.csv and writes data/siRBench_base_with_features.csv
 python data/scripts/make_all_features.py
 
 # Explicit paths
-python data/scripts/make_all_features.py data/siRBench_base.csv -o data/siRBench_full.csv
-
-# Performance/ablation toggles
-python data/scripts/make_all_features.py \
-  [--no-advanced-energies] \
-  [--no-rnaup] \
-  [--no-cofold] \
-  [--with-std-seqs]
+python data/scripts/make_all_features.py data/siRBench_base.csv -o data/siRBench_full_with_features.csv
 ```
 
 - Input must contain exact `siRNA` and `mRNA` columns (19 nt expected; `T`→`U`, truncated to 19).
 - Outputs include:
-  - Composition/NN: `ends`, `DH_all`, base fractions (`U_all`, `G_all`) and dinucleotide fractions (`UU_all`, `GG_all`, `GC_all`, `CC_all`, `UA_all`).
+  - Thermodynamics: `ends`, `DG_total`, `DH_total`, and per-position nearest-neighbour stacks (`DG_pos1..18`, `DH_pos1..18`).
   - Constraint energies (RNAfold/RNAcofold): `single_energy_total`, `single_energy_pos1..19`, `duplex_energy_total`, `duplex_energy_sirna_pos1..19`, `duplex_energy_target_pos1..19`.
   - RNAup: `RNAup_open_dG` (opening siRNA+target), `RNAup_interaction_dG` (hybridization).
-  - All numeric columns are rounded to 2 decimals. Optional standardized sequences with `--with-std-seqs`.
+  - All numeric columns are rounded to three decimals.
 
 ### Train/Validation Split (siRBench)
 Create a 90/10 split from `data/siRBench_train.csv` while preserving distributions across cell line, binary label, and binned efficacy.
