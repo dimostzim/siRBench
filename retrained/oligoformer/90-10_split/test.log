@@ -1,6 +1,0 @@
-2025-08-27 12:12:34 - INFO - Number of train: 3068
-2025-08-27 12:12:34 - INFO - Number of val: 690
-2025-08-27 12:12:34 - INFO - Number of test: 690
-2025-08-27 12:12:35 - INFO - val_pcc-0.5997, pval-1.32e-68
-2025-08-27 12:12:35 - INFO - Saved predictions to result/20250827_121234_siRBench_test/log/train/test_predictions.csv
-2025-08-27 12:12:35 - INFO - val_acc-0.7507,val_f1-0.8307, val_pre-0.7288, val_rec-0.9657, val_rocauc-0.7938, val_prc-0.8472,val_loss-0.0468 ***
