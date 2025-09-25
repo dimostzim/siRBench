@@ -1,8 +1,0 @@
-tool,standard_split,best_10-fold_split
-AttSiOff,0.4560,0.3933
-GNN4siRNA,0.4188,0.3930
-Oligoformer,0.5495,0.5327
-siRNABERT,0.4394,0.4441
-siRNADiscovery,0.4828,0.4809
-ENsiRNA,0.5443,0.5110
-
