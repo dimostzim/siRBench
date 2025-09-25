@@ -1,13 +1,36 @@
-# Agentomics Model
+# Agentomics siRBench Runner
 
-This folder contains everything needed to retrain and run inference for the agentomics model (standard split).
+This folder bundles the pretrained Agentomics model and helpers to score the siRBench splits that ship with the repository.
 
-- `model.txt`, `metrics.json`: LightGBM booster and training metrics.
-- `representation.joblib`: feature pipeline (builder + scaler + feature list).
-- `model_config.json`: hyperparameters.
-- `build_representation.py`, `train_model.py`, `feature_builder.py`: utilities for rebuilding the representation and training a model if you place new data at `data/train.csv` and `data/validation.csv`.
-- `inference.py`: CLI entry for predictions (`python -m retrained.agentomics.inference`).
-- `sample_input.csv`, `sample_output.csv`: illustration of the expected input schema and output format.
-- `agentomics_test_predictions.csv`, `agentomics_val_predictions.csv`: predictions on the siRBench test and validation splits.
+## Expected Data
 
-All files live flat at this level for easy packaging.
+All required CSVs already live in `/home/dtzim01/igem_2025/data/` (relative to this directory: `../data/`):
+```
+data/
+├── siRBench_train_90.csv
+├── siRBench_val_10.csv
+└── siRBench_test.csv
+```
+
+## How to Run
+
+```bash
+cd tools/agentomics
+pip install uv
+uv run agentomics_sirbench.py
+```
+
+The first run installs `lightgbm`, `pandas`, `numpy`, `scikit-learn`, `joblib`, and `scipy` into an isolated environment before executing the script. Prefer to manage the environment yourself? Activate it and replace `uv run` with `python` in the command above.
+
+## Outputs
+
+Predictions are written to `tools/agentomics/results/`:
+- `train_90_predictions.csv`
+- `val_10_predictions.csv`
+- `test_predictions.csv`
+
+Each CSV contains two columns: `true` (ground-truth efficacy when available) and `pred` (Agentomics predictions). The script prints the training and validation losses along with Pearson correlation coefficients for the validation and test splits.
+
+## Scope
+
+The current workflow targets the curated siRBench feature tables bundled with the repo. Running it on other datasets is unsupported without code changes.

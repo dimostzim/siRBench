@@ -1,7 +1,6 @@
 import argparse
 from collections import Counter
 from pathlib import Path
-import sys
 from typing import Dict, Optional, Sequence
 
 import joblib
@@ -10,8 +9,6 @@ import numpy as np
 import pandas as pd
 
 BASE_DIR = Path(__file__).resolve().parent
-if str(BASE_DIR) not in sys.path:
-    sys.path.insert(0, str(BASE_DIR))
 ARTIFACT_PATH = BASE_DIR / "representation.joblib"
 MODEL_PATH = BASE_DIR / "model.txt"
 
@@ -181,7 +178,7 @@ def load_model() -> lgb.Booster:
 
 def prepare_features(df: pd.DataFrame, artifact: dict) -> np.ndarray:
     input_df = df.copy()
-    for col in ["target", "numeric_label"]:
+    for col in ["efficacy", "binary", "source", "cell_line", "target", "numeric_label"]:
         if col in input_df.columns:
             input_df = input_df.drop(columns=col)
 

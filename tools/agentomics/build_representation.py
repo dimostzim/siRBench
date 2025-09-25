@@ -1,23 +1,36 @@
+from pathlib import Path
 import numpy as np
 import pandas as pd
-from pathlib import Path
 from sklearn.preprocessing import StandardScaler
 import joblib
 
 BASE_DIR = Path(__file__).resolve().parent
-DATA_DIR = BASE_DIR / "data"
-TRAIN_PATH = DATA_DIR / "train.csv"
-VAL_PATH = DATA_DIR / "validation.csv"
+REPO_ROOT = BASE_DIR.parents[1]
+DATA_DIR = REPO_ROOT / "data"
+
+DEFAULT_TRAIN = DATA_DIR / "train.csv"
+DEFAULT_VAL = DATA_DIR / "validation.csv"
+SIRBENCH_TRAIN = DATA_DIR / "siRBench_train_90.csv"
+SIRBENCH_VAL = DATA_DIR / "siRBench_val_10.csv"
+
+TRAIN_PATH = DEFAULT_TRAIN if DEFAULT_TRAIN.exists() else SIRBENCH_TRAIN
+VAL_PATH = DEFAULT_VAL if DEFAULT_VAL.exists() else SIRBENCH_VAL
 OUTPUT_PATH = BASE_DIR / "representation.joblib"
 
 SEQ_COLS = ["siRNA", "mRNA", "extended_mRNA"]
-TARGET_COL = "target"
-LEAK_COL = "numeric_label"
+TARGET_CANDIDATES = ["efficacy", "target"]
+LEAK_CANDIDATES = ["binary", "source", "cell_line", "numeric_label"]
 
 train_df = pd.read_csv(TRAIN_PATH)
 val_df = pd.read_csv(VAL_PATH)
 
-drop_cols = SEQ_COLS + [TARGET_COL, LEAK_COL]
+TARGET_COL = next((col for col in TARGET_CANDIDATES if col in train_df.columns), None)
+if TARGET_COL is None:
+    raise KeyError(f"No target column found in {TRAIN_PATH}; expected one of {TARGET_CANDIDATES}")
+
+drop_cols = SEQ_COLS
+drop_cols += [col for col in TARGET_CANDIDATES if col in train_df.columns]
+drop_cols += [col for col in LEAK_CANDIDATES if col in train_df.columns]
 base_numeric_cols = [c for c in train_df.columns if c not in drop_cols]
 base_numeric_cols.sort()
 
