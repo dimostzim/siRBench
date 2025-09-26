@@ -25,7 +25,7 @@ def compute_metrics(y_true, y_pred):
 def train_lightgbm(X_train, y_train, X_val, y_val, params, num_boost_round, early_stopping_rounds):
     train_set = lgb.Dataset(X_train, label=y_train)
     val_set = lgb.Dataset(X_val, label=y_val, reference=train_set)
-    callbacks = [lgb.log_evaluation(period=0), lgb.early_stopping(stopping_rounds=early_stopping_rounds, verbose=False)]
+    callbacks = [lgb.log_evaluation(period=100), lgb.early_stopping(stopping_rounds=early_stopping_rounds, verbose=True)]
     booster = lgb.train(
         params,
         train_set,
@@ -88,13 +88,19 @@ def main():
     }
     METRICS_PATH.write_text(json.dumps(results, indent=2))
 
-    summary = {
-        "best_iteration": best_iteration,
-        "device": used_device,
-        "train_rmse": round(train_metrics["rmse"], 4),
-        "val_rmse": round(val_metrics["rmse"], 4),
-    }
-    print(json.dumps(summary))
+    # Print final results clearly
+    print(f"\n{'='*50}")
+    print("TRAINING COMPLETED")
+    print(f"{'='*50}")
+    print(f"Best iteration: {best_iteration}")
+    print(f"Device used: {used_device}")
+    print(f"\nFINAL LOSSES:")
+    print(f"Train Loss: {train_metrics['rmse']:.4f} RMSE")
+    print(f"Val Loss:   {val_metrics['rmse']:.4f} RMSE")
+    print(f"\nFINAL METRICS:")
+    print(f"Train - RMSE: {train_metrics['rmse']:.4f}, MAE: {train_metrics['mae']:.4f}, R²: {train_metrics['r2']:.4f}")
+    print(f"Val   - RMSE: {val_metrics['rmse']:.4f}, MAE: {val_metrics['mae']:.4f}, R²: {val_metrics['r2']:.4f}")
+    print(f"{'='*50}")
 
 
 if __name__ == "__main__":

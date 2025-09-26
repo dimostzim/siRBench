@@ -21,6 +21,12 @@ def main() -> None:
     for split in SPLITS:
         csv_path = DATA_DIR / f"siRBench_{split}.csv"
         df = pd.read_csv(csv_path)
+
+        if split == "val_10":
+            print("Getting predictions on validation set...")
+        elif split == "test":
+            print("Getting predictions on test set...")
+
         features = prepare_features(df, artifact)
         preds = booster.predict(pd.DataFrame(features, columns=feature_names))
 
@@ -30,16 +36,9 @@ def main() -> None:
         if "efficacy" in df.columns:
             loss = ((df["efficacy"] - preds) ** 2).mean()
             pcc = pearsonr(df["efficacy"], preds)[0]
-        else:
-            loss = float("nan")
-            pcc = float("nan")
-
-        if split == "train_90":
-            print(f"{split:>8}: Loss = {loss:.4f}")
-        elif split == "val_10":
             print(f"{split:>8}: Loss = {loss:.4f}, PCC = {pcc:.4f}")
         else:
-            print(f"{split:>8}: PCC = {pcc:.4f}")
+            print(f"{split:>8}: No ground truth available")
 
 
 if __name__ == "__main__":

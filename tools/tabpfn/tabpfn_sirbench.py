@@ -30,7 +30,12 @@ def main():
         y = df["efficacy"]
 
         if split == "train_90":
+            print("Fitting model on train set...")
             regressor.fit(X, y)
+        elif split == "val_10":
+            print("Getting predictions on validation set...")
+        else:  # test
+            print("Getting predictions on test set...")
 
         preds = regressor.predict(X)
         loss = ((y - preds) ** 2).mean()
@@ -40,12 +45,7 @@ def main():
             RESULTS_DIR / f"{split}_predictions.csv", index=False
         )
 
-        if split == "train_90":
-            print(f"{split:>8}: Loss = {loss:.4f}")
-        elif split == "val_10":
-            print(f"{split:>8}: Loss = {loss:.4f}, PCC = {pcc:.4f}")
-        else:
-            print(f"{split:>8}: PCC = {pcc:.4f}")
+        print(f"{split:>8}: Loss = {loss:.4f}, PCC = {pcc:.4f}")
 
 
 if __name__ == "__main__":
