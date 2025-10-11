@@ -1,3 +1,0 @@
-Number of test: 690
------------------Start testing!-----------------
-test_acc-0.8275,test_f1-0.8937, test_pre-0.8913, test_rec-0.8961, test_rocauc-0.8193, test_prc-0.9440,test_pcc-0.5546,test_loss-0.0544 ***
