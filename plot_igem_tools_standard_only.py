@@ -10,7 +10,7 @@ standard_df = standard_df.sort_values("pcc", ascending=False)
 names = standard_df["tool"].str.replace("siRNADiscovery", "siRNA\nDiscovery")
 values = standard_df["pcc"] * 100
 
-colors = ["red" if tool in {"TabPFN", "Agentomics"} else "#4682B4" for tool in standard_df["tool"]]
+colors = ["red" if tool in {"TabPFN", "LightGBM"} else "#4682B4" for tool in standard_df["tool"]]
 
 fig, ax = plt.subplots(figsize=(10, 6))
 bar_width = 0.2
