@@ -1,0 +1,7 @@
+Tool Name,Paper,Github
+Oligoformer,https://academic.oup.com/bioinformatics/article/40/10/btae577/7775419?login=true,https://github.com/lulab/OligoFormer
+GNN4siRNA,https://www.mdpi.com/1422-0067/23/22/14211,https://github.com/BCB4PM/GNN4siRNA
+siRNADiscovery,https://academic.oup.com/bib/article/25/6/bbae563/7877280,https://github.com/BertramLoong/siRNADiscovery
+AttSiOff,https://link.springer.com/article/10.1007/s44258-024-00019-1,https://github.com/2333liubin/AttSiOff
+BERT-siRNA,https://pubmed.ncbi.nlm.nih.gov/38431236/,https://github.com/ChengkuiZhao/siRNABERT
+ENsiRNA,https://www.sciencedirect.com/science/article/pii/S0022283625001974,https://github.com/tanwenchong/ENsiRNA
