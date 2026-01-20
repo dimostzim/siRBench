@@ -1,0 +1,9 @@
+competitors/__pycache__/
+competitors/data/
+competitors/models/
+competitors/preds*.csv
+competitors/metrics*.json
+competitors/tools/*/*_src/
+competitors/tools/*/__pycache__/
+competitors/tools/*/*.pyc
+competitors/tools/*/*.pyo
