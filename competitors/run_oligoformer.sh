@@ -15,7 +15,6 @@ METRICS_JSON="${METRICS_JSON:-${ROOT_DIR}/metrics_oligoformer.json}"
 
 RNAFM_ROOT="${RNAFM_ROOT:-${ROOT_DIR}/tools/oligoformer/oligoformer_src/RNA-FM}"
 USE_RNAFM="${USE_RNAFM:-1}"
-GPUS="${GPUS:-all}"
 
 SUDO=""
 if ! docker info >/dev/null 2>&1; then
@@ -40,26 +39,24 @@ if [ "${USE_RNAFM}" = "1" ]; then
 fi
 
 run python3 "${ROOT_DIR}/prepare.py" "${PREPARE_ARGS[@]}" \
-  --input-csv "${TRAIN_CSV}" --dataset-name train --gpus "${GPUS}"
+  --input-csv "${TRAIN_CSV}" --dataset-name train
 run python3 "${ROOT_DIR}/prepare.py" "${PREPARE_ARGS[@]}" \
-  --input-csv "${VAL_CSV}" --dataset-name val --gpus "${GPUS}"
+  --input-csv "${VAL_CSV}" --dataset-name val
 run python3 "${ROOT_DIR}/prepare.py" "${PREPARE_ARGS[@]}" \
-  --input-csv "${TEST_CSV}" --dataset-name test --gpus "${GPUS}"
+  --input-csv "${TEST_CSV}" --dataset-name test
 
 run python3 "${ROOT_DIR}/train.py" --tool oligoformer \
   --train-csv "${OUT_DATA}/train.csv" \
   --val-csv "${OUT_DATA}/val.csv" \
   --data-dir "${OUT_DATA}" \
-  --model-dir "${MODEL_DIR}" \
-  --gpus "${GPUS}"
+  --model-dir "${MODEL_DIR}"
 
 run python3 "${ROOT_DIR}/test.py" --tool oligoformer \
   --test-csv "${OUT_DATA}/test.csv" \
   --data-dir "${OUT_DATA}" \
   --model-path "${MODEL_DIR}/model.pt" \
   --output-csv "${PREDS}" \
-  --metrics-json "${METRICS_JSON}" \
-  --gpus "${GPUS}"
+  --metrics-json "${METRICS_JSON}"
 
 echo "Done. Predictions: ${PREDS}"
 echo "Metrics: ${METRICS_JSON}"
