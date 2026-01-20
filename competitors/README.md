@@ -2,7 +2,7 @@
 
 Unified wrappers to prepare/train/test competitor models. Commands run inside Docker by default.
 
-GPU selection: use `--gpus all` (default) or `--gpus 0` to select a device.
+GPU is required; Docker runs with `--gpus all`.
 Images bake required pretrained weights (RNA-FM, DNABERT for siRNABERT) to avoid runtime downloads.
 ENsiRNA `prepare.py` will generate PDBs if `pdb_data_path` is missing and Rosetta is available.
 

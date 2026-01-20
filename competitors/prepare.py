@@ -43,7 +43,6 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--tool", required=True, choices=TOOL_CHOICES)
     p.add_argument("--docker", action="store_true", help=argparse.SUPPRESS)
-    p.add_argument("--gpus", default="all", help="GPU selector for Docker, e.g. all or 0")
     args, unknown = p.parse_known_args()
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -56,7 +55,7 @@ def main():
 
     host_root = repo_root(base_dir)
     forwarded = rewrite_args(unknown, host_root)
-    run_docker(args.tool, "prepare.py", forwarded, host_root, gpus=args.gpus)
+    run_docker(args.tool, "prepare.py", forwarded, host_root)
 
 
 if __name__ == "__main__":

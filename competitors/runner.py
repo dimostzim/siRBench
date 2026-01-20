@@ -30,7 +30,7 @@ def to_container_path(path, host_root, container_root="/work"):
     return path
 
 
-def run_docker(tool, script_rel, argv, host_root, gpus="all"):
+def run_docker(tool, script_rel, argv, host_root):
     image = f"{tool}:latest"
     workdir = f"/work/competitors/tools/{tool}"
     torch_home = os.environ.get("TORCH_HOME")
@@ -39,6 +39,7 @@ def run_docker(tool, script_rel, argv, host_root, gpus="all"):
         "docker", "run", "--rm",
         "-v", f"{host_root}:/work",
         "-w", workdir,
+        "--gpus", "all",
     ]
     if torch_home:
         cmd.extend(["-e", f"TORCH_HOME={torch_home}"])
@@ -46,8 +47,6 @@ def run_docker(tool, script_rel, argv, host_root, gpus="all"):
         if not os.path.abspath(rosetta_dir).startswith(os.path.abspath(host_root) + os.sep):
             cmd.extend(["-v", f"{rosetta_dir}:{rosetta_dir}"])
         cmd.extend(["-e", f"ROSETTA_DIR={rosetta_dir}"])
-    if gpus:
-        cmd.extend(["--gpus", gpus])
     cmd.append(image)
     cmd.extend(["python3", script_rel])
     cmd.extend(argv)
