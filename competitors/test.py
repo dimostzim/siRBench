@@ -49,6 +49,13 @@ def rewrite_args(argv, host_root):
     return out
 
 
+def get_arg_value(argv, flag):
+    for i, arg in enumerate(argv):
+        if arg == flag and i + 1 < len(argv):
+            return argv[i + 1]
+    return None
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--tool", required=True, choices=TOOL_CHOICES)
@@ -65,7 +72,12 @@ def main():
 
     host_root = repo_root(base_dir)
     forwarded = rewrite_args(unknown, host_root)
-    run_docker(args.tool, "test.py", forwarded, host_root)
+
+    test_csv = get_arg_value(unknown, "--test-csv") or "test"
+    model_path = get_arg_value(unknown, "--model-path") or "model"
+    status_msg = f"[{args.tool}] test {os.path.basename(model_path)} -> {os.path.basename(test_csv)}"
+
+    run_docker(args.tool, "test.py", forwarded, host_root, status_msg=status_msg)
 
 
 if __name__ == "__main__":

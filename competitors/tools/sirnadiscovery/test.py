@@ -6,6 +6,7 @@ import sys
 import pandas as pd
 import tensorflow as tf
 from stellargraph.mapper import HinSAGENodeGenerator
+from stellargraph.layer import HinSAGE
 
 from common import build_graph, load_params
 
@@ -23,7 +24,7 @@ def main():
     p.add_argument("--model-path", required=True)
     p.add_argument("--output-csv", default="predictions.csv")
     p.add_argument("--metrics-json", default=None)
-    p.add_argument("--src-root", default="sirnadiscovery_src")
+    p.add_argument("--src-root", default="sirnadiscovery_src/siRNA_split")
     args = p.parse_args()
 
     params = load_params(args.params_json)
@@ -35,7 +36,17 @@ def main():
     test_interaction = pd.DataFrame(test_df['efficacy'].values, index=test_df['siRNA'] + "_" + test_df['mRNA'])
     test_gen = generator.flow(test_interaction.index, test_interaction)
 
-    model = tf.keras.models.load_model(args.model_path)
+    custom_objects = {"HinSAGE": HinSAGE}
+    try:
+        from stellargraph.layer import MeanHinAggregator, MeanPoolingAggregator, AttentionalAggregator
+        custom_objects.update({
+            "MeanHinAggregator": MeanHinAggregator,
+            "MeanPoolingAggregator": MeanPoolingAggregator,
+            "AttentionalAggregator": AttentionalAggregator,
+        })
+    except Exception:
+        pass
+    model = tf.keras.models.load_model(args.model_path, custom_objects=custom_objects)
     preds = model.predict(test_gen).squeeze()
 
     out_df = pd.DataFrame({

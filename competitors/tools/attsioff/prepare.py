@@ -94,8 +94,13 @@ def main():
     df[args.sirna_col] = df[args.sirna_col].astype(str).str.upper().str.replace('T', 'U')
     df[args.mrna_col] = df[args.mrna_col].astype(str).str.upper().str.replace('T', 'U')
 
-    if args.biopred_col not in df.columns or args.dsir_col not in df.columns or args.iscore_col not in df.columns:
-        raise ValueError("Missing required columns for AttSiOff: s-Biopredsi, DSIR, i-score")
+    def ensure_col(col, default=0.0):
+        if col not in df.columns:
+            df[col] = default
+
+    ensure_col(args.biopred_col, 0.0)
+    ensure_col(args.dsir_col, 0.0)
+    ensure_col(args.iscore_col, 0.0)
 
     df["RNAFM_ind"] = list(range(len(df)))
 

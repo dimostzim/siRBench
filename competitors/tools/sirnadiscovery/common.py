@@ -54,19 +54,19 @@ def build_graph(df_all, preprocess_dir, ago2_dir, params, src_root):
     sirna_thermo_feat = sirna_thermo_feat.set_index('index').drop(columns=['siRNA', 'mRNA'])
 
     con_feat = pd.read_csv(os.path.join(preprocess_dir, "con_matrix.txt"), header=None, index_col=0)
-    con_feat = con_feat.reindex(sirna_thermo_feat.index)
+    con_feat = con_feat.reindex(sirna_thermo_feat.index).fillna(0.0)
 
     sirna_sfold_feat = pd.read_csv(os.path.join(preprocess_dir, "self_siRNA_matrix.txt"), header=None, index_col=0)
-    sirna_sfold_feat = sirna_sfold_feat.reindex(sirna_onehot.index)
+    sirna_sfold_feat = sirna_sfold_feat.reindex(sirna_onehot.index).fillna(0.0)
 
     mrna_sfold_feat = pd.read_csv(os.path.join(preprocess_dir, "self_mRNA_matrix.txt"), header=None, index_col=0)
-    mrna_sfold_feat = mrna_sfold_feat.reindex(mrna_onehot.index)
+    mrna_sfold_feat = mrna_sfold_feat.reindex(mrna_onehot.index).fillna(0.0)
 
     sirna_ago = pd.read_csv(os.path.join(ago2_dir, "siRNA_AGO2.csv"), index_col=0)
-    sirna_ago = sirna_ago.reindex(sirna_onehot.index)
+    sirna_ago = sirna_ago.reindex(sirna_onehot.index).fillna(0.0)
 
     mrna_ago = pd.read_csv(os.path.join(ago2_dir, "mRNA_AGO2.csv"), index_col=0)
-    mrna_ago = mrna_ago.reindex(mrna_onehot.index)
+    mrna_ago = mrna_ago.reindex(mrna_onehot.index).fillna(0.0)
 
     sirna_gc = [utils.countGC(seq) for seq in data['siRNA_seq']]
     sirna_gc = pd.DataFrame(sirna_gc, index=list(data['siRNA']))

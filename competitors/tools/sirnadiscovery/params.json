@@ -1,7 +1,7 @@
 {
   "dmodel": 6,
-  "sirna_length": 21,
-  "max_mrna_len": 9756,
+  "sirna_length": 19,
+  "max_mrna_len": 57,
   "batch_size": 64,
   "epochs": 26,
   "hinsage_layer_sizes": [64, 32],

@@ -68,7 +68,7 @@ def main():
     x_inp, x_out = hinsage.in_out_tensors()
     prediction = tf.keras.layers.Dense(units=1)(x_out)
     model = tf.keras.Model(inputs=x_inp, outputs=prediction)
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=args.lr), loss=args.loss)
+    model.compile(optimizer=tf.keras.optimizers.Adamax(learning_rate=args.lr), loss=args.loss)
 
     model.fit(train_gen, epochs=args.epochs, validation_data=val_gen, verbose=2, shuffle=False)
 

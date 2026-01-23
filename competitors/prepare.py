@@ -39,6 +39,13 @@ def rewrite_args(argv, host_root):
     return out
 
 
+def get_arg_value(argv, flag):
+    for i, arg in enumerate(argv):
+        if arg == flag and i + 1 < len(argv):
+            return argv[i + 1]
+    return None
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--tool", required=True, choices=TOOL_CHOICES)
@@ -55,7 +62,12 @@ def main():
 
     host_root = repo_root(base_dir)
     forwarded = rewrite_args(unknown, host_root)
-    run_docker(args.tool, "prepare.py", forwarded, host_root)
+
+    input_csv = get_arg_value(unknown, "--input-csv") or "data"
+    dataset_name = get_arg_value(unknown, "--dataset-name") or os.path.basename(input_csv)
+    status_msg = f"[{args.tool}] prepare {dataset_name}"
+
+    run_docker(args.tool, "prepare.py", forwarded, host_root, status_msg=status_msg)
 
 
 if __name__ == "__main__":

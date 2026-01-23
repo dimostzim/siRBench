@@ -3,6 +3,11 @@ set -e
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 if [[ "$*" == *"--docker"* ]]; then
+    if ! docker image inspect oligoformer:latest >/dev/null 2>&1; then
+        echo "Building oligoformer first (needed for RNA-FM weights)..."
+        ../../setup.sh --tool oligoformer
+    fi
+
     image_tag="${IMAGE_TAG:-attsioff:latest}"
 
     BUILD_ARGS=""

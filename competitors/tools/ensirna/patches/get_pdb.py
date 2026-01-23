@@ -24,8 +24,30 @@ def resolve_rosetta_dir(rosetta_dir=None):
         base = rosetta_dir
     else:
         base = os.environ.get("ROSETTA_DIR", "/app/ENsiRNA-main/rosetta/rosetta.binary.linux.release-371")
-    ff = os.path.join(base, "main/source/bin/rna_denovo.static.linuxgccrelease")
+    ff_candidates = [
+        os.path.join(base, "main/source/bin/rna_denovo.static.linuxgccrelease"),
+        os.path.join(base, "main/source/bin/rna_denovo.linuxgccrelease"),
+        os.path.join(base, "bin/rna_denovo.default.linuxgccrelease"),
+        os.path.join(base, "usr/local/bin/rna_denovo.default.linuxgccrelease"),
+        os.path.join(base, "usr/local/bin/rna_denovo.linuxgccrelease"),
+    ]
+    ff = None
+    for cand in ff_candidates:
+        if os.path.exists(cand):
+            ff = cand
+            break
+    if ff is None:
+        import glob
+        matches = glob.glob(os.path.join(base, "main/source/bin", "rna_denovo*linux*release"))
+        if matches:
+            ff = matches[0]
+
     ex = os.path.join(base, "main/tools/rna_tools/silent_util/extract_lowscore_decoys.py")
+    if not os.path.exists(ex):
+        import glob
+        matches = glob.glob(os.path.join(base, "main/tools/rna_tools/**/extract_lowscore_decoys.py"), recursive=True)
+        if matches:
+            ex = matches[0]
     return base, ff, ex
 
 #MOD_VOCAB.mod2index acsiRNA_mod atom_mod
@@ -45,10 +67,16 @@ class Data_Prepare:
             self.json_dir=excel_dir[:-4]+'no2.json'
 
         self.rosetta_dir, self.ff, self.ex = resolve_rosetta_dir(rosetta_dir)
-        if not os.path.exists(self.ff):
-            raise FileNotFoundError(f"Rosetta rna_denovo not found: {self.ff}")
-        if not os.path.exists(self.ex):
-            raise FileNotFoundError(f"Rosetta extract_lowscore_decoys not found: {self.ex}")
+        if not self.ff or not os.path.exists(self.ff):
+            raise FileNotFoundError(f"Rosetta rna_denovo not found under: {self.rosetta_dir}")
+        if not self.ex or not os.path.exists(self.ex):
+            self.ex = None
+
+        self.database = os.path.join(self.rosetta_dir, "database")
+        if not os.path.isdir(self.database):
+            self.database = os.environ.get("ROSETTA_DATABASE")
+        if not self.database or not os.path.isdir(self.database):
+            self.database = None
 
 
     def get_path(self,siRNA):
@@ -78,70 +106,89 @@ class Data_Prepare:
     def get_anti_start(self,data):
         seq1=data['sense seq']
         seq2=data['anti seq']
-        com=f" echo -e \"{seq1}\n{seq2}\n\" | RNAplex "
-        raw_se=subprocess.run(com,shell=True,capture_output=True, text=True).stdout 
-        secondary_seq1 = re.split(r'\s+', raw_se)[0].split('&')[0]
-        secondary_seq2 = re.split(r'\s+', raw_se)[0].split('&')[1]
-        seq2_ = re.split(r'\s+', raw_se)[3].split(',')
-        seq1_ = re.split(r'\s+', raw_se)[1].split(',')
-        anti1=0
-        anti2=0
-        s1=0
-        s2=0
-        flag=0
-        for i in  secondary_seq2:
-            if i=='.':
-                anti1+=1
-                flag=1
-            else:
-                if flag==1:
-                    anti1+=len(seq2[:int(int(seq2_[0])-1)])
-                break    
-        for i in  secondary_seq2[::-1]:
-            if i=='.':
-                flag=-1
-                anti2-=1
-            else:
-                if flag==-1:
-                    anti2-=len(seq2[int(seq2_[1]):])
-                break  
-        flag=0
-        for i in  secondary_seq1:
-            if i=='.':
-                flag=1
-                s1+=1
-            else:
-                if flag==1:
-                    s1+=len(seq1[:int(seq1_[0])-1])
-                break
-        for i in  secondary_seq1[::-1]:
-            if i=='.':
-                flag=-1
-                s2-=1
-            else:
-                if flag==-1:
-                    s2-=len(seq1[int(seq1_[1]):])
-                break
-        seq2_ = re.split(r'\s+', raw_se)[3].split(',')
-        sec_pos = [1000]
-        padlen = int((61 - len(seq1)) / 2)
-        chain = [0]
-        for i in range(-padlen,len(seq1)+padlen): #mrna
-            sec_pos.append(i)
-            chain.append(1)
-        sec_pos.append(2000)
-        chain.append(2)
-        for i in range(len(seq1)): #sense
-            sec_pos.append(i)
-            chain.append(3)
-        for i in range(s2+anti1+len(seq1)-1,s1+anti2-1,-1): #anti
-            sec_pos.append(i)
-            chain.append(3)
-  
-        if len(sec_pos) != 61+len(seq2)+len(seq1)+1+1:
-            print('!=',data['siRNA'],len(sec_pos),len(seq2))
-            return None
-        return sec_pos,chain
+        target_len = 57
+        padlen = max(0, int((target_len - len(seq1)) / 2))
+
+        def fallback_positions():
+            sec_pos = [1000]
+            chain = [0]
+            for i in range(-padlen, len(seq1) + padlen):  # mRNA
+                sec_pos.append(i)
+                chain.append(1)
+            sec_pos.append(2000)
+            chain.append(2)
+            for i in range(len(seq1)):  # sense
+                sec_pos.append(i)
+                chain.append(3)
+            for i in range(len(seq2) - 1, -1, -1):  # anti
+                sec_pos.append(i)
+                chain.append(3)
+            return sec_pos, chain
+
+        try:
+            com=f" echo -e \"{seq1}\n{seq2}\n\" | RNAplex "
+            raw_se=subprocess.run(com,shell=True,capture_output=True, text=True).stdout 
+            secondary_seq1 = re.split(r'\s+', raw_se)[0].split('&')[0]
+            secondary_seq2 = re.split(r'\s+', raw_se)[0].split('&')[1]
+            seq2_ = re.split(r'\s+', raw_se)[3].split(',')
+            seq1_ = re.split(r'\s+', raw_se)[1].split(',')
+            anti1=0
+            anti2=0
+            s1=0
+            s2=0
+            flag=0
+            for i in  secondary_seq2:
+                if i=='.':
+                    anti1+=1
+                    flag=1
+                else:
+                    if flag==1:
+                        anti1+=len(seq2[:int(int(seq2_[0])-1)])
+                    break    
+            for i in  secondary_seq2[::-1]:
+                if i=='.':
+                    flag=-1
+                    anti2-=1
+                else:
+                    if flag==-1:
+                        anti2-=len(seq2[int(seq2_[1]):])
+                    break  
+            flag=0
+            for i in  secondary_seq1:
+                if i=='.':
+                    flag=1
+                    s1+=1
+                else:
+                    if flag==1:
+                        s1+=len(seq1[:int(seq1_[0])-1])
+                    break
+            for i in  secondary_seq1[::-1]:
+                if i=='.':
+                    flag=-1
+                    s2-=1
+                else:
+                    if flag==-1:
+                        s2-=len(seq1[int(seq1_[1]):])
+                    break
+            seq2_ = re.split(r'\s+', raw_se)[3].split(',')
+            sec_pos = [1000]
+            chain = [0]
+            for i in range(-padlen,len(seq1)+padlen): #mrna
+                sec_pos.append(i)
+                chain.append(1)
+            sec_pos.append(2000)
+            chain.append(2)
+            for i in range(len(seq1)): #sense
+                sec_pos.append(i)
+                chain.append(3)
+            for i in range(s2+anti1+len(seq1)-1,s1+anti2-1,-1): #anti
+                sec_pos.append(i)
+                chain.append(3)
+            if len(sec_pos) != target_len+len(seq2)+len(seq1)+1+1:
+                return fallback_positions()
+            return sec_pos,chain
+        except Exception:
+            return fallback_positions()
 
     def process(self):
         df=pd.read_csv(self.excel_dir) 
@@ -235,9 +282,16 @@ class Data_Prepare:
         os.mkdir(f"{self.pdb_dir}/{data['siRNA']}")
         os.chdir(f"{self.pdb_dir}/{data['siRNA']}")
 
-        subprocess.run([self.ff, '-sequence', seq, '-secstruct', secondary_seq, '-minimize_rna'])
-        subprocess.run(['python', self.ex, 'default.out', '-rosetta_folder', self.rosetta_dir, '1'])
-        subprocess.run(['cp','default.out.1.pdb',f"{self.pdb_dir}/{data['siRNA']}.pdb"])
+        cmd = [self.ff, '-sequence', seq, '-secstruct', secondary_seq, '-minimize_rna']
+        if self.database:
+            cmd.extend(['-database', self.database])
+        subprocess.run(cmd)
+        if self.ex:
+            subprocess.run(['python', self.ex, 'default.out', '-rosetta_folder', self.rosetta_dir, '1'])
+            subprocess.run(['cp','default.out.1.pdb',f"{self.pdb_dir}/{data['siRNA']}.pdb"])
+        else:
+            # Fallback for minimal Rosetta installs without extract_lowscore_decoys.py
+            subprocess.run(['cp','default.out',f"{self.pdb_dir}/{data['siRNA']}.pdb"])
       
         #os.chdir(f"/public2022/tanwenchong/rna/EnModSIRNA-1main")
         subprocess.run(['rm','-r',f"{self.pdb_dir}/{data['siRNA']}"])

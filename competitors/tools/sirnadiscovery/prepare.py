@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import argparse
+import hashlib
 import os
 import shutil
 
@@ -13,7 +14,7 @@ def main():
     p.add_argument("--dataset-name")
     p.add_argument("--id-col", default="id")
     p.add_argument("--sirna-col", default="siRNA")
-    p.add_argument("--mrna-col", default="mRNA")
+    p.add_argument("--mrna-col", default="extended_mRNA")
     p.add_argument("--efficacy-col", default="efficacy")
     p.add_argument("--preprocess-dir")
     p.add_argument("--rna-ago2-dir")
@@ -28,8 +29,12 @@ def main():
     df[args.sirna_col] = df[args.sirna_col].astype(str).str.upper().str.replace('T', 'U')
     df[args.mrna_col] = df[args.mrna_col].astype(str).str.upper().str.replace('T', 'U')
 
-    df["sirna_id"] = [f"sirna_{i:06d}" for i in range(len(df))]
-    df["mrna_id"] = [f"mrna_{i:06d}" for i in range(len(df))]
+    def stable_id(prefix, seq):
+        digest = hashlib.md5(seq.encode("utf-8")).hexdigest()[:16]
+        return f"{prefix}_{digest}"
+
+    df["sirna_id"] = [stable_id("sirna", seq) for seq in df[args.sirna_col]]
+    df["mrna_id"] = [stable_id("mrna", seq) for seq in df[args.mrna_col]]
 
     out_df = pd.DataFrame({
         "id": df[args.id_col],

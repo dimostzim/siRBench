@@ -38,7 +38,7 @@ RUN wget -q https://github.com/ViennaRNA/ViennaRNA/releases/download/v${VIENNA_V
 RUN python3 -m pip install --no-cache-dir --upgrade pip
 
 RUN python3 -m pip install --no-cache-dir \
-    pandas scikit-learn chardet \
+    pandas scikit-learn chardet biopython \
     tensorflow==2.4.1 stellargraph==1.2.1
 
 WORKDIR /work/competitors/tools/sirnadiscovery

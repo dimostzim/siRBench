@@ -1,6 +1,6 @@
 # AttSiOff wrapper
 
-Requires additional feature columns: `s-Biopredsi`, `DSIR`, `i-score`.
+Optional feature columns: `s-Biopredsi`, `DSIR`, `i-score` (filled with 0.0 if missing).
 
 ## Prepare
 

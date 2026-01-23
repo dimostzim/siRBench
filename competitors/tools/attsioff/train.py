@@ -19,14 +19,20 @@ def load_modules(src_root):
     return RNAFM_SIPRED_2, Generate_dataset, create_pssm
 
 
+def _col_or_zeros(df, col):
+    if col in df.columns:
+        return df[col]
+    return np.zeros(len(df))
+
+
 def build_dataset(df, create_pssm):
     seq = np.array(df['Antisense'])
     data = {
         'seq': seq,
         'mrna': np.array(df['mrna']),
-        's-biopredsi': np.array(df['s-Biopredsi']),
-        'dsir': np.array(df['DSIR']) / 100.0,
-        'i-score': np.array(df['i-score']) / 100.0,
+        's-biopredsi': np.array(_col_or_zeros(df, 's-Biopredsi')),
+        'dsir': np.array(_col_or_zeros(df, 'DSIR')) / 100.0,
+        'i-score': np.array(_col_or_zeros(df, 'i-score')) / 100.0,
         'inhibition': np.array(df['inhibition']),
         'RNAFM_ind': np.array(df['RNAFM_ind']),
     }

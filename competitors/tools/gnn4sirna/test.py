@@ -7,6 +7,7 @@ import pandas as pd
 import tensorflow as tf
 import stellargraph as sg
 from stellargraph.mapper import HinSAGENodeGenerator
+from stellargraph.layer import HinSAGE
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, ROOT_DIR)
@@ -53,7 +54,17 @@ def main():
     generator = HinSAGENodeGenerator(graph, args.batch_size, [8, 4], head_node_type="interaction")
     test_gen = generator.flow(test_interaction.index, test_interaction)
 
-    model = tf.keras.models.load_model(args.model_path)
+    custom_objects = {"HinSAGE": HinSAGE}
+    try:
+        from stellargraph.layer import MeanHinAggregator, MeanPoolingAggregator, AttentionalAggregator
+        custom_objects.update({
+            "MeanHinAggregator": MeanHinAggregator,
+            "MeanPoolingAggregator": MeanPoolingAggregator,
+            "AttentionalAggregator": AttentionalAggregator,
+        })
+    except Exception:
+        pass
+    model = tf.keras.models.load_model(args.model_path, custom_objects=custom_objects)
     preds = model.predict(test_gen).squeeze()
 
     out_df = pd.DataFrame({

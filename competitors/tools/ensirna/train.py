@@ -10,7 +10,7 @@ def main():
     p.add_argument("--train-set", required=True)
     p.add_argument("--valid-set", required=True)
     p.add_argument("--model-dir", required=True)
-    p.add_argument("--batch-size", type=int, default=8)
+    p.add_argument("--batch-size", type=int, default=16)
     p.add_argument("--gpus", nargs='+', default=["0"])
     p.add_argument("--model-type", default="RNAmaskModel")
     p.add_argument("--src-root", default="ensirna_src")

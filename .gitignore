@@ -1,9 +1,13 @@
 competitors/__pycache__/
 competitors/data/
 competitors/models/
+competitors/results/
 competitors/preds*.csv
 competitors/metrics*.json
 competitors/tools/*/*_src/
+competitors/tools/ensirna/rosetta/
+competitors/tools/ensirna/rosetta/bin/
+competitors/tools/ensirna/rosetta/database/
 competitors/tools/*/__pycache__/
 competitors/tools/*/*.pyc
 competitors/tools/*/*.pyo

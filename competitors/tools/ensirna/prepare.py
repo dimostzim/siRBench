@@ -14,6 +14,21 @@ def revcomp(seq):
     return seq.upper().replace('T', 'U').translate(comp)[::-1]
 
 
+def clean_seq(seq):
+    seq = str(seq).upper().replace('T', 'U')
+    return seq.replace('X', '').replace('N', '')
+
+
+def resolve_position(mrna_seq, sense_seq, anti_seq, target_seq=None):
+    if target_seq and target_seq in mrna_seq:
+        return mrna_seq.index(target_seq)
+    if sense_seq in mrna_seq:
+        return mrna_seq.index(sense_seq)
+    if anti_seq in mrna_seq:
+        return mrna_seq.index(anti_seq)
+    return 0
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--input-csv", required=True)
@@ -54,23 +69,20 @@ def main():
 
         os.makedirs(pdb_dir, exist_ok=True)
 
-        def clean_mrna(seq):
-            seq = str(seq).upper().replace('T', 'U')
-            return seq.replace('X', '').replace('N', '')
-
         df_pdb = df.copy()
         df_pdb["sirna_seq"] = df_pdb[args.sirna_col].astype(str).str.upper().str.replace('T', 'U')
         df_pdb["sense seq"] = df_pdb["sirna_seq"].apply(revcomp)
         df_pdb["anti seq"] = df_pdb["sirna_seq"]
-        df_pdb["mRNA_seq"] = df_pdb[args.mrna_col].apply(clean_mrna)
+        df_pdb["mRNA_seq"] = df_pdb[args.mrna_col].apply(clean_seq)
+        if "mRNA" in df.columns:
+            df_pdb["target_seq"] = df_pdb["mRNA"].apply(clean_seq)
+        else:
+            df_pdb["target_seq"] = None
 
         def find_position(row):
             if args.position_col in df.columns and not pd.isna(row[args.position_col]):
                 return int(row[args.position_col])
-            try:
-                return int(row["mRNA_seq"].index(row["anti seq"]))
-            except ValueError:
-                return 0
+            return int(resolve_position(row["mRNA_seq"], row["sense seq"], row["anti seq"], row.get("target_seq")))
 
         df_pdb["position"] = df_pdb.apply(find_position, axis=1)
 
@@ -105,15 +117,12 @@ def main():
             anti_seq = sirna
             sense_seq = revcomp(sirna)
 
-            mrna_seq = str(row[args.mrna_col]).upper().replace('T', 'U')
-            mrna_seq = mrna_seq.replace('X', '').replace('N', '')
+            mrna_seq = clean_seq(row[args.mrna_col])
+            target_seq = clean_seq(row["mRNA"]) if "mRNA" in df.columns else None
 
             position = row[args.position_col] if args.position_col in df.columns else None
             if position is None or pd.isna(position):
-                try:
-                    position = mrna_seq.index(anti_seq)
-                except ValueError:
-                    position = 0
+                position = resolve_position(mrna_seq, sense_seq, anti_seq, target_seq)
 
             pdb_path = row[pdb_col] if pdb_col in df.columns else None
             if pdb_path is None or pd.isna(pdb_path):

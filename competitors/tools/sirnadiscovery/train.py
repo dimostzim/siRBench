@@ -21,7 +21,7 @@ def main():
     p.add_argument("--rna-ago2-dir", required=True)
     p.add_argument("--params-json", default="params.json")
     p.add_argument("--model-dir", default="models")
-    p.add_argument("--src-root", default="sirnadiscovery_src")
+    p.add_argument("--src-root", default="sirnadiscovery_src/siRNA_split")
     args = p.parse_args()
 
     src_root = os.path.abspath(os.path.join(os.path.dirname(__file__), args.src_root))
