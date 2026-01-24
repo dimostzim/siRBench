@@ -1,5 +1,3 @@
-FROM oligoformer:latest AS weights
-
 FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
 
 ARG http_proxy
@@ -38,6 +36,6 @@ RUN python3 -m pip install --no-cache-dir \
 ENV TORCH_HOME=/opt/torch
 
 RUN mkdir -p "${TORCH_HOME}/hub/checkpoints"
-COPY --from=weights /opt/torch/hub/checkpoints/RNA-FM_pretrained.pth ${TORCH_HOME}/hub/checkpoints/RNA-FM_pretrained.pth
+COPY checkpoints/RNA-FM_pretrained.pth ${TORCH_HOME}/hub/checkpoints/RNA-FM_pretrained.pth
 
 WORKDIR /work/competitors/tools/ensirna

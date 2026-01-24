@@ -1,16 +1,27 @@
 #!/bin/bash
 set -e
 
-TOOL=""
+TOOLS=()
 
 while [[ $# -gt 0 ]]; do
     case $1 in
         --tool)
-            TOOL="$2"
-            shift 2
+            shift
+            if [ $# -eq 0 ] || [[ "$1" == --* ]]; then
+                echo "Missing value for --tool"
+                exit 1
+            fi
+            while [ $# -gt 0 ] && [[ "$1" != --* ]]; do
+                TOOLS+=("$1")
+                shift
+            done
             ;;
         --docker)
             shift
+            ;;
+        --help|-h)
+            echo "Usage: $0 --tool <name>..."
+            exit 0
             ;;
         *)
             echo "Unknown argument: $1"
@@ -19,10 +30,17 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [ -z "$TOOL" ]; then
+if [ ${#TOOLS[@]} -eq 0 ]; then
     echo "Error: --tool is required"
     exit 1
 fi
 
-cd "$(dirname "$0")/tools/$TOOL"
-./setup.sh --docker
+BASE_DIR="$(dirname "$0")/tools"
+for tool in "${TOOLS[@]}"; do
+    TOOL_DIR="${BASE_DIR}/${tool}"
+    if [ ! -d "${TOOL_DIR}" ]; then
+        echo "Unknown tool: ${tool}"
+        exit 1
+    fi
+    (cd "${TOOL_DIR}" && ./setup.sh --docker)
+done

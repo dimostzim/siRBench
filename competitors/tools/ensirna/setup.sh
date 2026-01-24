@@ -3,12 +3,30 @@ set -e
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 if [[ "$*" == *"--docker"* ]]; then
-    if ! docker image inspect oligoformer:latest >/dev/null 2>&1; then
-        echo "Building oligoformer first (needed for RNA-FM weights)..."
-        ../../setup.sh --tool oligoformer
-    fi
-
     image_tag="${IMAGE_TAG:-ensirna:latest}"
+
+    CKPT_DIR="checkpoints"
+    CKPT_FILE="${CKPT_DIR}/RNA-FM_pretrained.pth"
+    CKPT_URL="https://proj.cse.cuhk.edu.hk/rnafm/api/download?filename=RNA-FM_pretrained.pth"
+    EXPECTED_SIZE=1194424423
+    mkdir -p "${CKPT_DIR}"
+    size=0
+    if [ -f "${CKPT_FILE}" ]; then
+        size=$(wc -c < "${CKPT_FILE}")
+    fi
+    if [ "${size}" -ne "${EXPECTED_SIZE}" ]; then
+        curl -L -C - -o "${CKPT_FILE}" "${CKPT_URL}"
+    fi
+    if [ ! -f "${CKPT_FILE}" ]; then
+        echo "Checkpoint download failed: ${CKPT_FILE}"
+        exit 1
+    fi
+    size=$(wc -c < "${CKPT_FILE}")
+    if [ "${size}" -ne "${EXPECTED_SIZE}" ]; then
+        echo "Checkpoint size mismatch: ${size} (expected ${EXPECTED_SIZE})."
+        echo "Rerun setup to resume the download."
+        exit 1
+    fi
 
     BUILD_ARGS=""
     [ -n "$http_proxy" ] && BUILD_ARGS="$BUILD_ARGS --build-arg http_proxy=$http_proxy"

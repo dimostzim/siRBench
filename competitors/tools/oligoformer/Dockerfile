@@ -33,8 +33,7 @@ RUN python3 -m pip install --no-cache-dir \
 
 ENV TORCH_HOME=/opt/torch
 
-RUN mkdir -p "${TORCH_HOME}/hub/checkpoints" && \
-    wget -O "${TORCH_HOME}/hub/checkpoints/RNA-FM_pretrained.pth" \
-    "https://proj.cse.cuhk.edu.hk/rnafm/api/download?filename=RNA-FM_pretrained.pth"
+RUN mkdir -p "${TORCH_HOME}/hub/checkpoints"
+COPY checkpoints/RNA-FM_pretrained.pth ${TORCH_HOME}/hub/checkpoints/RNA-FM_pretrained.pth
 
 WORKDIR /work/competitors/tools/oligoformer

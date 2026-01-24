@@ -5,9 +5,13 @@ competitors/results/
 competitors/preds*.csv
 competitors/metrics*.json
 competitors/tools/*/*_src/
+competitors/tools/oligoformer/checkpoints/
+competitors/tools/attsioff/checkpoints/
+competitors/tools/ensirna/checkpoints/
 competitors/tools/ensirna/rosetta/
 competitors/tools/ensirna/rosetta/bin/
 competitors/tools/ensirna/rosetta/database/
 competitors/tools/*/__pycache__/
 competitors/tools/*/*.pyc
 competitors/tools/*/*.pyo
+competitors/scripts/__pycache__/
