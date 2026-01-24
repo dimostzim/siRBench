@@ -26,10 +26,10 @@ siRBench is a benchmark framework for evaluating computational methods for predi
 ### Running the Full Pipeline (OligoFormer example)
 ```bash
 # Run complete prepare → train → test pipeline
-./competitors/run_oligoformer.sh
+./competitors/run_tool.sh --tool oligoformer
 
 # Or with custom paths:
-DATA_ROOT=/path/to/data OUT_DATA=/path/to/output ./competitors/run_oligoformer.sh
+DATA_ROOT=/path/to/data ./competitors/run_tool.sh --tool oligoformer
 ```
 
 ### Individual Steps
@@ -41,14 +41,14 @@ python3 competitors/prepare.py --tool oligoformer \
   --dataset-name train
 
 # Train model
-python3 competitors/train.py --tool oligoformer \
+python3 competitors/scripts/train.py --tool oligoformer \
   --train-csv competitors/data/oligoformer/train.csv \
   --val-csv competitors/data/oligoformer/val.csv \
   --data-dir competitors/data/oligoformer \
   --model-dir competitors/models/oligoformer
 
 # Test and evaluate
-python3 competitors/test.py --tool oligoformer \
+python3 competitors/scripts/test.py --tool oligoformer \
   --test-csv competitors/data/oligoformer/test.csv \
   --data-dir competitors/data/oligoformer \
   --model-path competitors/models/oligoformer/model.pt \
@@ -71,11 +71,12 @@ siRBench/
 │   ├── siRBench_full_base_1000_*.csv  # Train/val/test splits
 │   └── scripts/                    # ViennaRNA feature calculators
 └── competitors/                    # Unified ML pipeline
-    ├── runner.py                   # Docker orchestration (path translation, GPU)
     ├── prepare.py                  # Wrapper → tools/<tool>/prepare.py
-    ├── train.py                    # Wrapper → tools/<tool>/train.py
-    ├── test.py                     # Wrapper → tools/<tool>/test.py
-    ├── metrics.py                  # Evaluation (MAE, MSE, RMSE, R², Pearson, Spearman)
+    ├── scripts/                    # Wrapper utilities + docker runner
+    │   ├── runner.py               # Docker orchestration (path translation, GPU)
+    │   ├── train.py                # Wrapper → tools/<tool>/train.py
+    │   ├── test.py                 # Wrapper → tools/<tool>/test.py
+    │   └── metrics.py              # Evaluation (MAE, MSE, RMSE, R², Pearson, Spearman)
     └── tools/<tool>/               # Tool-specific implementations
 ```
 

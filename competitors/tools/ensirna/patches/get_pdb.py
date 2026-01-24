@@ -4,6 +4,7 @@ import json
 from utils.rna_utils import VOCAB
 import argparse
 import os
+import sys
 
 import torch
 import RNA
@@ -255,29 +256,13 @@ class Data_Prepare:
             return False
 
     def get_secondary_structure(self,data):
-        #if os.path.exists(f"{self.pdb_dir}/{data['siRNA']}"):
-        #    return True
-    
         seq1=data['sense seq']
         seq2=data['anti seq']
         seq=seq1+' '+seq2
-
-        #sencondary_seq=RNA.duplexfold(seq1,seq2).structure.replace('&',' ')
-        com=f" echo -e \"{seq1}\n{seq2}\n\" | RNAplex "
-        raw_se=subprocess.run(com,shell=True,capture_output=True, text=True).stdout
-
-        secondary_seq1 = re.split(r'\s+', raw_se)[0].split('&')[0]
-        
-        secondary_seq2 = re.split(r'\s+', raw_se)[0].split('&')[1]
-        
-        
-        seq1_ = re.split(r'\s+', raw_se)[1].split(',')
-        seq2_ = re.split(r'\s+', raw_se)[3].split(',')
-
-        secondary_seq1 = ''.join(['.' for _ in seq1[:int(seq1_[0])-1]]) + secondary_seq1 + ''.join(['.' for _ in seq1[int(seq1_[1]):]])
-        secondary_seq2 = ''.join(['.' for _ in seq2[:int(seq2_[0])-1]]) + secondary_seq2 + ''.join(['.' for _ in seq2[int(seq2_[1]):]])
-
-        secondary_seq = secondary_seq1 + ' ' + secondary_seq2
+        pair_len = min(len(seq1), len(seq2))
+        left = '(' * pair_len + '.' * (len(seq1) - pair_len)
+        right = ')' * pair_len + '.' * (len(seq2) - pair_len)
+        secondary_seq = left + ' ' + right
 
         os.mkdir(f"{self.pdb_dir}/{data['siRNA']}")
         os.chdir(f"{self.pdb_dir}/{data['siRNA']}")
@@ -287,7 +272,7 @@ class Data_Prepare:
             cmd.extend(['-database', self.database])
         subprocess.run(cmd)
         if self.ex:
-            subprocess.run(['python', self.ex, 'default.out', '-rosetta_folder', self.rosetta_dir, '1'])
+            subprocess.run([sys.executable, self.ex, 'default.out', '-rosetta_folder', self.rosetta_dir, '1'])
             subprocess.run(['cp','default.out.1.pdb',f"{self.pdb_dir}/{data['siRNA']}.pdb"])
         else:
             # Fallback for minimal Rosetta installs without extract_lowscore_decoys.py

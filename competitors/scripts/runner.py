@@ -1,6 +1,5 @@
 import os
 import subprocess
-import sys
 
 QUIET = os.environ.get("QUIET", "1") == "1"
 
@@ -15,10 +14,16 @@ TOOL_CHOICES = [
 
 
 def tool_dir(base_dir, tool):
+    base_dir = os.path.abspath(base_dir)
+    if os.path.basename(base_dir) == "scripts":
+        base_dir = os.path.dirname(base_dir)
     return os.path.join(base_dir, "tools", tool)
 
 
 def repo_root(base_dir):
+    base_dir = os.path.abspath(base_dir)
+    if os.path.basename(base_dir) == "scripts":
+        base_dir = os.path.dirname(base_dir)
     return os.path.abspath(os.path.join(base_dir, ".."))
 
 
@@ -48,6 +53,7 @@ def run_docker(tool, script_rel, argv, host_root, status_msg=None):
         "docker", "run", "--rm",
         "-v", f"{host_root}:/work",
         "-w", workdir,
+        "--entrypoint", "python3",
         "--gpus", "all",
         "-e", "PYTHONWARNINGS=ignore::UserWarning",
         "-e", "HOME=/tmp",
@@ -63,7 +69,7 @@ def run_docker(tool, script_rel, argv, host_root, status_msg=None):
             cmd.extend(["-v", f"{rosetta_dir}:{rosetta_dir}"])
         cmd.extend(["-e", f"ROSETTA_DIR={rosetta_dir_container}"])
     cmd.append(image)
-    cmd.extend(["python3", script_rel])
+    cmd.append(script_rel)
     cmd.extend(argv)
 
     if QUIET:

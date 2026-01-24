@@ -30,7 +30,7 @@ Each tool has its own `prepare.py` with extra flags; see `tools/<tool>/README.md
 ## Train
 
 ```bash
-python3 train.py --tool oligoformer --train-csv data/train.csv --val-csv data/val.csv --data-dir data --model-dir models/oligoformer
+python3 scripts/train.py --tool oligoformer --train-csv data/train.csv --val-csv data/val.csv --data-dir data --model-dir models/oligoformer
 ```
 
 All tools expect an explicit validation set for training. Run `test.py` separately on a held-out test set.
@@ -38,11 +38,17 @@ All tools expect an explicit validation set for training. Run `test.py` separate
 ## Test
 
 ```bash
-python3 test.py --tool oligoformer --test-csv data/test.csv --data-dir data --model-path models/oligoformer/model.pt --output-csv preds.csv
+python3 scripts/test.py --tool oligoformer --test-csv data/test.csv --data-dir data --model-path models/oligoformer/model.pt --output-csv preds.csv
 ```
 
-`test.py` prints common regression metrics (MAE, MSE, RMSE, R2, Pearson, Spearman).
+`scripts/test.py` prints common regression metrics (MAE, MSE, RMSE, R2, Pearson, Spearman).
 Use `--metrics-json /path/to/metrics.json` to save the metrics to disk.
+
+## Run multiple tools
+
+```bash
+./run_tool.sh --tool oligoformer gnn4sirna sirnadiscovery
+```
 
 ## Smoke test
 

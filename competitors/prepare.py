@@ -3,6 +3,9 @@ import argparse
 import os
 import sys
 
+SCRIPTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts")
+sys.path.insert(0, SCRIPTS_DIR)
+
 from runner import TOOL_CHOICES, tool_dir, repo_root, to_container_path, run_docker
 
 PATH_FLAGS = {
@@ -65,7 +68,8 @@ def main():
 
     input_csv = get_arg_value(unknown, "--input-csv") or "data"
     dataset_name = get_arg_value(unknown, "--dataset-name") or os.path.basename(input_csv)
-    status_msg = f"[{args.tool}] prepare {dataset_name}"
+    display_name = os.path.basename(input_csv) if input_csv else dataset_name
+    status_msg = f"[{args.tool}] prepare {display_name}"
 
     run_docker(args.tool, "prepare.py", forwarded, host_root, status_msg=status_msg)
 

@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     wget \
     build-essential \
+    python3-rna \
     vienna-rna \
     && rm -rf /var/lib/apt/lists/*
 
@@ -30,7 +31,7 @@ RUN python3 -m pip install --no-cache-dir \
     torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 RUN python3 -m pip install --no-cache-dir \
-    numpy pandas scipy scikit-learn biopython tqdm fair-esm \
+    numpy pandas scipy scikit-learn biopython tqdm fair-esm matplotlib \
     ptflops yacs pyyaml pytorch-ignite
 
 ENV TORCH_HOME=/opt/torch

@@ -15,16 +15,14 @@ tar_extract_stdin() {
     tar -xj -f - -C "${TMP_DIR}" --wildcards --wildcards-match-slash \
         "*/database/**" \
         "*/main/source/bin/rna_denovo*linux*release" \
-        "*/main/tools/rna_tools/**/extract_lowscore_decoys.py" \
-        "*/bin/rna_denovo.default.linuxgccrelease"
+        "*/main/tools/rna_tools/**/extract_lowscore_decoys.py"
 }
 
 tar_extract_file() {
     tar -xjf "${SOURCE}" -C "${TMP_DIR}" --wildcards --wildcards-match-slash \
         "*/database/**" \
         "*/main/source/bin/rna_denovo*linux*release" \
-        "*/main/tools/rna_tools/**/extract_lowscore_decoys.py" \
-        "*/bin/rna_denovo.default.linuxgccrelease"
+        "*/main/tools/rna_tools/**/extract_lowscore_decoys.py"
 }
 
 if [[ "${SOURCE}" =~ ^https?:// ]]; then

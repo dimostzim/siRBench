@@ -8,7 +8,7 @@ Global decisions
 ## Oligoformer
 - Inputs: 19-nt siRNA + 57-nt target (paper uses 57; no deviation).
 - Hyperparams: lr 1e-4, batch 16, epochs 200, exp lr gamma 0.999, early stop 30 (repo defaults; paper does not specify in wrapper).
-- Pipeline: `run_all.sh` passes these explicitly.
+- Pipeline: `run_tool.sh` passes these explicitly.
 
 ## siRNABERT
 - Inputs: 19-nt siRNA only with 6-mer tokenization; target not used (matches paper).
@@ -16,7 +16,7 @@ Global decisions
 
 ## AttSiOff
 - Inputs: 19-nt siRNA, 57-nt target (paper uses 21/59; deviation).
-- RNA-FM embeddings are padded/truncated to 19/57 and the DNN input width is updated to 19*4 + 57*1 + 110.
+- RNA-FM embeddings are padded/truncated to 21/59 to match the original model input width (21*4 + 59*1 + 110).
 - Optional columns `s-Biopredsi`, `DSIR`, `i-score` are filled with 0.0 if missing (the model does not consume them).
 - Hyperparams: batch 128, lr 0.005, epochs 1000, early stopping 20 (paper defaults).
 

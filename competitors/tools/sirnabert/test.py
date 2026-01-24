@@ -10,7 +10,8 @@ from torch.utils.data import DataLoader
 from transformers import BertConfig, BertModel, BertTokenizer
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-sys.path.insert(0, ROOT_DIR)
+SCRIPTS_DIR = os.path.join(ROOT_DIR, "scripts")
+sys.path.insert(0, SCRIPTS_DIR)
 from metrics import format_metrics, regression_metrics, save_metrics
 
 

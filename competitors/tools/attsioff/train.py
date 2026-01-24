@@ -14,9 +14,51 @@ from scipy import stats
 
 def load_modules(src_root):
     sys.path.insert(0, src_root)
+    import load_data as ld
     from model import RNAFM_SIPRED_2
-    from load_data import Generate_dataset, create_pssm
-    return RNAFM_SIPRED_2, Generate_dataset, create_pssm
+
+    def pad_rnafm(arr, target_len):
+        pad_dtype = arr.dtype
+        cur_len = arr.shape[0]
+        if cur_len < target_len:
+            pad = target_len - cur_len
+            pad_front = pad // 2
+            pad_back = pad - pad_front
+            if pad_front:
+                arr = np.concatenate([np.ones((pad_front, 640), dtype=pad_dtype) * 0.05, arr], axis=0)
+            if pad_back:
+                arr = np.concatenate([arr, np.ones((pad_back, 640), dtype=pad_dtype) * 0.05], axis=0)
+        elif cur_len > target_len:
+            extra = cur_len - target_len
+            start = extra // 2
+            arr = arr[start:start + target_len]
+        return arr
+
+    def process_mrna_RNAFM(ori_mrna, rnafm_mrna):
+        pad_dtype = rnafm_mrna.dtype
+        front_dot_num = ori_mrna[:20].count('.')
+        back_dot_num = ori_mrna[-20:].count('.')
+        if front_dot_num:
+            rnafm_mrna = np.concatenate([np.ones((front_dot_num, 640), dtype=pad_dtype) * 0.05, rnafm_mrna], axis=0)
+        if back_dot_num:
+            rnafm_mrna = np.concatenate([rnafm_mrna, np.ones((back_dot_num, 640), dtype=pad_dtype) * 0.05], axis=0)
+        return pad_rnafm(rnafm_mrna, 59)
+
+    def process_sirna_RNAFM(rnafm_sirna):
+        return pad_rnafm(rnafm_sirna, 21)
+
+    ld.process_mrna_RNAFM = process_mrna_RNAFM
+    orig_load_sirna = ld.load_sirna
+
+    def load_sirna(args, dataset, pssm):
+        result = orig_load_sirna(args, dataset, pssm)
+        for item in result:
+            item['rnafm_encode'] = process_sirna_RNAFM(item['rnafm_encode']).astype(np.float32)
+            item['rnafm_encode_mrna'] = item['rnafm_encode_mrna'].astype(np.float32)
+        return result
+
+    ld.load_sirna = load_sirna
+    return RNAFM_SIPRED_2, ld.Generate_dataset, ld.create_pssm
 
 
 def _col_or_zeros(df, col):
@@ -48,8 +90,10 @@ def train_epoch(model, loader, optimizer, criterion, device):
         for k in batch:
             if hasattr(batch[k], 'to'):
                 batch[k] = batch[k].to(device)
+                if batch[k].dtype == torch.float64:
+                    batch[k] = batch[k].to(torch.float32)
         pred = model(batch)
-        label = batch['inhibit']
+        label = batch['inhibit'].to(torch.float32)
         loss = criterion(label, pred)
         optimizer.zero_grad()
         loss.backward()
@@ -70,8 +114,10 @@ def eval_epoch(model, loader, criterion, device):
             for k in batch:
                 if hasattr(batch[k], 'to'):
                     batch[k] = batch[k].to(device)
+                    if batch[k].dtype == torch.float64:
+                        batch[k] = batch[k].to(torch.float32)
             pred = model(batch)
-            label = batch['inhibit']
+            label = batch['inhibit'].to(torch.float32)
             loss = criterion(label, pred)
             total_loss += loss.item() * label.shape[0]
             count += label.shape[0]

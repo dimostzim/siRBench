@@ -23,6 +23,14 @@ PATH_FLAGS = {
     "--rna-ago2-dir",
     "--params-json",
 }
+MODEL_OUTPUT = {
+    "oligoformer": "model.pt",
+    "sirnadiscovery": "model.keras",
+    "sirnabert": "model.pt",
+    "attsioff": "model.pt",
+    "gnn4sirna": "model.keras",
+    "ensirna": "model.ckpt",
+}
 
 
 def rewrite_args(argv, host_root):
@@ -64,10 +72,12 @@ def main():
     host_root = repo_root(base_dir)
     forwarded = rewrite_args(unknown, host_root)
 
-    train_csv = get_arg_value(unknown, "--train-csv") or "train"
-    status_msg = f"[{args.tool}] train {os.path.basename(train_csv)}"
+    train_csv = get_arg_value(unknown, "--train-csv") or get_arg_value(unknown, "--train-set") or "train"
+    model_name = MODEL_OUTPUT.get(args.tool, "model")
+    print(f"[{args.tool}] device: cuda")
+    print(f"[{args.tool}] training {os.path.basename(train_csv)} -> {model_name}")
 
-    run_docker(args.tool, "train.py", forwarded, host_root, status_msg=status_msg)
+    run_docker(args.tool, "train.py", forwarded, host_root, status_msg=None)
 
 
 if __name__ == "__main__":
