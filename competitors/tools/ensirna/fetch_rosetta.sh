@@ -15,6 +15,9 @@ tar_extract_stdin() {
     tar -xj -f - -C "${TMP_DIR}" --wildcards --wildcards-match-slash \
         "*/database/**" \
         "*/main/source/bin/rna_denovo*linux*release" \
+        "*/main/source/build/src/**/rna_denovo*linux*release" \
+        "*/main/source/bin/extract_pdbs*linux*release" \
+        "*/main/source/build/src/**/extract_pdbs*linux*release" \
         "*/main/tools/rna_tools/**/extract_lowscore_decoys.py"
 }
 
@@ -22,6 +25,9 @@ tar_extract_file() {
     tar -xjf "${SOURCE}" -C "${TMP_DIR}" --wildcards --wildcards-match-slash \
         "*/database/**" \
         "*/main/source/bin/rna_denovo*linux*release" \
+        "*/main/source/build/src/**/rna_denovo*linux*release" \
+        "*/main/source/bin/extract_pdbs*linux*release" \
+        "*/main/source/build/src/**/extract_pdbs*linux*release" \
         "*/main/tools/rna_tools/**/extract_lowscore_decoys.py"
 }
 
@@ -84,6 +90,13 @@ fi
 if [ ! -f "${OUT_DIR}/database/chemical/residue_type_sets/fa_standard/residue_types.txt" ]; then
     echo "Rosetta database missing under ${OUT_DIR}/database."
     exit 1
+fi
+
+BIN_DIR="${OUT_DIR}/main/source/bin"
+EXTRACT_STATIC="${BIN_DIR}/extract_pdbs.static.linuxgccrelease"
+EXTRACT_BIN="${BIN_DIR}/extract_pdbs.linuxgccrelease"
+if [ -f "${EXTRACT_STATIC}" ] && [ ! -e "${EXTRACT_BIN}" ]; then
+    (cd "${BIN_DIR}" && ln -s extract_pdbs.static.linuxgccrelease extract_pdbs.linuxgccrelease)
 fi
 
 echo "Rosetta extracted to ${OUT_DIR}"

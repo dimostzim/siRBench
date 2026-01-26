@@ -264,22 +264,21 @@ class Data_Prepare:
         right = ')' * pair_len + '.' * (len(seq2) - pair_len)
         secondary_seq = left + ' ' + right
 
-        os.mkdir(f"{self.pdb_dir}/{data['siRNA']}")
-        os.chdir(f"{self.pdb_dir}/{data['siRNA']}")
+        workdir = f"{self.pdb_dir}/{data['siRNA']}"
+        os.mkdir(workdir)
 
-        cmd = [self.ff, '-sequence', seq, '-secstruct', secondary_seq, '-minimize_rna']
+        cmd = [self.ff, '-sequence', seq, '-secstruct', secondary_seq, '-minimize_rna', '-out:file:silent', 'default.out']
         if self.database:
             cmd.extend(['-database', self.database])
-        subprocess.run(cmd)
+        subprocess.run(cmd, cwd=workdir)
         if self.ex:
-            subprocess.run([sys.executable, self.ex, 'default.out', '-rosetta_folder', self.rosetta_dir, '1'])
-            subprocess.run(['cp','default.out.1.pdb',f"{self.pdb_dir}/{data['siRNA']}.pdb"])
+            subprocess.run([sys.executable, self.ex, 'default.out', '-rosetta_folder', self.rosetta_dir, '1'], cwd=workdir)
+            subprocess.run(['cp','default.out.1.pdb',f"{self.pdb_dir}/{data['siRNA']}.pdb"], cwd=workdir)
         else:
             # Fallback for minimal Rosetta installs without extract_lowscore_decoys.py
-            subprocess.run(['cp','default.out',f"{self.pdb_dir}/{data['siRNA']}.pdb"])
+            subprocess.run(['cp','default.out',f"{self.pdb_dir}/{data['siRNA']}.pdb"], cwd=workdir)
       
-        #os.chdir(f"/public2022/tanwenchong/rna/EnModSIRNA-1main")
-        subprocess.run(['rm','-r',f"{self.pdb_dir}/{data['siRNA']}"])
+        subprocess.run(['rm','-r',workdir])
         
 
         if os.path.exists(f"{self.pdb_dir}/{data['siRNA']}.pdb"):

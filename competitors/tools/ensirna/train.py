@@ -21,6 +21,11 @@ def main():
 
     os.makedirs(args.model_dir, exist_ok=True)
 
+    if "--embed_dim" not in unknown:
+        unknown += ["--embed_dim", "128"]
+    if "--num_workers" not in unknown:
+        unknown += ["--num_workers", "0"]
+
     cmd = [
         sys.executable, train_script,
         "--train_set", args.train_set,

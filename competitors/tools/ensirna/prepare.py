@@ -106,10 +106,24 @@ def main():
         ]
         subprocess.check_call(cmd, cwd=src_root)
 
+        pdb_json = os.path.splitext(pdb_csv)[0] + ".json"
+        if not os.path.exists(pdb_json):
+            raise FileNotFoundError(f"Missing PDB metadata: {pdb_json}")
+        pdb_df = pd.read_json(pdb_json, lines=True)
+        pdb_df = pdb_df.set_index("siRNA")
+
         df[pdb_col] = df.get(pdb_col)
-        for i, row in df.iterrows():
-            if not have_pdb_col or pd.isna(row[pdb_col]):
-                df.at[i, pdb_col] = os.path.join(pdb_dir, f"{row['pdb_id']}.pdb")
+        df[pdb_col] = df[pdb_col].where(~df[pdb_col].isna(), df["pdb_id"].map(pdb_df["pdb_data_path"]))
+        if args.start_col in df.columns:
+            df[args.start_col] = df[args.start_col].where(~df[args.start_col].isna(), df["pdb_id"].map(pdb_df["start"]))
+        else:
+            df[args.start_col] = df["pdb_id"].map(pdb_df["start"])
+        if args.chain_col in df.columns:
+            df[args.chain_col] = df[args.chain_col].where(~df[args.chain_col].isna(), df["pdb_id"].map(pdb_df["chain"]))
+        else:
+            df[args.chain_col] = df["pdb_id"].map(pdb_df["chain"])
+
+        df = df.dropna(subset=[pdb_col, args.start_col, args.chain_col])
 
     with open(args.output_jsonl, 'w') as f:
         for _, row in df.iterrows():
@@ -132,8 +146,8 @@ def main():
                 "id": row[args.id_col],
                 "pdb": os.path.basename(str(pdb_path)),
                 "pdb_data_path": str(pdb_path),
-                "chain": row[args.chain_col] if args.chain_col in df.columns else "A",
-                "start": int(row[args.start_col]) if args.start_col in df.columns else 0,
+                "chain": row[args.chain_col],
+                "start": row[args.start_col],
                 "position": int(position),
                 "mRNA_seq": mrna_seq,
                 "sense seq": sense_seq,

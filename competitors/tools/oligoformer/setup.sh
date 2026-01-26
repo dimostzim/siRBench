@@ -7,24 +7,13 @@ if [[ "$*" == *"--docker"* ]]; then
 
     CKPT_DIR="checkpoints"
     CKPT_FILE="${CKPT_DIR}/RNA-FM_pretrained.pth"
-    CKPT_URL="https://proj.cse.cuhk.edu.hk/rnafm/api/download?filename=RNA-FM_pretrained.pth"
+    CKPT_URL="https://huggingface.co/cuhkaih/rnafm/resolve/main/RNA-FM_pretrained.pth"
     EXPECTED_SIZE=1194424423
     mkdir -p "${CKPT_DIR}"
-    size=0
-    if [ -f "${CKPT_FILE}" ]; then
-        size=$(wc -c < "${CKPT_FILE}")
-    fi
-    if [ "${size}" -ne "${EXPECTED_SIZE}" ]; then
-        curl -L -C - -o "${CKPT_FILE}" "${CKPT_URL}"
-    fi
-    if [ ! -f "${CKPT_FILE}" ]; then
-        echo "Checkpoint download failed: ${CKPT_FILE}"
-        exit 1
-    fi
+    wget -c -O "${CKPT_FILE}" "${CKPT_URL}"
     size=$(wc -c < "${CKPT_FILE}")
     if [ "${size}" -ne "${EXPECTED_SIZE}" ]; then
         echo "Checkpoint size mismatch: ${size} (expected ${EXPECTED_SIZE})."
-        echo "Rerun setup to resume the download."
         exit 1
     fi
 

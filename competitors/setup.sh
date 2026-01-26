@@ -2,6 +2,7 @@
 set -e
 
 TOOLS=()
+RUN_ALL=1
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -15,12 +16,14 @@ while [[ $# -gt 0 ]]; do
                 TOOLS+=("$1")
                 shift
             done
+            RUN_ALL=0
             ;;
         --docker)
             shift
             ;;
         --help|-h)
-            echo "Usage: $0 --tool <name>..."
+            echo "Usage: $0 [--tool <name>...]"
+            echo "If no flags provided, sets up all tools."
             exit 0
             ;;
         *)
@@ -30,9 +33,8 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [ ${#TOOLS[@]} -eq 0 ]; then
-    echo "Error: --tool is required"
-    exit 1
+if [ "$RUN_ALL" = "1" ]; then
+    TOOLS=(oligoformer sirnadiscovery sirnabert attsioff gnn4sirna ensirna)
 fi
 
 BASE_DIR="$(dirname "$0")/tools"

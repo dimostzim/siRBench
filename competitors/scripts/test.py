@@ -22,6 +22,7 @@ PATH_FLAGS = {
     "--params-json",
     "--metrics-json",
     "--ckpt",
+    "--save-dir",
 }
 
 MULTI_PATH_FLAGS = {"--ckpt"}

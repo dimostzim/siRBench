@@ -178,13 +178,9 @@ def main():
     for epoch in range(args.epochs):
         train_loss = train_epoch(model, train_loader, optimizer, criterion, device)
         val_loss, val_pcc = eval_epoch(model, val_loader, criterion, device)
-        improved = False
-        if val_pcc is not None:
-            if best_pcc is None or val_pcc > best_pcc:
-                improved = True
-        else:
-            if best_loss is None or val_loss < best_loss:
-                improved = True
+        # Model selection / early stopping: optimize validation loss (MSE).
+        # We still compute and log PCC for diagnostics, but it does not drive selection.
+        improved = best_loss is None or val_loss < best_loss
         if improved:
             best_loss = val_loss
             best_pcc = val_pcc

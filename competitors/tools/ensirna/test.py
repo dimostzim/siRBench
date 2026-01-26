@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import argparse
+import glob
 import json
 import os
 import subprocess
@@ -21,7 +22,10 @@ def main():
     p.add_argument("--metrics-json", default=None)
     p.add_argument("--save-dir", default="results")
     p.add_argument("--gpu", type=int, default=0)
+    p.add_argument("--batch-size", type=int, default=32)
+    p.add_argument("--num-workers", type=int, default=0)
     p.add_argument("--run-id", default="ensirna")
+    p.add_argument("--ensemble", action="store_true", help="Use all checkpoints as an ensemble")
     p.add_argument("--src-root", default="ensirna_src")
     args = p.parse_args()
 
@@ -30,14 +34,67 @@ def main():
 
     os.makedirs(args.save_dir, exist_ok=True)
 
+    ckpt_paths = []
+    for pattern in args.ckpt:
+        if os.path.isdir(pattern):
+            ckpt_paths.extend(glob.glob(os.path.join(pattern, "**", "*.ckpt"), recursive=True))
+            continue
+        matches = glob.glob(pattern)
+        if not matches and pattern.endswith("*.ckpt"):
+            base_dir = os.path.dirname(pattern)
+            matches = glob.glob(os.path.join(base_dir, "**", "*.ckpt"), recursive=True)
+        if matches:
+            ckpt_paths.extend(matches)
+        elif os.path.exists(pattern):
+            ckpt_paths.append(pattern)
+
+    ckpt_paths = sorted(set(ckpt_paths))
+    if not ckpt_paths:
+        raise FileNotFoundError(
+            f"No checkpoints found for --ckpt {args.ckpt}. "
+            "Pass a concrete .ckpt path or a directory containing checkpoints."
+        )
+
+    if not args.ensemble and len(ckpt_paths) > 1:
+        topk_map = os.path.join(os.path.dirname(ckpt_paths[0]), "topk_map.txt")
+        if os.path.exists(topk_map):
+            best_score = None
+            best_path = None
+            basenames = {os.path.basename(p): p for p in ckpt_paths}
+            with open(topk_map, "r") as fin:
+                for line in fin:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        score_str, path_str = line.split(":", 1)
+                        score = float(score_str.strip())
+                        path = path_str.strip()
+                    except ValueError:
+                        continue
+                    chosen = None
+                    if path in ckpt_paths:
+                        chosen = path
+                    else:
+                        chosen = basenames.get(os.path.basename(path))
+                    if chosen is None:
+                        continue
+                    if best_score is None or score < best_score:
+                        best_score = score
+                        best_path = chosen
+            if best_path:
+                ckpt_paths = [best_path]
+
     cmd = [
         sys.executable, run_script,
         "--ckpt",
-    ] + args.ckpt + [
+    ] + ckpt_paths + [
         "--test_set", args.test_set,
         "--save_dir", args.save_dir,
         "--gpu", str(args.gpu),
         "--id", args.run_id,
+        "--batch_size", str(args.batch_size),
+        "--num_workers", str(args.num_workers),
     ]
 
     subprocess.check_call(cmd, cwd=src_root)
