@@ -259,10 +259,9 @@ if [ "$RUN_ENSIRNA" = "1" ]; then
     python3 scripts/train.py --tool ensirna --train-set data/ensirna/train.jsonl --valid-set data/ensirna/val.jsonl --model-dir models/ensirna \
         --batch-size 16 --lr 1e-4 --final_lr 1e-5 --max_epoch 100
 
+    shopt -s globstar nullglob
     CKPTS=(models/ensirna/**/*.ckpt)
-    if [ ${#CKPTS[@]} -eq 1 ] && [[ "${CKPTS[0]}" == *"**"* ]]; then
-        CKPTS=()
-    fi
+    shopt -u globstar nullglob
     if [ ${#CKPTS[@]} -eq 0 ]; then
         echo "No ENsiRNA checkpoints found in models/ensirna; skipping test."
     else

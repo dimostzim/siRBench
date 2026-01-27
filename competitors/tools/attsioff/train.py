@@ -124,12 +124,14 @@ def eval_epoch(model, loader, criterion, device):
             labels.extend(label.detach().cpu().numpy().tolist())
             preds.extend(pred.detach().cpu().numpy().tolist())
     pcc = None
+    spcc = None
     try:
         if len(labels) > 1:
             pcc = stats.pearsonr(preds, labels)[0]
+            spcc = stats.spearmanr(preds, labels)[0]
     except Exception:
-        pcc = None
-    return total_loss / max(count, 1), pcc
+        pass
+    return total_loss / max(count, 1), pcc, spcc
 
 
 def main():
@@ -170,23 +172,21 @@ def main():
     criterion = nn.MSELoss(reduction='mean')
 
     os.makedirs(args.model_dir, exist_ok=True)
-    best_loss = None
-    best_pcc = None
+    best_spcc = None
     best_epoch = -1
     best_path = os.path.join(args.model_dir, "model.pt")
 
     for epoch in range(args.epochs):
         train_loss = train_epoch(model, train_loader, optimizer, criterion, device)
-        val_loss, val_pcc = eval_epoch(model, val_loader, criterion, device)
-        # Model selection / early stopping: optimize validation loss (MSE).
-        # We still compute and log PCC for diagnostics, but it does not drive selection.
-        improved = best_loss is None or val_loss < best_loss
+        val_loss, val_pcc, val_spcc = eval_epoch(model, val_loader, criterion, device)
+        # Model selection / early stopping: optimize Spearman correlation (higher is better).
+        # This matches the original AttSiOff implementation.
+        improved = best_spcc is None or (val_spcc is not None and val_spcc > best_spcc)
         if improved:
-            best_loss = val_loss
-            best_pcc = val_pcc
+            best_spcc = val_spcc
             best_epoch = epoch
             torch.save(model.state_dict(), best_path)
-        print(f"epoch={epoch} train_loss={train_loss:.6f} val_loss={val_loss:.6f} val_pcc={val_pcc}")
+        print(f"epoch={epoch} train_loss={train_loss:.6f} val_loss={val_loss:.6f} val_pcc={val_pcc} val_spcc={val_spcc}")
         if epoch - best_epoch > args.early_stopping:
             break
 
