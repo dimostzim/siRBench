@@ -1,5 +1,5 @@
 name: 
-  /workspace/runs/talkative_building_crack/.conda/envs/talkative_building_crack_env
+  siRBench-model-env
 channels:
   - conda-forge
 dependencies:

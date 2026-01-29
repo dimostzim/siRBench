@@ -6,9 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 siRBench is a benchmark framework for evaluating computational methods for predicting siRNA (small interfering RNA) knockdown efficacy. It provides:
 - A curated dataset of 4,098 siRNA-target pairs across 7 human cell lines
-- A standardized 1,000-sample benchmark split (800 train / 100 val / 100 test)
+- Standardized train/val/test CSV splits plus an additional leftout set for generalization checks
 - Docker-based wrappers for 6 different prediction methods with unified interfaces
 - Thermodynamic feature calculations using ViennaRNA utilities
+- A standalone non-Docker baseline model under `siRBench-model/` (XGBoost + LightGBM with calibration)
 
 ## Key Commands
 
@@ -36,7 +37,7 @@ DATA_ROOT=/path/to/data ./competitors/run_tool.sh --tool oligoformer
 ```bash
 # Prepare data (converts to tool-specific format)
 python3 competitors/prepare.py --tool oligoformer \
-  --input-csv data/siRBench_full_base_1000_train.csv \
+  --input-csv data/siRBench_train.csv \
   --output-dir competitors/data/oligoformer \
   --dataset-name train
 
@@ -56,10 +57,31 @@ python3 competitors/scripts/test.py --tool oligoformer \
   --metrics-json competitors/metrics.json
 ```
 
+### Leftout Evaluation
+```bash
+# Evaluate an additional unseen set
+./competitors/run_tool.sh --tool oligoformer --leftout data/siRBench_leftout.csv
+```
+
+### siRBench-model (non-Docker baseline)
+```bash
+# Train (uses numeric_label column)
+python3 siRBench-model/train.py \
+  --train-data data/siRBench_train.csv \
+  --validation-data data/siRBench_val_split.csv \
+  --artifacts-dir siRBench-model/training_artifacts
+
+# Inference
+python3 siRBench-model/inference.py \
+  --input data/siRBench_test.csv \
+  --output siRBench-model/preds.csv \
+  --artifacts-dir siRBench-model/training_artifacts
+```
+
 ### Feature Generation (requires ViennaRNA)
 ```bash
 cd data/scripts
-python3 make_all_features.py ../siRBench_full_base_1000.csv -o ../siRBench_with_features.csv
+python3 make_all_features.py ../siRBench_full_base.csv -o ../siRBench_with_features.csv
 ```
 
 ## Architecture
@@ -68,8 +90,12 @@ python3 make_all_features.py ../siRBench_full_base_1000.csv -o ../siRBench_with_
 ```
 siRBench/
 ├── data/                           # Datasets and feature utilities
-│   ├── siRBench_full_base_1000_*.csv  # Train/val/test splits
-│   └── scripts/                    # ViennaRNA feature calculators
+│   ├── siRBench_train.csv          # Train split
+│   ├── siRBench_val_split.csv      # Validation split
+│   ├── siRBench_test.csv           # Test split
+│   ├── siRBench_leftout.csv        # Leftout holdout set
+│   ├── thresholds*.csv/md          # Cell-line thresholds for binary labels
+│   └── scripts/                    # ViennaRNA feature calculators + split utilities
 └── competitors/                    # Unified ML pipeline
     ├── prepare.py                  # Wrapper → tools/<tool>/prepare.py
     ├── scripts/                    # Wrapper utilities + docker runner
@@ -78,6 +104,7 @@ siRBench/
     │   ├── test.py                 # Wrapper → tools/<tool>/test.py
     │   └── metrics.py              # Evaluation (MAE, MSE, RMSE, R², Pearson, Spearman)
     └── tools/<tool>/               # Tool-specific implementations
+└── siRBench-model/                 # Standalone baseline model (XGB+LGBM)
 ```
 
 ### Docker Execution Model
@@ -108,6 +135,12 @@ CSV files must contain:
 - `binary`: Classification label (cell-line specific thresholds)
 - `source`, `cell_line`: Provenance metadata
 
+## Results and Reports
+
+- `results/<tool>/preds.csv` and `results/<tool>/metrics.json` contain per-tool predictions/metrics.
+- Root-level `leftout_metrics.txt` and `test_metrics.txt` capture summary metrics for the benchmark splits.
+- Plots are saved to `results/metrics_panels.png`, `results/efficacy_kde.png`, and `data/siRBench_train_val_split.png`.
+
 ## Environment Variables
 
 ```bash
@@ -121,3 +154,4 @@ ROSETTA_DIR=/path/to/rosetta       # Required for ensirna PDB generation
 - ENsiRNA requires Rosetta installation for PDB generation
 - Feature generation requires ViennaRNA (RNAfold, RNAcofold, RNAup)
 - Each tool has additional flags documented in `tools/<tool>/README.md`
+- See `competitors/README.md`, `competitors/tools_overview.md`, and `competitors/TOOLS_CHANGES.md` for tool-specific notes
