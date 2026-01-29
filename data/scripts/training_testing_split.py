@@ -130,7 +130,7 @@ def ks_min_split_save_plot(
     return train_df, test_df, metrics
 
 
-df = pd.read_csv("siRBench_without_HeLa.csv")
+df = pd.read_csv("siRBench_train.csv")  # Use existing train set as base
 
 train, test, metrics = ks_min_split_save_plot(
     df,

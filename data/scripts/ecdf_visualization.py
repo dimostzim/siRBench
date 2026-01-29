@@ -10,7 +10,7 @@ def ecdf(values):
 
 train_df = pd.read_csv("siRBench_train.csv")
 test_seen_df = pd.read_csv("siRBench_test.csv")
-test_loco_df = pd.read_csv("siRBench_left_out_test.csv")  # HeLa
+test_loco_df = pd.read_csv("siRBench_leftout.csv")  # HeLa
 
 label_col = "efficacy" 
 
@@ -33,4 +33,5 @@ plt.legend()
 plt.grid(alpha=0.3)
 
 plt.tight_layout()
-plt.show()
+plt.savefig("../ecdf_comparison.png", dpi=150)
+print("Saved: ecdf_comparison.png")

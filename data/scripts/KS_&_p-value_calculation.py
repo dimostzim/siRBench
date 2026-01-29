@@ -2,7 +2,7 @@ from scipy.stats import ks_2samp
 import pandas as pd
 
 train_df = pd.read_csv("siRBench_train.csv")
-left_out_df = pd.read_csv("siRBench_left_out_test.csv")
+left_out_df = pd.read_csv("siRBench_leftout.csv")
 
 label_col = "efficacy"
 
