@@ -27,6 +27,7 @@ plt.rcParams.update({
 })
 
 TOOLS = [
+    "agml",
     "oligoformer",
     "sirnadiscovery",
     "sirnabert",
@@ -37,6 +38,7 @@ TOOLS = [
 
 # 3-letter codes
 TOOL_CODES = {
+    "agml": "AG-ML",
     "oligoformer": "OLI",
     "sirnadiscovery": "SDI",
     "sirnabert": "SBT",
@@ -59,13 +61,26 @@ METRICS_CONFIG = {
 ALL_METRICS = ["pearson", "spearman", "r2", "mae", "mse", "rmse"]
 
 # Colors for each tool (consistent across all panels)
+# AG-ML is blue, all others are gray
 TOOL_COLORS = {
-    "oligoformer": "#4C72B0",
-    "sirnadiscovery": "#55A868",
-    "sirnabert": "#C44E52",
-    "attsioff": "#8172B3",
-    "gnn4sirna": "#CCB974",
-    "ensirna": "#64B5CD",
+    "agml": "#2171B5",
+    "oligoformer": "#808080",
+    "sirnadiscovery": "#808080",
+    "sirnabert": "#808080",
+    "attsioff": "#808080",
+    "gnn4sirna": "#808080",
+    "ensirna": "#808080",
+}
+
+# Leftout colors: AG-ML is light blue, others are light gray
+TOOL_LEFTOUT_COLORS = {
+    "agml": "#9ECAE1",
+    "oligoformer": "#C0C0C0",
+    "sirnadiscovery": "#C0C0C0",
+    "sirnabert": "#C0C0C0",
+    "attsioff": "#C0C0C0",
+    "gnn4sirna": "#C0C0C0",
+    "ensirna": "#C0C0C0",
 }
 
 
@@ -74,6 +89,22 @@ def load_metrics(path):
         return None
     with open(path) as f:
         return json.load(f)
+
+
+def load_txt_metrics(path):
+    """Load metrics from txt file format (e.g., 'PEARSON: 0.688')."""
+    if not os.path.exists(path):
+        return None
+    metrics = {}
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            key, value = line.split(":", 1)
+            key = key.strip().lower()
+            metrics[key] = float(value.strip())
+    return metrics
 
 
 def lighten_color(color, amount=0.4):
@@ -97,14 +128,14 @@ def plot_metric_panel(ax, tools, test_values, leftout_values, metric_name, highe
 
     sorted_tools, sorted_test_values, sorted_leftout_values = zip(*sorted_pairs)
     test_colors = [TOOL_COLORS[t] for t in sorted_tools]
-    leftout_colors = [lighten_color(TOOL_COLORS[t], amount=0.45) for t in sorted_tools]
+    leftout_colors = [TOOL_LEFTOUT_COLORS[t] for t in sorted_tools]
 
     x = np.arange(len(sorted_tools))
     width = 0.45
     bars_test = ax.bar(x - width / 2, sorted_test_values, color=test_colors,
-                       edgecolor='white', linewidth=0.8, width=width, label="Test")
+                       edgecolor='black', linewidth=0.8, width=width, label="Test")
     bars_leftout = ax.bar(x + width / 2, sorted_leftout_values, color=leftout_colors,
-                          edgecolor='white', linewidth=0.8, width=width, label="Leftout")
+                          edgecolor='black', linewidth=0.8, width=width, label="Leftout")
 
     # Set axis
     ax.set_xticks(x)
@@ -122,17 +153,11 @@ def plot_metric_panel(ax, tools, test_values, leftout_values, metric_name, highe
         ymax = max_val * 1.05
         ax.set_ylim(0, ymax)
 
-    # Add value labels on bars
+    # Add value labels on bars (2 decimal places)
     for bars, values in ((bars_test, sorted_test_values), (bars_leftout, sorted_leftout_values)):
         for bar, val in zip(bars, values):
             height = bar.get_height()
-            # Format based on magnitude
-            if val < 0.01:
-                fmt = f'{val:.4f}'
-            elif val < 1:
-                fmt = f'{val:.3f}'
-            else:
-                fmt = f'{val:.2f}'
+            fmt = f'{val:.2f}'
             ax.annotate(
                 fmt,
                 xy=(bar.get_x() + bar.get_width() / 2, height),
@@ -158,13 +183,23 @@ def main():
     # Load metrics
     test_metrics = {}
     leftout_metrics = {}
+    repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     for tool in args.tools:
-        test_metrics[tool] = load_metrics(
-            os.path.join(args.results_dir, tool, "metrics.json")
-        )
-        leftout_metrics[tool] = load_metrics(
-            os.path.join(args.results_dir, tool, "metrics_leftout.json")
-        )
+        if tool == "agml":
+            # AG-ML uses txt files in repo root
+            test_metrics[tool] = load_txt_metrics(
+                os.path.join(repo_root, "test_metrics.txt")
+            )
+            leftout_metrics[tool] = load_txt_metrics(
+                os.path.join(repo_root, "leftout_metrics.txt")
+            )
+        else:
+            test_metrics[tool] = load_metrics(
+                os.path.join(args.results_dir, tool, "metrics.json")
+            )
+            leftout_metrics[tool] = load_metrics(
+                os.path.join(args.results_dir, tool, "metrics_leftout.json")
+            )
 
     # Filter tools with data
     tools_with_data = [
@@ -195,8 +230,17 @@ def main():
         plot_metric_panel(ax, tools_with_data, test_values, leftout_values,
                           display_name, higher_is_better)
 
-    # Add legend outside (top right)
+        # Add dataset legend to R² panel (top right)
+        if metric == "r2":
+            legend_handles = [
+                Patch(facecolor=TOOL_COLORS["agml"], edgecolor='black', label='Test'),
+                Patch(facecolor=TOOL_LEFTOUT_COLORS["agml"], edgecolor='black', label='Leftout'),
+            ]
+            ax.legend(handles=legend_handles, loc='upper right', frameon=False, fontsize=11)
+
+    # Add legend with letter codes
     tool_display_names = {
+        "agml": "Agentomics-ML",
         "oligoformer": "OligoFormer",
         "sirnadiscovery": "siRNADiscovery",
         "sirnabert": "siRNABERT",
@@ -204,21 +248,10 @@ def main():
         "gnn4sirna": "GNN4siRNA",
         "ensirna": "ENsiRNA",
     }
-    legend_handles = [
-        Patch(facecolor=TOOL_COLORS[t], edgecolor='white', label=tool_display_names[t])
-        for t in tools_with_data
-    ]
-
-    fig.legend(
-        handles=legend_handles,
-        loc='lower center',
-        bbox_to_anchor=(0.5, 0.01),
-        frameon=False,
-        fontsize=17,
-        handlelength=1.5,
-        handleheight=1.2,
-        ncol=6,
+    legend_text = "   ".join(
+        f"{TOOL_CODES[t]}={tool_display_names[t]}" for t in tools_with_data
     )
+    fig.text(0.5, 0.03, legend_text, ha='center', va='center', fontsize=14, fontweight='bold')
 
     # Save PNG
     out_dir = os.path.dirname(os.path.abspath(args.output))
