@@ -15,3 +15,5 @@ competitors/tools/*/__pycache__/
 competitors/tools/*/*.pyc
 competitors/tools/*/*.pyo
 competitors/scripts/__pycache__/
+results 
+results_old

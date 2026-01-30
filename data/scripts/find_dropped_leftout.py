@@ -1,8 +1,12 @@
+from pathlib import Path
+
 import pandas as pd
 
-initial_csv = "siRBench_hela.csv"
-remaining_csv = "siRBench_leftout.csv"
-output_csv = "siRBench_leftout_dropped.csv"
+base_dir = Path(__file__).resolve().parents[1]
+leftout_dir = base_dir / "leftout"
+initial_csv = leftout_dir / "siRBench_hela.csv"
+remaining_csv = leftout_dir / "siRBench_leftout.csv"
+output_csv = leftout_dir / "siRBench_leftout_dropped.csv"
 
 df_initial = pd.read_csv(initial_csv)
 df_remaining = pd.read_csv(remaining_csv)

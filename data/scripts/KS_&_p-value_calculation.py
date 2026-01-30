@@ -1,8 +1,11 @@
+from pathlib import Path
+
 from scipy.stats import ks_2samp
 import pandas as pd
 
-train_df = pd.read_csv("siRBench_train.csv")
-left_out_df = pd.read_csv("siRBench_leftout.csv")
+base_dir = Path(__file__).resolve().parents[1]
+train_df = pd.read_csv(base_dir / "siRBench_train.csv")
+left_out_df = pd.read_csv(base_dir / "leftout" / "siRBench_leftout.csv")
 
 label_col = "efficacy"
 

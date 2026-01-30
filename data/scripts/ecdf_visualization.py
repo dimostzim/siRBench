@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,9 +10,10 @@ def ecdf(values):
     y = np.arange(1, len(x) + 1) / len(x)
     return x, y
 
-train_df = pd.read_csv("siRBench_train.csv")
-test_seen_df = pd.read_csv("siRBench_test.csv")
-test_loco_df = pd.read_csv("siRBench_leftout.csv")  # HeLa
+base_dir = Path(__file__).resolve().parents[1]
+train_df = pd.read_csv(base_dir / "siRBench_train.csv")
+test_seen_df = pd.read_csv(base_dir / "siRBench_test.csv")
+test_loco_df = pd.read_csv(base_dir / "leftout" / "siRBench_leftout.csv")  # HeLa
 
 label_col = "efficacy" 
 
@@ -33,5 +36,6 @@ plt.legend()
 plt.grid(alpha=0.3)
 
 plt.tight_layout()
-plt.savefig("../ecdf_comparison.png", dpi=150)
-print("Saved: ecdf_comparison.png")
+output_path = base_dir / "plots" / "ecdf_comparison.png"
+plt.savefig(output_path, dpi=150)
+print(f"Saved: {output_path}")

@@ -12,12 +12,21 @@ from torch.utils.data import DataLoader
 from transformers import BertModel, BertConfig, BertTokenizer
 
 
-def set_seed(seed):
+def seed_everything(seed, deterministic=False):
+    os.environ["PYTHONHASHSEED"] = str(seed)
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+    if deterministic:
+        os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+        try:
+            torch.use_deterministic_algorithms(True)
+        except Exception:
+            pass
 
 
 def seq2kmer(seq, k=6):
@@ -88,10 +97,11 @@ def main():
     p.add_argument("--lr", type=float, default=5e-5)
     p.add_argument("--max-len", type=int, default=16)
     p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--deterministic", action="store_true")
     p.add_argument("--cuda", default="0")
     args = p.parse_args()
 
-    set_seed(args.seed)
+    seed_everything(args.seed, args.deterministic)
 
     train_df = pd.read_csv(args.train_csv)
     val_df = pd.read_csv(args.val_csv)

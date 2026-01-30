@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 import numpy as np
 from scipy.stats import ks_2samp, wasserstein_distance
@@ -130,15 +132,16 @@ def ks_min_split_save_plot(
     return train_df, test_df, metrics
 
 
-df = pd.read_csv("siRBench_train.csv")  # Use existing train set as base
+base_dir = Path(__file__).resolve().parents[1]
+df = pd.read_csv(base_dir / "siRBench_train.csv")  # Use existing train set as base
 
 train, test, metrics = ks_min_split_save_plot(
     df,
     target="efficacy",
     test_size=0.09,
     n_iters=2168,
-    train_filename="siRBench_train.csv",
-    test_filename="siRBench_test.csv",
+    train_filename=base_dir / "siRBench_train.csv",
+    test_filename=base_dir / "siRBench_test.csv",
     n_bins=50
 )
 

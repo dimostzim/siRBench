@@ -20,12 +20,21 @@ def load_modules(src_root):
     return data_process_loader, Oligo
 
 
-def set_seed(seed):
+def seed_everything(seed, deterministic=False):
+    os.environ["PYTHONHASHSEED"] = str(seed)
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+    if deterministic:
+        os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+        try:
+            torch.use_deterministic_algorithms(True)
+        except Exception:
+            pass
 
 
 def train_epoch(model, loader, criterion, optimizer, device):
@@ -96,11 +105,12 @@ def main():
     p.add_argument("--weight-decay", type=float, default=0.999)
     p.add_argument("--early-stopping", type=int, default=30)
     p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--deterministic", action="store_true")
     p.add_argument("--cuda", default="0")
     p.add_argument("--oligoformer-src", default="oligoformer_src")
     args = p.parse_args()
 
-    set_seed(args.seed)
+    seed_everything(args.seed, args.deterministic)
 
     data_dir = args.data_dir or os.path.dirname(os.path.abspath(args.train_csv))
     train_name = args.train_name or os.path.splitext(os.path.basename(args.train_csv))[0]

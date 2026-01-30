@@ -2,6 +2,7 @@
 import argparse
 import json
 import os
+import random
 import sys
 
 import numpy as np
@@ -59,6 +60,23 @@ def load_modules(src_root):
 
     ld.load_sirna = load_sirna
     return RNAFM_SIPRED_2, ld.Generate_dataset, ld.create_pssm
+
+
+def seed_everything(seed, deterministic=False):
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+    if deterministic:
+        os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+        try:
+            torch.use_deterministic_algorithms(True)
+        except Exception:
+            pass
 
 
 def _col_or_zeros(df, col):
@@ -143,10 +161,14 @@ def main():
     p.add_argument("--batch-size", type=int, default=128)
     p.add_argument("--epochs", type=int, default=1000)
     p.add_argument("--lr", type=float, default=0.005)
+    p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--deterministic", action="store_true")
     p.add_argument("--cuda", default="0")
     p.add_argument("--early-stopping", type=int, default=20)
     p.add_argument("--src-root", default="attsioff_src")
     args = p.parse_args()
+
+    seed_everything(args.seed, args.deterministic)
 
     data_dir = args.data_dir or os.path.dirname(os.path.abspath(args.train_csv))
     os.chdir(data_dir)

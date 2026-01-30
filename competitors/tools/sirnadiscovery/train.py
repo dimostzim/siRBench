@@ -2,11 +2,11 @@
 import argparse
 import json
 import os
+import random
 import sys
 
 import numpy as np
 import pandas as pd
-import tensorflow as tf
 from stellargraph.mapper import HinSAGENodeGenerator
 from stellargraph.layer import HinSAGE
 
@@ -22,7 +22,25 @@ def main():
     p.add_argument("--params-json", default="params.json")
     p.add_argument("--model-dir", default="models")
     p.add_argument("--src-root", default="sirnadiscovery_src/siRNA_split")
+    p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--deterministic", action="store_true")
     args = p.parse_args()
+
+    os.environ["PYTHONHASHSEED"] = str(args.seed)
+    if args.deterministic:
+        os.environ["TF_DETERMINISTIC_OPS"] = "1"
+        os.environ["TF_CUDNN_DETERMINISTIC"] = "1"
+
+    import tensorflow as tf
+
+    random.seed(args.seed)
+    np.random.seed(args.seed)
+    tf.random.set_seed(args.seed)
+    if args.deterministic:
+        try:
+            tf.config.experimental.enable_op_determinism()
+        except Exception:
+            pass
 
     src_root = os.path.abspath(os.path.join(os.path.dirname(__file__), args.src_root))
     params = load_params(args.params_json)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Generate KDE density plot for train/val/test/leftout efficacy distributions."""
 import argparse
-import os
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -42,21 +42,22 @@ LABELS = {
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--data-dir", default="/home/dtzim01/siRBench/data")
-    p.add_argument("--output", default="results/efficacy_kde.png")
+    p.add_argument("--output", default=None)
     p.add_argument("--efficacy-col", default="efficacy")
     args = p.parse_args()
 
     # Load datasets
+    data_dir = Path(args.data_dir)
     datasets = {
-        'train': os.path.join(args.data_dir, "siRBench_train_split.csv"),
-        'val': os.path.join(args.data_dir, "siRBench_val_split.csv"),
-        'test': os.path.join(args.data_dir, "siRBench_test.csv"),
-        'leftout': os.path.join(args.data_dir, "siRBench_leftout.csv"),
+        'train': data_dir / "val_split" / "siRBench_train_split.csv",
+        'val': data_dir / "val_split" / "siRBench_val_split.csv",
+        'test': data_dir / "siRBench_test.csv",
+        'leftout': data_dir / "leftout" / "siRBench_leftout.csv",
     }
 
     data = {}
     for name, path in datasets.items():
-        if os.path.exists(path):
+        if path.exists():
             df = pd.read_csv(path)
             data[name] = df[args.efficacy_col].dropna().values
             print(f"{name}: {len(data[name])} samples")
@@ -89,15 +90,14 @@ def main():
     plt.tight_layout()
 
     # Save
-    out_dir = os.path.dirname(os.path.abspath(args.output))
-    if out_dir:
-        os.makedirs(out_dir, exist_ok=True)
+    output_path = Path(args.output) if args.output else data_dir / "plots" / "efficacy_kde.png"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    fig.savefig(args.output, dpi=150, facecolor='white', edgecolor='none')
-    print(f"Saved: {args.output}")
+    fig.savefig(output_path, dpi=150, facecolor='white', edgecolor='none')
+    print(f"Saved: {output_path}")
 
     # Also save PDF
-    pdf_path = args.output.rsplit(".", 1)[0] + ".pdf"
+    pdf_path = output_path.with_suffix(".pdf")
     fig.savefig(pdf_path, dpi=300, facecolor='white', edgecolor='none')
     print(f"Saved: {pdf_path}")
 

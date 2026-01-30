@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import random
 from pathlib import Path
 
 import joblib
@@ -53,13 +54,23 @@ def group_bias(df, group_col):
     return rows
 
 
-def try_xgb_gpu():
+def try_xgb_gpu(deterministic=False):
     # Attempt to use GPU; fallback handled by caller if training fails
+    if deterministic:
+        return 'hist', 'auto'
     return 'gpu_hist', 'gpu_predictor'
 
 
-def train(train_path: str, val_path: str, artifacts_dir: str):
+def seed_everything(seed: int):
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    random.seed(seed)
+    np.random.seed(seed)
+
+
+def train(train_path: str, val_path: str, artifacts_dir: str, seed: int = 42, deterministic: bool = False):
     Path(artifacts_dir).mkdir(parents=True, exist_ok=True)
+
+    seed_everything(seed)
 
     train_df = pd.read_csv(train_path)
     val_df = pd.read_csv(val_path)
@@ -75,7 +86,8 @@ def train(train_path: str, val_path: str, artifacts_dir: str):
     sample_weight_val = 1.0 + 3.5 * np.abs(y_val - 0.5)
 
     # XGBoost DART
-    tree_method, predictor = try_xgb_gpu()
+    tree_method, predictor = try_xgb_gpu(deterministic)
+    n_jobs = 1 if deterministic else -1
     xgb_params = dict(
         n_estimators=2600,
         learning_rate=0.028,
@@ -95,8 +107,8 @@ def train(train_path: str, val_path: str, artifacts_dir: str):
         eval_metric='rmse',
         tree_method=tree_method,
         predictor=predictor,
-        n_jobs=-1,
-        random_state=42,
+        n_jobs=n_jobs,
+        random_state=seed,
     )
     try:
         xgb_model = xgb.XGBRegressor(**xgb_params)
@@ -126,7 +138,7 @@ def train(train_path: str, val_path: str, artifacts_dir: str):
     xgb_model.save_model(os.path.join(artifacts_dir, 'xgb_model.json'))
 
     # LightGBM
-    lgb_device = 'gpu'
+    lgb_device = 'cpu' if deterministic else 'gpu'
     lgb_params = dict(
         objective='regression',
         metric='rmse',
@@ -143,8 +155,8 @@ def train(train_path: str, val_path: str, artifacts_dir: str):
         colsample_bytree=0.85,
         reg_alpha=0.0,
         reg_lambda=0.7,
-        random_state=42,
-        n_jobs=-1,
+        random_state=seed,
+        n_jobs=n_jobs,
     )
     lgb_callbacks = [lgb.early_stopping(500, verbose=False)]
     try:
@@ -224,6 +236,8 @@ def train(train_path: str, val_path: str, artifacts_dir: str):
         'xgb_best_iteration': int(getattr(xgb_model, 'best_iteration', None) or xgb_model.get_booster().best_ntree_limit),
         'lgb_best_iteration': int(lgb_model.best_iteration_ if lgb_model.best_iteration_ is not None else lgb_model.n_estimators),
         'feature_count': int(X_train.shape[1]),
+        'seed': seed,
+        'deterministic': deterministic,
     }
     with open(os.path.join(artifacts_dir, 'training_summary.json'), 'w') as f:
         json.dump(summary, f, indent=2)
@@ -234,9 +248,11 @@ def main():
     parser.add_argument('--train-data', required=True)
     parser.add_argument('--validation-data', required=True)
     parser.add_argument('--artifacts-dir', required=True)
+    parser.add_argument('--seed', type=int, default=42)
+    parser.add_argument('--deterministic', action='store_true')
     args = parser.parse_args()
 
-    train(args.train_data, args.validation_data, args.artifacts_dir)
+    train(args.train_data, args.validation_data, args.artifacts_dir, seed=args.seed, deterministic=args.deterministic)
 
 
 if __name__ == '__main__':
