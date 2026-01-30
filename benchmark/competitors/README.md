@@ -12,7 +12,7 @@ Setup builds the Docker image and clones the upstream tool repository into each 
 Use `--tool <name>...` to limit setup to specific tools.
 
 ```bash
-./setup.sh
+./benchmark/competitors/setup.sh
 ```
 
 ## Run tools
@@ -20,7 +20,7 @@ Use `--tool <name>...` to limit setup to specific tools.
 Use the wrapper to run prepare/train/test in one go:
 
 ```bash
-./run_tool.sh --tool oligoformer gnn4sirna sirnadiscovery \
+./benchmark/competitors/run_tool.sh --tool oligoformer gnn4sirna sirnadiscovery \
   --train /path/to/train.csv \
   --val /path/to/val.csv \
   --test /path/to/test.csv
@@ -31,7 +31,10 @@ To evaluate an additional unseen set, pass `--leftout /path/to/leftout.csv`.
 ## Prepare
 
 ```bash
-python3 prepare.py --tool oligoformer --input-csv /path/to/train.csv --output-dir data --dataset-name train
+python3 benchmark/competitors/scripts/prepare.py --tool oligoformer \
+  --input-csv /path/to/train.csv \
+  --output-dir benchmark/competitors/data \
+  --dataset-name train
 ```
 
 Each tool has its own `prepare.py` with extra flags; see `tools/<tool>/README.md`.
@@ -39,7 +42,11 @@ Each tool has its own `prepare.py` with extra flags; see `tools/<tool>/README.md
 ## Train
 
 ```bash
-python3 scripts/train.py --tool oligoformer --train-csv data/train.csv --val-csv data/val.csv --data-dir data --model-dir models/oligoformer
+python3 benchmark/competitors/scripts/train.py --tool oligoformer \
+  --train-csv benchmark/competitors/data/train.csv \
+  --val-csv benchmark/competitors/data/val.csv \
+  --data-dir benchmark/competitors/data \
+  --model-dir benchmark/competitors/models/oligoformer
 ```
 
 All tools expect an explicit validation set for training. Run `test.py` separately on a held-out test set.
@@ -47,7 +54,11 @@ All tools expect an explicit validation set for training. Run `test.py` separate
 ## Test
 
 ```bash
-python3 scripts/test.py --tool oligoformer --test-csv data/test.csv --data-dir data --model-path models/oligoformer/model.pt --output-csv preds.csv
+python3 benchmark/competitors/scripts/test.py --tool oligoformer \
+  --test-csv benchmark/competitors/data/test.csv \
+  --data-dir benchmark/competitors/data \
+  --model-path benchmark/competitors/models/oligoformer/model.pt \
+  --output-csv benchmark/results/oligoformer/preds.csv
 ```
 
 `scripts/test.py` prints common regression metrics (MAE, MSE, RMSE, R2, Pearson, Spearman).
@@ -66,15 +77,7 @@ Outputs are written under `models/` and `results/`:
 Generate a 3x3 panel PNG (one tool per panel) from the saved metrics:
 
 ```bash
-python3 scripts/plot_metrics.py
+python3 benchmark/competitors/scripts/plot_metrics.py
 ```
 
 The output is written to `results/metrics_panels.png`.
-
-## Smoke test
-
-Build images and verify each tool entrypoint runs:
-
-```bash
-./smoke_test.sh
-```

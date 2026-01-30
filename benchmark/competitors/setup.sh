@@ -37,7 +37,8 @@ if [ "$RUN_ALL" = "1" ]; then
     TOOLS=(oligoformer sirnadiscovery sirnabert attsioff gnn4sirna ensirna)
 fi
 
-BASE_DIR="$(dirname "$0")/tools"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BASE_DIR="${SCRIPT_DIR}/tools"
 for tool in "${TOOLS[@]}"; do
     TOOL_DIR="${BASE_DIR}/${tool}"
     if [ ! -d "${TOOL_DIR}" ]; then

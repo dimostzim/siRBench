@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Generate KDE density plot for train/val/test/leftout efficacy distributions."""
 import argparse
+import os
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -41,7 +42,8 @@ LABELS = {
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--data-dir", default="/home/dtzim01/siRBench/data")
+    repo_root = Path(os.environ.get("SIRBENCH_REPO_ROOT") or Path(__file__).resolve().parents[3])
+    p.add_argument("--data-dir", default=str(repo_root / "data"))
     p.add_argument("--output", default=None)
     p.add_argument("--efficacy-col", default="efficacy")
     args = p.parse_args()

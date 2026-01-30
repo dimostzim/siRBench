@@ -21,6 +21,9 @@ def tool_dir(base_dir, tool):
 
 
 def repo_root(base_dir):
+    env_root = os.environ.get("SIRBENCH_REPO_ROOT")
+    if env_root:
+        return os.path.abspath(env_root)
     base_dir = os.path.abspath(base_dir)
     if os.path.basename(base_dir) == "scripts":
         base_dir = os.path.dirname(base_dir)
@@ -40,11 +43,13 @@ def to_container_path(path, host_root, container_root="/work"):
 
 def run_docker(tool, script_rel, argv, host_root, status_msg=None):
     image = f"{tool}:latest"
-    workdir = f"/work/competitors/tools/{tool}"
+    comp_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    tool_host_dir = os.path.join(comp_root, "tools", tool)
+    workdir = to_container_path(tool_host_dir, host_root)
     torch_home = os.environ.get("TORCH_HOME")
     rosetta_dir = os.environ.get("ROSETTA_DIR")
     if not rosetta_dir and tool == "ensirna":
-        default_rosetta = os.path.join(host_root, "competitors", "tools", "ensirna", "rosetta")
+        default_rosetta = os.path.join(comp_root, "tools", "ensirna", "rosetta")
         if os.path.isdir(default_rosetta):
             rosetta_dir = default_rosetta
     uid = os.getuid() if hasattr(os, "getuid") else None

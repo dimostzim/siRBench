@@ -27,7 +27,7 @@ plt.rcParams.update({
 })
 
 TOOLS = [
-    "agml",
+    "srm",
     "oligoformer",
     "sirnadiscovery",
     "sirnabert",
@@ -38,7 +38,7 @@ TOOLS = [
 
 # 3-letter codes
 TOOL_CODES = {
-    "agml": "AG-ML",
+    "srm": "SRM",
     "oligoformer": "OLI",
     "sirnadiscovery": "SDI",
     "sirnabert": "SBT",
@@ -61,9 +61,9 @@ METRICS_CONFIG = {
 ALL_METRICS = ["pearson", "spearman", "r2", "mae", "mse", "rmse"]
 
 # Colors for each tool (consistent across all panels)
-# AG-ML is blue, all others are gray
+# SRM (siRBench-Model) is blue, all others are gray
 TOOL_COLORS = {
-    "agml": "#2171B5",
+    "srm": "#2171B5",
     "oligoformer": "#808080",
     "sirnadiscovery": "#808080",
     "sirnabert": "#808080",
@@ -72,9 +72,9 @@ TOOL_COLORS = {
     "ensirna": "#808080",
 }
 
-# Leftout colors: AG-ML is light blue, others are light gray
+# Leftout colors: SRM is light blue, others are light gray
 TOOL_LEFTOUT_COLORS = {
-    "agml": "#9ECAE1",
+    "srm": "#9ECAE1",
     "oligoformer": "#C0C0C0",
     "sirnadiscovery": "#C0C0C0",
     "sirnabert": "#C0C0C0",
@@ -174,24 +174,27 @@ def plot_metric_panel(ax, tools, test_values, leftout_values, metric_name, highe
 
 
 def main():
+    # Default results dir is benchmark/results relative to this script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    default_results_dir = os.path.join(script_dir, "..", "..", "results")
+
     p = argparse.ArgumentParser()
-    p.add_argument("--results-dir", default="results")
-    p.add_argument("--output", default="results/metrics_panels.png")
+    p.add_argument("--results-dir", default=default_results_dir)
+    p.add_argument("--output", default=os.path.join(default_results_dir, "metrics_panels.png"))
     p.add_argument("--tools", nargs="+", default=TOOLS)
     args = p.parse_args()
 
     # Load metrics
     test_metrics = {}
     leftout_metrics = {}
-    repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     for tool in args.tools:
-        if tool == "agml":
-            # AG-ML uses txt files in repo root
+        if tool == "srm":
+            # siRBench-Model uses txt files in results/sirbench-model/
             test_metrics[tool] = load_txt_metrics(
-                os.path.join(repo_root, "test_metrics.txt")
+                os.path.join(args.results_dir, "sirbench-model", "test_metrics.txt")
             )
             leftout_metrics[tool] = load_txt_metrics(
-                os.path.join(repo_root, "leftout_metrics.txt")
+                os.path.join(args.results_dir, "sirbench-model", "leftout_metrics.txt")
             )
         else:
             test_metrics[tool] = load_metrics(
@@ -233,14 +236,14 @@ def main():
         # Add dataset legend to R² panel (top right)
         if metric == "r2":
             legend_handles = [
-                Patch(facecolor=TOOL_COLORS["agml"], edgecolor='black', label='Test'),
-                Patch(facecolor=TOOL_LEFTOUT_COLORS["agml"], edgecolor='black', label='Leftout'),
+                Patch(facecolor=TOOL_COLORS["srm"], edgecolor='black', label='Test'),
+                Patch(facecolor=TOOL_LEFTOUT_COLORS["srm"], edgecolor='black', label='Leftout'),
             ]
-            ax.legend(handles=legend_handles, loc='upper right', frameon=False, fontsize=11)
+            ax.legend(handles=legend_handles, loc='upper right', frameon=False, fontsize=13)
 
     # Add legend with letter codes
     tool_display_names = {
-        "agml": "Agentomics-ML",
+        "srm": "siRBench-Model",
         "oligoformer": "OligoFormer",
         "sirnadiscovery": "siRNADiscovery",
         "sirnabert": "siRNABERT",
@@ -249,9 +252,9 @@ def main():
         "ensirna": "ENsiRNA",
     }
     legend_text = "   ".join(
-        f"{TOOL_CODES[t]}={tool_display_names[t]}" for t in tools_with_data
+        f"{TOOL_CODES[t]}: {tool_display_names[t]}" for t in tools_with_data
     )
-    fig.text(0.5, 0.03, legend_text, ha='center', va='center', fontsize=14, fontweight='bold')
+    fig.text(0.5, 0.03, legend_text, ha='center', va='center', fontsize=16, fontweight='bold')
 
     # Save PNG
     out_dir = os.path.dirname(os.path.abspath(args.output))

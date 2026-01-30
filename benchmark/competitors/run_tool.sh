@@ -1,7 +1,18 @@
 #!/bin/bash
 set -euo pipefail
 
-cd "$(dirname "$0")"
+ORIG_PWD="$(pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "${SCRIPT_DIR}"
+
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+BENCH_ROOT="${REPO_ROOT}/benchmark"
+DATA_ROOT="${SCRIPT_DIR}/data"
+MODEL_ROOT="${SCRIPT_DIR}/models"
+RESULTS_ROOT="${BENCH_ROOT}/results"
+TOOLS_ROOT="${SCRIPT_DIR}/tools"
+
+export SIRBENCH_REPO_ROOT="${REPO_ROOT}"
 
 ensure_dirs() {
     local tool="$1"
@@ -138,6 +149,28 @@ if [ -z "${TRAIN_CSV}" ] || [ -z "${VAL_CSV}" ] || [ -z "${TEST_CSV}" ]; then
     exit 1
 fi
 
+make_abs() {
+    local path="$1"
+    if [ -z "${path}" ]; then
+        echo ""
+        return 0
+    fi
+    if [[ "${path}" = /* ]]; then
+        echo "${path}"
+    elif [ -e "${REPO_ROOT}/${path}" ]; then
+        echo "${REPO_ROOT}/${path}"
+    elif [ -e "${ORIG_PWD}/${path}" ]; then
+        echo "${ORIG_PWD}/${path}"
+    else
+        echo "${REPO_ROOT}/${path}"
+    fi
+}
+
+TRAIN_CSV="$(make_abs "${TRAIN_CSV}")"
+VAL_CSV="$(make_abs "${VAL_CSV}")"
+TEST_CSV="$(make_abs "${TEST_CSV}")"
+LEFTOUT_CSV="$(make_abs "${LEFTOUT_CSV}")"
+
 DETERMINISTIC_ARGS=()
 if [ "${DETERMINISTIC}" = "1" ]; then
     DETERMINISTIC_ARGS+=(--deterministic)
@@ -146,104 +179,104 @@ fi
 # ============ OLIGOFORMER ============
 if [ "$RUN_OLIGOFORMER" = "1" ]; then
     echo "=== OLIGOFORMER ==="
-    ensure_dirs oligoformer data/oligoformer models/oligoformer results/oligoformer
+    ensure_dirs oligoformer "${DATA_ROOT}/oligoformer" "${MODEL_ROOT}/oligoformer" "${RESULTS_ROOT}/oligoformer"
 
-    RNAFM_ROOT="tools/oligoformer/oligoformer_src/RNA-FM"
+    RNAFM_ROOT="${TOOLS_ROOT}/oligoformer/oligoformer_src/RNA-FM"
 
-    maybe_prepare "oligoformer" "data/oligoformer/train.csv" python3 prepare.py --tool oligoformer --input-csv "$TRAIN_CSV" --output-dir data/oligoformer --dataset-name train --run-rnafm --rnafm-root "$RNAFM_ROOT"
-    maybe_prepare "oligoformer" "data/oligoformer/val.csv" python3 prepare.py --tool oligoformer --input-csv "$VAL_CSV" --output-dir data/oligoformer --dataset-name val --run-rnafm --rnafm-root "$RNAFM_ROOT"
-    maybe_prepare "oligoformer" "data/oligoformer/test.csv" python3 prepare.py --tool oligoformer --input-csv "$TEST_CSV" --output-dir data/oligoformer --dataset-name test --run-rnafm --rnafm-root "$RNAFM_ROOT"
+    maybe_prepare "oligoformer" "${DATA_ROOT}/oligoformer/train.csv" python3 scripts/prepare.py --tool oligoformer --input-csv "$TRAIN_CSV" --output-dir "${DATA_ROOT}/oligoformer" --dataset-name train --run-rnafm --rnafm-root "$RNAFM_ROOT"
+    maybe_prepare "oligoformer" "${DATA_ROOT}/oligoformer/val.csv" python3 scripts/prepare.py --tool oligoformer --input-csv "$VAL_CSV" --output-dir "${DATA_ROOT}/oligoformer" --dataset-name val --run-rnafm --rnafm-root "$RNAFM_ROOT"
+    maybe_prepare "oligoformer" "${DATA_ROOT}/oligoformer/test.csv" python3 scripts/prepare.py --tool oligoformer --input-csv "$TEST_CSV" --output-dir "${DATA_ROOT}/oligoformer" --dataset-name test --run-rnafm --rnafm-root "$RNAFM_ROOT"
     if [ -n "${LEFTOUT_CSV}" ]; then
-        maybe_prepare "oligoformer" "data/oligoformer/leftout.csv" python3 prepare.py --tool oligoformer --input-csv "$LEFTOUT_CSV" --output-dir data/oligoformer --dataset-name leftout --run-rnafm --rnafm-root "$RNAFM_ROOT"
+        maybe_prepare "oligoformer" "${DATA_ROOT}/oligoformer/leftout.csv" python3 scripts/prepare.py --tool oligoformer --input-csv "$LEFTOUT_CSV" --output-dir "${DATA_ROOT}/oligoformer" --dataset-name leftout --run-rnafm --rnafm-root "$RNAFM_ROOT"
     fi
 
-    python3 scripts/train.py --tool oligoformer --train-csv data/oligoformer/train.csv --val-csv data/oligoformer/val.csv --data-dir data/oligoformer --model-dir models/oligoformer \
+    python3 scripts/train.py --tool oligoformer --train-csv "${DATA_ROOT}/oligoformer/train.csv" --val-csv "${DATA_ROOT}/oligoformer/val.csv" --data-dir "${DATA_ROOT}/oligoformer" --model-dir "${MODEL_ROOT}/oligoformer" \
         --epochs 200 --batch-size 16 --lr 1e-4 --weight-decay 0.999 --early-stopping 30 --seed "${SEED}" "${DETERMINISTIC_ARGS[@]}"
 
-    python3 scripts/test.py --tool oligoformer --test-csv data/oligoformer/test.csv --data-dir data/oligoformer --model-path models/oligoformer/model.pt --output-csv results/oligoformer/preds.csv --metrics-json results/oligoformer/metrics.json
+    python3 scripts/test.py --tool oligoformer --test-csv "${DATA_ROOT}/oligoformer/test.csv" --data-dir "${DATA_ROOT}/oligoformer" --model-path "${MODEL_ROOT}/oligoformer/model.pt" --output-csv "${RESULTS_ROOT}/oligoformer/preds.csv" --metrics-json "${RESULTS_ROOT}/oligoformer/metrics.json"
     if [ -n "${LEFTOUT_CSV}" ]; then
-        python3 scripts/test.py --tool oligoformer --test-csv data/oligoformer/leftout.csv --data-dir data/oligoformer --model-path models/oligoformer/model.pt --output-csv results/oligoformer/preds_leftout.csv --metrics-json results/oligoformer/metrics_leftout.json
+        python3 scripts/test.py --tool oligoformer --test-csv "${DATA_ROOT}/oligoformer/leftout.csv" --data-dir "${DATA_ROOT}/oligoformer" --model-path "${MODEL_ROOT}/oligoformer/model.pt" --output-csv "${RESULTS_ROOT}/oligoformer/preds_leftout.csv" --metrics-json "${RESULTS_ROOT}/oligoformer/metrics_leftout.json"
     fi
 fi
 
 # ============ SIRNADISCOVERY ============
 if [ "$RUN_SIRNADISCOVERY" = "1" ]; then
     echo "=== SIRNADISCOVERY ==="
-    ensure_dirs sirnadiscovery data/sirnadiscovery models/sirnadiscovery results/sirnadiscovery
+    ensure_dirs sirnadiscovery "${DATA_ROOT}/sirnadiscovery" "${MODEL_ROOT}/sirnadiscovery" "${RESULTS_ROOT}/sirnadiscovery"
 
-    PREPROCESS_DIR="tools/sirnadiscovery/sirnadiscovery_src/siRNA_split/siRNA_split_preprocess"
-    RNA_AGO2_DIR="tools/sirnadiscovery/sirnadiscovery_src/siRNA_split/RNA_AGO2"
+    PREPROCESS_DIR="${TOOLS_ROOT}/sirnadiscovery/sirnadiscovery_src/siRNA_split/siRNA_split_preprocess"
+    RNA_AGO2_DIR="${TOOLS_ROOT}/sirnadiscovery/sirnadiscovery_src/siRNA_split/RNA_AGO2"
 
-    maybe_prepare "sirnadiscovery" "data/sirnadiscovery/train.csv" python3 prepare.py --tool sirnadiscovery --input-csv "$TRAIN_CSV" --output-dir data/sirnadiscovery --dataset-name train --preprocess-dir "$PREPROCESS_DIR" --rna-ago2-dir "$RNA_AGO2_DIR" --mrna-col extended_mRNA
-    maybe_prepare "sirnadiscovery" "data/sirnadiscovery/val.csv" python3 prepare.py --tool sirnadiscovery --input-csv "$VAL_CSV" --output-dir data/sirnadiscovery --dataset-name val --preprocess-dir "$PREPROCESS_DIR" --rna-ago2-dir "$RNA_AGO2_DIR" --mrna-col extended_mRNA
-    maybe_prepare "sirnadiscovery" "data/sirnadiscovery/test.csv" python3 prepare.py --tool sirnadiscovery --input-csv "$TEST_CSV" --output-dir data/sirnadiscovery --dataset-name test --preprocess-dir "$PREPROCESS_DIR" --rna-ago2-dir "$RNA_AGO2_DIR" --mrna-col extended_mRNA
+    maybe_prepare "sirnadiscovery" "${DATA_ROOT}/sirnadiscovery/train.csv" python3 scripts/prepare.py --tool sirnadiscovery --input-csv "$TRAIN_CSV" --output-dir "${DATA_ROOT}/sirnadiscovery" --dataset-name train --preprocess-dir "$PREPROCESS_DIR" --rna-ago2-dir "$RNA_AGO2_DIR" --mrna-col extended_mRNA
+    maybe_prepare "sirnadiscovery" "${DATA_ROOT}/sirnadiscovery/val.csv" python3 scripts/prepare.py --tool sirnadiscovery --input-csv "$VAL_CSV" --output-dir "${DATA_ROOT}/sirnadiscovery" --dataset-name val --preprocess-dir "$PREPROCESS_DIR" --rna-ago2-dir "$RNA_AGO2_DIR" --mrna-col extended_mRNA
+    maybe_prepare "sirnadiscovery" "${DATA_ROOT}/sirnadiscovery/test.csv" python3 scripts/prepare.py --tool sirnadiscovery --input-csv "$TEST_CSV" --output-dir "${DATA_ROOT}/sirnadiscovery" --dataset-name test --preprocess-dir "$PREPROCESS_DIR" --rna-ago2-dir "$RNA_AGO2_DIR" --mrna-col extended_mRNA
     if [ -n "${LEFTOUT_CSV}" ]; then
-        maybe_prepare "sirnadiscovery" "data/sirnadiscovery/leftout.csv" python3 prepare.py --tool sirnadiscovery --input-csv "$LEFTOUT_CSV" --output-dir data/sirnadiscovery --dataset-name leftout --preprocess-dir "$PREPROCESS_DIR" --rna-ago2-dir "$RNA_AGO2_DIR" --mrna-col extended_mRNA
+        maybe_prepare "sirnadiscovery" "${DATA_ROOT}/sirnadiscovery/leftout.csv" python3 scripts/prepare.py --tool sirnadiscovery --input-csv "$LEFTOUT_CSV" --output-dir "${DATA_ROOT}/sirnadiscovery" --dataset-name leftout --preprocess-dir "$PREPROCESS_DIR" --rna-ago2-dir "$RNA_AGO2_DIR" --mrna-col extended_mRNA
     fi
 
-    python3 scripts/train.py --tool sirnadiscovery --train-csv data/sirnadiscovery/train.csv --val-csv data/sirnadiscovery/val.csv --preprocess-dir "$PREPROCESS_DIR" --rna-ago2-dir "$RNA_AGO2_DIR" --model-dir models/sirnadiscovery \
+    python3 scripts/train.py --tool sirnadiscovery --train-csv "${DATA_ROOT}/sirnadiscovery/train.csv" --val-csv "${DATA_ROOT}/sirnadiscovery/val.csv" --preprocess-dir "$PREPROCESS_DIR" --rna-ago2-dir "$RNA_AGO2_DIR" --model-dir "${MODEL_ROOT}/sirnadiscovery" \
         --seed "${SEED}" "${DETERMINISTIC_ARGS[@]}"
 
-    python3 scripts/test.py --tool sirnadiscovery --test-csv data/sirnadiscovery/test.csv --preprocess-dir "$PREPROCESS_DIR" --rna-ago2-dir "$RNA_AGO2_DIR" --model-path models/sirnadiscovery/model.keras --output-csv results/sirnadiscovery/preds.csv --metrics-json results/sirnadiscovery/metrics.json
+    python3 scripts/test.py --tool sirnadiscovery --test-csv "${DATA_ROOT}/sirnadiscovery/test.csv" --preprocess-dir "$PREPROCESS_DIR" --rna-ago2-dir "$RNA_AGO2_DIR" --model-path "${MODEL_ROOT}/sirnadiscovery/model.keras" --output-csv "${RESULTS_ROOT}/sirnadiscovery/preds.csv" --metrics-json "${RESULTS_ROOT}/sirnadiscovery/metrics.json"
     if [ -n "${LEFTOUT_CSV}" ]; then
-        python3 scripts/test.py --tool sirnadiscovery --test-csv data/sirnadiscovery/leftout.csv --preprocess-dir "$PREPROCESS_DIR" --rna-ago2-dir "$RNA_AGO2_DIR" --model-path models/sirnadiscovery/model.keras --output-csv results/sirnadiscovery/preds_leftout.csv --metrics-json results/sirnadiscovery/metrics_leftout.json
+        python3 scripts/test.py --tool sirnadiscovery --test-csv "${DATA_ROOT}/sirnadiscovery/leftout.csv" --preprocess-dir "$PREPROCESS_DIR" --rna-ago2-dir "$RNA_AGO2_DIR" --model-path "${MODEL_ROOT}/sirnadiscovery/model.keras" --output-csv "${RESULTS_ROOT}/sirnadiscovery/preds_leftout.csv" --metrics-json "${RESULTS_ROOT}/sirnadiscovery/metrics_leftout.json"
     fi
 fi
 
 # ============ SIRNABERT ============
 if [ "$RUN_SIRNABERT" = "1" ]; then
     echo "=== SIRNABERT ==="
-    ensure_dirs sirnabert data/sirnabert models/sirnabert results/sirnabert
+    ensure_dirs sirnabert "${DATA_ROOT}/sirnabert" "${MODEL_ROOT}/sirnabert" "${RESULTS_ROOT}/sirnabert"
 
-    maybe_prepare "sirnabert" "data/sirnabert/train.csv" python3 prepare.py --tool sirnabert --input-csv "$TRAIN_CSV" --output-dir data/sirnabert --dataset-name train
-    maybe_prepare "sirnabert" "data/sirnabert/val.csv" python3 prepare.py --tool sirnabert --input-csv "$VAL_CSV" --output-dir data/sirnabert --dataset-name val
-    maybe_prepare "sirnabert" "data/sirnabert/test.csv" python3 prepare.py --tool sirnabert --input-csv "$TEST_CSV" --output-dir data/sirnabert --dataset-name test
+    maybe_prepare "sirnabert" "${DATA_ROOT}/sirnabert/train.csv" python3 scripts/prepare.py --tool sirnabert --input-csv "$TRAIN_CSV" --output-dir "${DATA_ROOT}/sirnabert" --dataset-name train
+    maybe_prepare "sirnabert" "${DATA_ROOT}/sirnabert/val.csv" python3 scripts/prepare.py --tool sirnabert --input-csv "$VAL_CSV" --output-dir "${DATA_ROOT}/sirnabert" --dataset-name val
+    maybe_prepare "sirnabert" "${DATA_ROOT}/sirnabert/test.csv" python3 scripts/prepare.py --tool sirnabert --input-csv "$TEST_CSV" --output-dir "${DATA_ROOT}/sirnabert" --dataset-name test
     if [ -n "${LEFTOUT_CSV}" ]; then
-        maybe_prepare "sirnabert" "data/sirnabert/leftout.csv" python3 prepare.py --tool sirnabert --input-csv "$LEFTOUT_CSV" --output-dir data/sirnabert --dataset-name leftout
+        maybe_prepare "sirnabert" "${DATA_ROOT}/sirnabert/leftout.csv" python3 scripts/prepare.py --tool sirnabert --input-csv "$LEFTOUT_CSV" --output-dir "${DATA_ROOT}/sirnabert" --dataset-name leftout
     fi
 
-    python3 scripts/train.py --tool sirnabert --train-csv data/sirnabert/train.csv --val-csv data/sirnabert/val.csv --model-dir models/sirnabert \
+    python3 scripts/train.py --tool sirnabert --train-csv "${DATA_ROOT}/sirnabert/train.csv" --val-csv "${DATA_ROOT}/sirnabert/val.csv" --model-dir "${MODEL_ROOT}/sirnabert" \
         --epochs 30 --batch-size 100 --lr 5e-5 --max-len 16 --seed "${SEED}" "${DETERMINISTIC_ARGS[@]}"
 
-    python3 scripts/test.py --tool sirnabert --test-csv data/sirnabert/test.csv --model-path models/sirnabert/model.pt --output-csv results/sirnabert/preds.csv --metrics-json results/sirnabert/metrics.json
+    python3 scripts/test.py --tool sirnabert --test-csv "${DATA_ROOT}/sirnabert/test.csv" --model-path "${MODEL_ROOT}/sirnabert/model.pt" --output-csv "${RESULTS_ROOT}/sirnabert/preds.csv" --metrics-json "${RESULTS_ROOT}/sirnabert/metrics.json"
     if [ -n "${LEFTOUT_CSV}" ]; then
-        python3 scripts/test.py --tool sirnabert --test-csv data/sirnabert/leftout.csv --model-path models/sirnabert/model.pt --output-csv results/sirnabert/preds_leftout.csv --metrics-json results/sirnabert/metrics_leftout.json
+        python3 scripts/test.py --tool sirnabert --test-csv "${DATA_ROOT}/sirnabert/leftout.csv" --model-path "${MODEL_ROOT}/sirnabert/model.pt" --output-csv "${RESULTS_ROOT}/sirnabert/preds_leftout.csv" --metrics-json "${RESULTS_ROOT}/sirnabert/metrics_leftout.json"
     fi
 fi
 
 # ============ ATTSIOFF ============
 if [ "$RUN_ATTSIOFF" = "1" ]; then
     echo "=== ATTSIOFF ==="
-    ensure_dirs attsioff data/attsioff models/attsioff results/attsioff
+    ensure_dirs attsioff "${DATA_ROOT}/attsioff" "${MODEL_ROOT}/attsioff" "${RESULTS_ROOT}/attsioff"
 
-    maybe_prepare "attsioff" "data/attsioff/train.csv" python3 prepare.py --tool attsioff --input-csv "$TRAIN_CSV" --output-dir data/attsioff --dataset-name train
-    maybe_prepare "attsioff" "data/attsioff/val.csv" python3 prepare.py --tool attsioff --input-csv "$VAL_CSV" --output-dir data/attsioff --dataset-name val
-    maybe_prepare "attsioff" "data/attsioff/test.csv" python3 prepare.py --tool attsioff --input-csv "$TEST_CSV" --output-dir data/attsioff --dataset-name test
+    maybe_prepare "attsioff" "${DATA_ROOT}/attsioff/train.csv" python3 scripts/prepare.py --tool attsioff --input-csv "$TRAIN_CSV" --output-dir "${DATA_ROOT}/attsioff" --dataset-name train
+    maybe_prepare "attsioff" "${DATA_ROOT}/attsioff/val.csv" python3 scripts/prepare.py --tool attsioff --input-csv "$VAL_CSV" --output-dir "${DATA_ROOT}/attsioff" --dataset-name val
+    maybe_prepare "attsioff" "${DATA_ROOT}/attsioff/test.csv" python3 scripts/prepare.py --tool attsioff --input-csv "$TEST_CSV" --output-dir "${DATA_ROOT}/attsioff" --dataset-name test
     if [ -n "${LEFTOUT_CSV}" ]; then
-        maybe_prepare "attsioff" "data/attsioff/leftout.csv" python3 prepare.py --tool attsioff --input-csv "$LEFTOUT_CSV" --output-dir data/attsioff --dataset-name leftout
+        maybe_prepare "attsioff" "${DATA_ROOT}/attsioff/leftout.csv" python3 scripts/prepare.py --tool attsioff --input-csv "$LEFTOUT_CSV" --output-dir "${DATA_ROOT}/attsioff" --dataset-name leftout
     fi
 
-    python3 scripts/train.py --tool attsioff --train-csv data/attsioff/train.csv --val-csv data/attsioff/val.csv --data-dir data/attsioff --model-dir models/attsioff \
+    python3 scripts/train.py --tool attsioff --train-csv "${DATA_ROOT}/attsioff/train.csv" --val-csv "${DATA_ROOT}/attsioff/val.csv" --data-dir "${DATA_ROOT}/attsioff" --model-dir "${MODEL_ROOT}/attsioff" \
         --batch-size 128 --epochs 1000 --lr 0.005 --early-stopping 20 --seed "${SEED}" "${DETERMINISTIC_ARGS[@]}"
 
-    python3 scripts/test.py --tool attsioff --test-csv data/attsioff/test.csv --data-dir data/attsioff --model-path models/attsioff/model.pt --output-csv results/attsioff/preds.csv --metrics-json results/attsioff/metrics.json
+    python3 scripts/test.py --tool attsioff --test-csv "${DATA_ROOT}/attsioff/test.csv" --data-dir "${DATA_ROOT}/attsioff" --model-path "${MODEL_ROOT}/attsioff/model.pt" --output-csv "${RESULTS_ROOT}/attsioff/preds.csv" --metrics-json "${RESULTS_ROOT}/attsioff/metrics.json"
     if [ -n "${LEFTOUT_CSV}" ]; then
-        python3 scripts/test.py --tool attsioff --test-csv data/attsioff/leftout.csv --data-dir data/attsioff --model-path models/attsioff/model.pt --output-csv results/attsioff/preds_leftout.csv --metrics-json results/attsioff/metrics_leftout.json
+        python3 scripts/test.py --tool attsioff --test-csv "${DATA_ROOT}/attsioff/leftout.csv" --data-dir "${DATA_ROOT}/attsioff" --model-path "${MODEL_ROOT}/attsioff/model.pt" --output-csv "${RESULTS_ROOT}/attsioff/preds_leftout.csv" --metrics-json "${RESULTS_ROOT}/attsioff/metrics_leftout.json"
     fi
 fi
 
 # ============ GNN4SIRNA ============
 if [ "$RUN_GNN4SIRNA" = "1" ]; then
     echo "=== GNN4SIRNA ==="
-    ensure_dirs gnn4sirna data/gnn4sirna models/gnn4sirna results/gnn4sirna
+    ensure_dirs gnn4sirna "${DATA_ROOT}/gnn4sirna" "${MODEL_ROOT}/gnn4sirna" "${RESULTS_ROOT}/gnn4sirna"
 
-    maybe_prepare "gnn4sirna" "data/gnn4sirna/train.csv" python3 prepare.py --tool gnn4sirna --input-csv "$TRAIN_CSV" --output-dir data/gnn4sirna --dataset-name train --mrna-col extended_mRNA
-    maybe_prepare "gnn4sirna" "data/gnn4sirna/val.csv" python3 prepare.py --tool gnn4sirna --input-csv "$VAL_CSV" --output-dir data/gnn4sirna --dataset-name val --mrna-col extended_mRNA
-    maybe_prepare "gnn4sirna" "data/gnn4sirna/test.csv" python3 prepare.py --tool gnn4sirna --input-csv "$TEST_CSV" --output-dir data/gnn4sirna --dataset-name test --mrna-col extended_mRNA
+    maybe_prepare "gnn4sirna" "${DATA_ROOT}/gnn4sirna/train.csv" python3 scripts/prepare.py --tool gnn4sirna --input-csv "$TRAIN_CSV" --output-dir "${DATA_ROOT}/gnn4sirna" --dataset-name train --mrna-col extended_mRNA
+    maybe_prepare "gnn4sirna" "${DATA_ROOT}/gnn4sirna/val.csv" python3 scripts/prepare.py --tool gnn4sirna --input-csv "$VAL_CSV" --output-dir "${DATA_ROOT}/gnn4sirna" --dataset-name val --mrna-col extended_mRNA
+    maybe_prepare "gnn4sirna" "${DATA_ROOT}/gnn4sirna/test.csv" python3 scripts/prepare.py --tool gnn4sirna --input-csv "$TEST_CSV" --output-dir "${DATA_ROOT}/gnn4sirna" --dataset-name test --mrna-col extended_mRNA
     if [ -n "${LEFTOUT_CSV}" ]; then
-        maybe_prepare "gnn4sirna" "data/gnn4sirna/leftout.csv" python3 prepare.py --tool gnn4sirna --input-csv "$LEFTOUT_CSV" --output-dir data/gnn4sirna --dataset-name leftout --mrna-col extended_mRNA
+        maybe_prepare "gnn4sirna" "${DATA_ROOT}/gnn4sirna/leftout.csv" python3 scripts/prepare.py --tool gnn4sirna --input-csv "$LEFTOUT_CSV" --output-dir "${DATA_ROOT}/gnn4sirna" --dataset-name leftout --mrna-col extended_mRNA
     fi
-    if [ ! -f "data/gnn4sirna/all_input.csv" ]; then
+    if [ ! -f "${DATA_ROOT}/gnn4sirna/all_input.csv" ]; then
 python3 - <<PY
 import csv
 
@@ -252,7 +285,7 @@ paths = [
     "${VAL_CSV}",
     "${TEST_CSV}",
 ]
-out_path = "data/gnn4sirna/all_input.csv"
+out_path = "${DATA_ROOT}/gnn4sirna/all_input.csv"
 
 with open(out_path, "w", newline="") as out_f:
     writer = None
@@ -267,52 +300,52 @@ with open(out_path, "w", newline="") as out_f:
                 writer.writerow(row)
 PY
     fi
-    if [ ! -d "data/gnn4sirna/processed/all" ]; then
-        python3 prepare.py --tool gnn4sirna --input-csv data/gnn4sirna/all_input.csv --output-dir data/gnn4sirna --dataset-name all --mrna-col extended_mRNA
+    if [ ! -d "${DATA_ROOT}/gnn4sirna/processed/all" ]; then
+        python3 scripts/prepare.py --tool gnn4sirna --input-csv "${DATA_ROOT}/gnn4sirna/all_input.csv" --output-dir "${DATA_ROOT}/gnn4sirna" --dataset-name all --mrna-col extended_mRNA
     else
         echo "[gnn4sirna] prepare skipped (processed/all exists)"
     fi
 
-    python3 scripts/train.py --tool gnn4sirna --train-csv data/gnn4sirna/train.csv --val-csv data/gnn4sirna/val.csv --processed-dir data/gnn4sirna/processed/all --model-dir models/gnn4sirna \
+    python3 scripts/train.py --tool gnn4sirna --train-csv "${DATA_ROOT}/gnn4sirna/train.csv" --val-csv "${DATA_ROOT}/gnn4sirna/val.csv" --processed-dir "${DATA_ROOT}/gnn4sirna/processed/all" --model-dir "${MODEL_ROOT}/gnn4sirna" \
         --batch-size 60 --epochs 10 --lr 1e-3 --loss mse --seed "${SEED}" "${DETERMINISTIC_ARGS[@]}"
 
-    python3 scripts/test.py --tool gnn4sirna --test-csv data/gnn4sirna/test.csv --processed-dir data/gnn4sirna/processed/all --model-path models/gnn4sirna/model.keras --output-csv results/gnn4sirna/preds.csv --metrics-json results/gnn4sirna/metrics.json
+    python3 scripts/test.py --tool gnn4sirna --test-csv "${DATA_ROOT}/gnn4sirna/test.csv" --processed-dir "${DATA_ROOT}/gnn4sirna/processed/all" --model-path "${MODEL_ROOT}/gnn4sirna/model.keras" --output-csv "${RESULTS_ROOT}/gnn4sirna/preds.csv" --metrics-json "${RESULTS_ROOT}/gnn4sirna/metrics.json"
     if [ -n "${LEFTOUT_CSV}" ]; then
-        python3 scripts/test.py --tool gnn4sirna --test-csv data/gnn4sirna/leftout.csv --processed-dir data/gnn4sirna/processed/leftout --model-path models/gnn4sirna/model.keras --output-csv results/gnn4sirna/preds_leftout.csv --metrics-json results/gnn4sirna/metrics_leftout.json
+        python3 scripts/test.py --tool gnn4sirna --test-csv "${DATA_ROOT}/gnn4sirna/leftout.csv" --processed-dir "${DATA_ROOT}/gnn4sirna/processed/leftout" --model-path "${MODEL_ROOT}/gnn4sirna/model.keras" --output-csv "${RESULTS_ROOT}/gnn4sirna/preds_leftout.csv" --metrics-json "${RESULTS_ROOT}/gnn4sirna/metrics_leftout.json"
     fi
 fi
 
 # ============ ENSIRNA ============
 if [ "$RUN_ENSIRNA" = "1" ]; then
     echo "=== ENSIRNA ==="
-    ensure_dirs ensirna data/ensirna models/ensirna results/ensirna
+    ensure_dirs ensirna "${DATA_ROOT}/ensirna" "${MODEL_ROOT}/ensirna" "${RESULTS_ROOT}/ensirna"
 
-    maybe_prepare "ensirna" "data/ensirna/train.jsonl" python3 prepare.py --tool ensirna --input-csv "$TRAIN_CSV" --output-jsonl data/ensirna/train.jsonl
-    maybe_prepare "ensirna" "data/ensirna/val.jsonl" python3 prepare.py --tool ensirna --input-csv "$VAL_CSV" --output-jsonl data/ensirna/val.jsonl
-    maybe_prepare "ensirna" "data/ensirna/test.jsonl" python3 prepare.py --tool ensirna --input-csv "$TEST_CSV" --output-jsonl data/ensirna/test.jsonl
+    maybe_prepare "ensirna" "${DATA_ROOT}/ensirna/train.jsonl" python3 scripts/prepare.py --tool ensirna --input-csv "$TRAIN_CSV" --output-jsonl "${DATA_ROOT}/ensirna/train.jsonl"
+    maybe_prepare "ensirna" "${DATA_ROOT}/ensirna/val.jsonl" python3 scripts/prepare.py --tool ensirna --input-csv "$VAL_CSV" --output-jsonl "${DATA_ROOT}/ensirna/val.jsonl"
+    maybe_prepare "ensirna" "${DATA_ROOT}/ensirna/test.jsonl" python3 scripts/prepare.py --tool ensirna --input-csv "$TEST_CSV" --output-jsonl "${DATA_ROOT}/ensirna/test.jsonl"
     if [ -n "${LEFTOUT_CSV}" ]; then
-        maybe_prepare "ensirna" "data/ensirna/leftout.jsonl" python3 prepare.py --tool ensirna --input-csv "$LEFTOUT_CSV" --output-jsonl data/ensirna/leftout.jsonl
+        maybe_prepare "ensirna" "${DATA_ROOT}/ensirna/leftout.jsonl" python3 scripts/prepare.py --tool ensirna --input-csv "$LEFTOUT_CSV" --output-jsonl "${DATA_ROOT}/ensirna/leftout.jsonl"
     fi
 
-    python3 scripts/train.py --tool ensirna --train-set data/ensirna/train.jsonl --valid-set data/ensirna/val.jsonl --model-dir models/ensirna \
+    python3 scripts/train.py --tool ensirna --train-set "${DATA_ROOT}/ensirna/train.jsonl" --valid-set "${DATA_ROOT}/ensirna/val.jsonl" --model-dir "${MODEL_ROOT}/ensirna" \
         --batch-size 16 --lr 1e-4 --final_lr 1e-5 --max_epoch 100
 
     shopt -s globstar nullglob
-    CKPTS=(models/ensirna/**/*.ckpt)
+    CKPTS=(${MODEL_ROOT}/ensirna/**/*.ckpt)
     shopt -u globstar nullglob
     if [ ${#CKPTS[@]} -eq 0 ]; then
-        echo "No ENsiRNA checkpoints found in models/ensirna; skipping test."
+        echo "No ENsiRNA checkpoints found in ${MODEL_ROOT}/ensirna; skipping test."
     else
-        python3 scripts/test.py --tool ensirna --test-set data/ensirna/test.jsonl --ckpt "${CKPTS[@]}" \
-            --save-dir results/ensirna --run-id ensirna \
-            --output-csv results/ensirna/preds.csv --metrics-json results/ensirna/metrics.json
+        python3 scripts/test.py --tool ensirna --test-set "${DATA_ROOT}/ensirna/test.jsonl" --ckpt "${CKPTS[@]}" \
+            --save-dir "${RESULTS_ROOT}/ensirna" --run-id ensirna \
+            --output-csv "${RESULTS_ROOT}/ensirna/preds.csv" --metrics-json "${RESULTS_ROOT}/ensirna/metrics.json"
         if [ -n "${LEFTOUT_CSV}" ]; then
-            python3 scripts/test.py --tool ensirna --test-set data/ensirna/leftout.jsonl --ckpt "${CKPTS[@]}" \
-                --save-dir results/ensirna --run-id ensirna_leftout \
-                --output-csv results/ensirna/preds_leftout.csv --metrics-json results/ensirna/metrics_leftout.json
+            python3 scripts/test.py --tool ensirna --test-set "${DATA_ROOT}/ensirna/leftout.jsonl" --ckpt "${CKPTS[@]}" \
+                --save-dir "${RESULTS_ROOT}/ensirna" --run-id ensirna_leftout \
+                --output-csv "${RESULTS_ROOT}/ensirna/preds_leftout.csv" --metrics-json "${RESULTS_ROOT}/ensirna/metrics_leftout.json"
         fi
     fi
 fi
 
 echo "=== DONE ==="
-echo "Results in results/*/"
+echo "Results in ${RESULTS_ROOT}/*/"

@@ -6,13 +6,13 @@ Global decisions
 - Sequences are provided 5'->3' for both siRNA and target; siRNA is antisense and matches the target by Watson-Crick pairing.
 - When papers use longer targets (AttSiOff 59 nt, ENsiRNA 61 nt, GNN4siRNA/siRNADiscovery full-length), we document the deviation below.
 - Reproducibility: all wrappers accept `--seed` (default 42) and `--deterministic` for best-effort reproducibility; ENsiRNA upstream uses a fixed seed (12) and deterministic algorithms.
-  - Example: `python3 competitors/scripts/train.py --tool oligoformer --seed 42 --deterministic ...`
+  - Example: `python3 benchmark/competitors/scripts/train.py --tool oligoformer --seed 42 --deterministic ...`
 
 ## Oligoformer
 
 - Inputs: 19-nt siRNA + 57-nt target (paper uses 57; no deviation).
 - Hyperparams: lr 1e-4, batch 16, epochs 200, exp lr gamma 0.999, early stop 30 (repo defaults; paper does not specify in wrapper).
-- Pipeline: `run_tool.sh` passes these explicitly.
+- Pipeline: `benchmark/competitors/run_tool.sh` passes these explicitly.
 - Reproducibility: wrapper seeds Python/NumPy/Torch; `--deterministic` enables cudnn + deterministic algorithms.
 
 ## siRNABERT
