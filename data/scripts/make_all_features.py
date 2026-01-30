@@ -263,18 +263,22 @@ def main():
     p.add_argument('-o', '--output', help='Output CSV file (default: siRBench_with_features.csv)')
     args = p.parse_args()
 
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    data_dir = os.path.normpath(os.path.join(script_dir, '..'))
+
     if not args.output:
         if args.input == 'siRBench_base.csv':
-            args.output = 'siRBench_with_features.csv'
+            args.output = os.path.join(data_dir, 'siRBench_with_features.csv')
         else:
-            base_name = args.input.rsplit('.', 1)[0]
-            args.output = f'{base_name}_with_features.csv'
+            base_name = os.path.basename(args.input).rsplit('.', 1)[0]
+            args.output = os.path.join(data_dir, f'{base_name}_with_features.csv')
 
     input_path = args.input
     if not os.path.isabs(input_path):
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        if not os.path.exists(input_path) and os.path.exists(os.path.join(script_dir, '..', input_path)):
-            input_path = os.path.join(script_dir, '..', input_path)
+        if not os.path.exists(input_path):
+            candidate = os.path.join(data_dir, input_path)
+            if os.path.exists(candidate):
+                input_path = candidate
 
     print(f"Loading data from {input_path}...")
     df = pd.read_csv(input_path)
@@ -293,9 +297,6 @@ def main():
     out = build_unified_features(df)
 
     output_path = args.output
-    if not os.path.isabs(output_path):
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        output_path = os.path.join(script_dir, '..', output_path)
 
     print(f"\nSaving {out.shape[1]} features to {output_path}...")
     float_cols = out.select_dtypes(include=['float64', 'float32']).columns
