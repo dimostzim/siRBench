@@ -89,3 +89,21 @@ TARGET_FILE="$(pwd)/ensirna_src/ENsiRNA/run.py"
 if [ -f "${PATCH_FILE}" ]; then
     cp "${PATCH_FILE}" "${TARGET_FILE}"
 fi
+
+PATCH_FILE="$(pwd)/patches/train.py"
+TARGET_FILE="$(pwd)/ensirna_src/ENsiRNA/train.py"
+if [ -f "${PATCH_FILE}" ]; then
+    cp "${PATCH_FILE}" "${TARGET_FILE}"
+fi
+
+PATCH_FILE="$(pwd)/patches/abs_trainer.py"
+TARGET_FILE="$(pwd)/ensirna_src/ENsiRNA/trainer/abs_trainer.py"
+if [ -f "${PATCH_FILE}" ]; then
+    cp "${PATCH_FILE}" "${TARGET_FILE}"
+fi
+
+PATCH_FILE="$(pwd)/patches/random_seed.py"
+TARGET_FILE="$(pwd)/ensirna_src/ENsiRNA/utils/random_seed.py"
+if [ -f "${PATCH_FILE}" ]; then
+    cp "${PATCH_FILE}" "${TARGET_FILE}"
+fi

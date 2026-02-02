@@ -174,9 +174,9 @@ def plot_metric_panel(ax, tools, test_values, leftout_values, metric_name, highe
 
 
 def main():
-    # Default results dir is benchmark/results relative to this script
+    # Default results dir is benchmark/competitors/updated_validation_results relative to this script
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    default_results_dir = os.path.join(script_dir, "..", "..", "results")
+    default_results_dir = os.path.join(script_dir, "..", "updated_validation_results")
 
     p = argparse.ArgumentParser()
     p.add_argument("--results-dir", default=default_results_dir)

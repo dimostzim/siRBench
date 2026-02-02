@@ -143,13 +143,19 @@ def eval_epoch(model, loader, criterion, device):
             preds.extend(pred.detach().cpu().numpy().tolist())
     pcc = None
     spcc = None
+    r2 = None
     try:
         if len(labels) > 1:
             pcc = stats.pearsonr(preds, labels)[0]
             spcc = stats.spearmanr(preds, labels)[0]
+            y_true = np.array(labels, dtype=float)
+            y_pred = np.array(preds, dtype=float)
+            ss_res = np.sum((y_true - y_pred) ** 2)
+            ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
+            r2 = 1.0 - (ss_res / ss_tot) if ss_tot != 0 else None
     except Exception:
         pass
-    return total_loss / max(count, 1), pcc, spcc
+    return total_loss / max(count, 1), pcc, spcc, r2
 
 
 def main():
@@ -165,8 +171,17 @@ def main():
     p.add_argument("--deterministic", action="store_true")
     p.add_argument("--cuda", default="0")
     p.add_argument("--early-stopping", type=int, default=20)
+    p.add_argument("--early-stop-metric", default="spcc", choices=["spcc", "pcc", "mse", "r2"])
+    p.add_argument("--original-params", action="store_true", help="Use upstream default hyperparameters.")
     p.add_argument("--src-root", default="attsioff_src")
     args = p.parse_args()
+
+    if args.original_params:
+        args.batch_size = 128
+        args.epochs = 1000
+        args.lr = 0.005
+        args.early_stopping = 20
+        args.early_stop_metric = "spcc"
 
     seed_everything(args.seed, args.deterministic)
 
@@ -194,22 +209,33 @@ def main():
     criterion = nn.MSELoss(reduction='mean')
 
     os.makedirs(args.model_dir, exist_ok=True)
-    best_spcc = None
+    best_metric = None
     best_epoch = -1
     best_path = os.path.join(args.model_dir, "model.pt")
 
     for epoch in range(args.epochs):
         train_loss = train_epoch(model, train_loader, optimizer, criterion, device)
-        val_loss, val_pcc, val_spcc = eval_epoch(model, val_loader, criterion, device)
-        # Model selection / early stopping: optimize Spearman correlation (higher is better).
-        # This matches the original AttSiOff implementation.
-        improved = best_spcc is None or (val_spcc is not None and val_spcc > best_spcc)
+        val_loss, val_pcc, val_spcc, val_r2 = eval_epoch(model, val_loader, criterion, device)
+        # Model selection / early stopping: configurable metric.
+        improved = False
+        if args.early_stop_metric == "mse":
+            improved = best_metric is None or val_loss < best_metric
+            cur_metric = val_loss
+        elif args.early_stop_metric == "r2":
+            cur_metric = val_r2
+            improved = best_metric is None or (cur_metric is not None and cur_metric > best_metric)
+        elif args.early_stop_metric == "pcc":
+            cur_metric = val_pcc
+            improved = best_metric is None or (cur_metric is not None and cur_metric > best_metric)
+        else:
+            cur_metric = val_spcc
+            improved = best_metric is None or (cur_metric is not None and cur_metric > best_metric)
         if improved:
-            best_spcc = val_spcc
+            best_metric = cur_metric
             best_epoch = epoch
             torch.save(model.state_dict(), best_path)
-        print(f"epoch={epoch} train_loss={train_loss:.6f} val_loss={val_loss:.6f} val_pcc={val_pcc} val_spcc={val_spcc}")
-        if epoch - best_epoch > args.early_stopping:
+        print(f"epoch={epoch} train_loss={train_loss:.6f} val_loss={val_loss:.6f} val_pcc={val_pcc} val_spcc={val_spcc} val_r2={val_r2}")
+        if args.early_stopping and epoch - best_epoch > args.early_stopping:
             break
 
     meta = {

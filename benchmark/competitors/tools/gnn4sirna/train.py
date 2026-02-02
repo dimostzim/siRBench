@@ -45,9 +45,22 @@ def main():
     p.add_argument("--epochs", type=int, default=10)
     p.add_argument("--lr", type=float, default=1e-3)
     p.add_argument("--loss", default="mse")
+    p.add_argument("--early-stopping", type=int, default=0, help="Patience for early stopping; 0 disables.")
+    p.add_argument("--early-stop-metric", default="val_loss", choices=["val_loss", "val_r2_metric"])
+    p.add_argument("--early-stop-mode", default="auto", choices=["auto", "min", "max"])
+    p.add_argument("--original-params", action="store_true", help="Use upstream default hyperparameters.")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--deterministic", action="store_true")
     args = p.parse_args()
+
+    if args.original_params:
+        args.batch_size = 60
+        args.epochs = 10
+        args.lr = 1e-3
+        args.loss = "mse"
+        args.early_stopping = 0
+        args.early_stop_metric = "val_loss"
+        args.early_stop_mode = "auto"
 
     os.environ["PYTHONHASHSEED"] = str(args.seed)
     if args.deterministic:
@@ -86,9 +99,32 @@ def main():
     x_inp, x_out = hinsage.in_out_tensors()
     prediction = tf.keras.layers.Dense(units=1)(x_out)
     model = tf.keras.Model(inputs=x_inp, outputs=prediction)
-    model.compile(optimizer=tf.keras.optimizers.Adamax(learning_rate=args.lr), loss=args.loss)
+    def r2_metric(y_true, y_pred):
+        ss_res = tf.reduce_sum(tf.square(y_true - y_pred))
+        ss_tot = tf.reduce_sum(tf.square(y_true - tf.reduce_mean(y_true)))
+        return tf.where(tf.equal(ss_tot, 0.0), 0.0, 1.0 - ss_res / ss_tot)
 
-    model.fit(train_gen, epochs=args.epochs, validation_data=val_gen, verbose=2, shuffle=False)
+    model.compile(
+        optimizer=tf.keras.optimizers.Adamax(learning_rate=args.lr),
+        loss=args.loss,
+        metrics=[r2_metric],
+    )
+
+    callbacks = []
+    if args.early_stopping and args.early_stopping > 0:
+        mode = args.early_stop_mode
+        if mode == "auto":
+            mode = "min" if "loss" in args.early_stop_metric else "max"
+        callbacks.append(
+            tf.keras.callbacks.EarlyStopping(
+                monitor=args.early_stop_metric,
+                patience=args.early_stopping,
+                mode=mode,
+                restore_best_weights=True,
+            )
+        )
+
+    model.fit(train_gen, epochs=args.epochs, validation_data=val_gen, verbose=2, shuffle=False, callbacks=callbacks)
 
     os.makedirs(args.model_dir, exist_ok=True)
     model_path = os.path.join(args.model_dir, "model.keras")

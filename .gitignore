@@ -2,6 +2,7 @@ benchmark/competitors/__pycache__/
 benchmark/competitors/data/
 benchmark/competitors/models/
 benchmark/competitors/results/
+benchmark/competitors/updated_validation_results/
 benchmark/competitors/preds*.csv
 benchmark/competitors/metrics*.json
 benchmark/competitors/tools/*/*_src/

@@ -86,6 +86,20 @@ class siRNABertRegressor(nn.Module):
         return final_layer.squeeze(1)
 
 
+def _pearson(x, y):
+    if len(x) < 2:
+        return 0.0
+    return float(np.corrcoef(x, y)[0, 1])
+
+
+def _spearman(x, y):
+    if len(x) < 2:
+        return 0.0
+    xr = pd.Series(x).rank(method="average").to_numpy()
+    yr = pd.Series(y).rank(method="average").to_numpy()
+    return _pearson(xr, yr)
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--train-csv", required=True)
@@ -96,10 +110,21 @@ def main():
     p.add_argument("--batch-size", type=int, default=100)
     p.add_argument("--lr", type=float, default=5e-5)
     p.add_argument("--max-len", type=int, default=16)
+    p.add_argument("--early-stopping", type=int, default=0, help="Patience for early stopping; 0 disables.")
+    p.add_argument("--early-stop-metric", default="val_loss", choices=["val_loss", "val_pcc", "val_spcc", "val_r2"])
+    p.add_argument("--original-params", action="store_true", help="Use upstream default hyperparameters.")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--deterministic", action="store_true")
     p.add_argument("--cuda", default="0")
     args = p.parse_args()
+
+    if args.original_params:
+        args.epochs = 30
+        args.batch_size = 100
+        args.lr = 5e-5
+        args.max_len = 16
+        args.early_stopping = 0
+        args.early_stop_metric = "val_loss"
 
     seed_everything(args.seed, args.deterministic)
 
@@ -120,8 +145,10 @@ def main():
     criterion = nn.MSELoss()
 
     os.makedirs(args.model_dir, exist_ok=True)
-    best_loss = None
+    best_metric = None
     best_path = os.path.join(args.model_dir, "model.pt")
+    best_epoch = -1
+    patience_left = args.early_stopping if args.early_stopping else 0
 
     for epoch in range(args.epochs):
         model.train()
@@ -137,6 +164,8 @@ def main():
 
         model.eval()
         val_losses = []
+        val_labels = []
+        val_preds = []
         with torch.no_grad():
             for enc, label in val_loader:
                 input_id = enc['input_ids'].squeeze(1).to(device)
@@ -145,17 +174,54 @@ def main():
                 pred = model(input_id, mask)
                 loss = criterion(pred, label)
                 val_losses.append(loss.item())
+                val_labels.extend(label.detach().cpu().numpy().tolist())
+                val_preds.extend(pred.detach().cpu().numpy().tolist())
         val_loss = float(np.mean(val_losses)) if val_losses else 0.0
-        if best_loss is None or val_loss < best_loss:
-            best_loss = val_loss
+
+        val_pcc = _pearson(val_labels, val_preds)
+        val_spcc = _spearman(val_labels, val_preds)
+
+        if args.early_stop_metric == "val_loss":
+            cur_metric = val_loss
+            improved = best_metric is None or cur_metric < best_metric
+        elif args.early_stop_metric == "val_pcc":
+            cur_metric = val_pcc
+            improved = best_metric is None or cur_metric > best_metric
+        elif args.early_stop_metric == "val_r2":
+            if len(val_labels) > 1:
+                y_true = np.array(val_labels, dtype=float)
+                y_pred = np.array(val_preds, dtype=float)
+                ss_res = np.sum((y_true - y_pred) ** 2)
+                ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
+                cur_metric = 1.0 - (ss_res / ss_tot) if ss_tot != 0 else 0.0
+            else:
+                cur_metric = 0.0
+            improved = best_metric is None or cur_metric > best_metric
+        else:
+            cur_metric = val_spcc
+            improved = best_metric is None or cur_metric > best_metric
+
+        if improved:
+            best_metric = cur_metric
+            best_epoch = epoch
             torch.save(model.state_dict(), best_path)
-        print(f"epoch={epoch} val_loss={val_loss:.6f}")
+            if args.early_stopping:
+                patience_left = args.early_stopping
+        else:
+            if args.early_stopping:
+                patience_left -= 1
+
+        print(f"epoch={epoch} val_loss={val_loss:.6f} val_pcc={val_pcc:.4f} val_spcc={val_spcc:.4f}")
+        if args.early_stopping and patience_left <= 0:
+            break
 
     meta = {
         "train_csv": os.path.abspath(args.train_csv),
         "val_csv": os.path.abspath(args.val_csv) if args.val_csv else None,
         "bert_dir": args.bert_dir,
         "model_path": os.path.abspath(best_path),
+        "early_stop_metric": args.early_stop_metric,
+        "best_epoch": best_epoch,
     }
     with open(os.path.join(args.model_dir, "train_meta.json"), "w") as f:
         json.dump(meta, f, indent=2)

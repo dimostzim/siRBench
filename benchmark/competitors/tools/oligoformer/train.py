@@ -66,6 +66,7 @@ def eval_epoch(model, loader, criterion, device):
     count = 0
     all_labels = []
     all_probs = []
+    all_preds = []
     with torch.no_grad():
         for batch in loader:
             siRNA, mRNA, siRNA_FM, mRNA_FM, label, y, td = batch
@@ -80,6 +81,7 @@ def eval_epoch(model, loader, criterion, device):
             loss = criterion(pred[:, 1], label)
             all_labels.extend(y.detach().cpu().numpy().tolist())
             all_probs.extend(pred[:, 1].detach().cpu().numpy().tolist())
+            all_preds.extend(pred[:, 1].detach().cpu().numpy().tolist())
             total_loss += loss.item() * label.shape[0]
             count += label.shape[0]
     avg_loss = total_loss / max(count, 1)
@@ -88,7 +90,17 @@ def eval_epoch(model, loader, criterion, device):
         auc = roc_auc_score(np.array(all_labels), np.array(all_probs))
     except Exception:
         auc = None
-    return avg_loss, auc
+    r2 = None
+    try:
+        if len(all_labels) > 1:
+            y_true = np.array(all_labels, dtype=float)
+            y_pred = np.array(all_preds, dtype=float)
+            ss_res = np.sum((y_true - y_pred) ** 2)
+            ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
+            r2 = 1.0 - (ss_res / ss_tot) if ss_tot != 0 else None
+    except Exception:
+        r2 = None
+    return avg_loss, auc, r2
 
 
 def main():
@@ -104,11 +116,21 @@ def main():
     p.add_argument("--lr", type=float, default=1e-4)
     p.add_argument("--weight-decay", type=float, default=0.999)
     p.add_argument("--early-stopping", type=int, default=30)
+    p.add_argument("--early-stop-metric", default="loss+auc", choices=["loss", "auc", "loss+auc", "r2"])
+    p.add_argument("--original-params", action="store_true", help="Use upstream default hyperparameters.")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--deterministic", action="store_true")
     p.add_argument("--cuda", default="0")
     p.add_argument("--oligoformer-src", default="oligoformer_src")
     args = p.parse_args()
+
+    if args.original_params:
+        args.epochs = 200
+        args.batch_size = 16
+        args.lr = 1e-4
+        args.weight_decay = 0.999
+        args.early_stopping = 30
+        args.early_stop_metric = "loss+auc"
 
     seed_everything(args.seed, args.deterministic)
 
@@ -150,28 +172,39 @@ def main():
 
     os.makedirs(args.model_dir, exist_ok=True)
     best_loss = None
-    best_auc = -1.0
+    best_auc = None
+    best_r2 = None
     best_epoch = -1
     best_path = os.path.join(args.model_dir, "model.pt")
 
     for epoch in range(args.epochs):
         train_loss = train_epoch(model, train_loader, criterion, optimizer, device)
-        val_loss, val_auc = eval_epoch(model, val_loader, criterion, device)
+        val_loss, val_auc, val_r2 = eval_epoch(model, val_loader, criterion, device)
         scheduler.step()
         improved = False
-        if val_auc is not None:
-            if best_loss is None or (val_loss < best_loss and val_auc > best_auc):
-                improved = True
+        if args.early_stop_metric == "loss":
+            improved = best_loss is None or val_loss < best_loss
+        elif args.early_stop_metric == "auc":
+            if val_auc is not None:
+                improved = best_auc is None or val_auc > best_auc
+        elif args.early_stop_metric == "r2":
+            if val_r2 is not None:
+                improved = best_r2 is None or val_r2 > best_r2
         else:
-            if best_loss is None or val_loss < best_loss:
-                improved = True
+            if val_auc is not None:
+                improved = best_loss is None or (val_loss < best_loss and (best_auc is None or val_auc > best_auc))
+            else:
+                improved = best_loss is None or val_loss < best_loss
         if improved:
             best_loss = val_loss
-            best_auc = val_auc if val_auc is not None else best_auc
+            if val_auc is not None:
+                best_auc = val_auc
+            if val_r2 is not None:
+                best_r2 = val_r2
             best_epoch = epoch
             torch.save(model.state_dict(), best_path)
-        print(f"epoch={epoch} train_loss={train_loss:.6f} val_loss={val_loss:.6f} val_auc={val_auc}")
-        if epoch - best_epoch > args.early_stopping:
+        print(f"epoch={epoch} train_loss={train_loss:.6f} val_loss={val_loss:.6f} val_auc={val_auc} val_r2={val_r2}")
+        if args.early_stopping and epoch - best_epoch > args.early_stopping:
             break
 
     meta = {

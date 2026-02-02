@@ -25,7 +25,14 @@ def _standardize_sequences(df):
     return df
 
 
-def build_graph(df_all, preprocess_dir, ago2_dir, params, src_root):
+def _require_rows(df, expected_index, name, allow_missing):
+    missing = [idx for idx in expected_index if idx not in df.index]
+    if missing and not allow_missing:
+        sample = ", ".join(str(x) for x in missing[:5])
+        raise ValueError(f"Missing {len(missing)} rows in {name}; sample: {sample}")
+
+
+def build_graph(df_all, preprocess_dir, ago2_dir, params, src_root, allow_missing=False, allow_missing_ago2=False):
     utils = load_utils(src_root)
     data = _standardize_sequences(df_all)
 
@@ -54,18 +61,23 @@ def build_graph(df_all, preprocess_dir, ago2_dir, params, src_root):
     sirna_thermo_feat = sirna_thermo_feat.set_index('index').drop(columns=['siRNA', 'mRNA'])
 
     con_feat = pd.read_csv(os.path.join(preprocess_dir, "con_matrix.txt"), header=None, index_col=0)
+    _require_rows(con_feat, sirna_thermo_feat.index, "con_matrix.txt", allow_missing)
     con_feat = con_feat.reindex(sirna_thermo_feat.index).fillna(0.0)
 
     sirna_sfold_feat = pd.read_csv(os.path.join(preprocess_dir, "self_siRNA_matrix.txt"), header=None, index_col=0)
+    _require_rows(sirna_sfold_feat, sirna_onehot.index, "self_siRNA_matrix.txt", allow_missing)
     sirna_sfold_feat = sirna_sfold_feat.reindex(sirna_onehot.index).fillna(0.0)
 
     mrna_sfold_feat = pd.read_csv(os.path.join(preprocess_dir, "self_mRNA_matrix.txt"), header=None, index_col=0)
+    _require_rows(mrna_sfold_feat, mrna_onehot.index, "self_mRNA_matrix.txt", allow_missing)
     mrna_sfold_feat = mrna_sfold_feat.reindex(mrna_onehot.index).fillna(0.0)
 
     sirna_ago = pd.read_csv(os.path.join(ago2_dir, "siRNA_AGO2.csv"), index_col=0)
+    _require_rows(sirna_ago, sirna_onehot.index, "RNA_AGO2/siRNA_AGO2.csv", allow_missing_ago2)
     sirna_ago = sirna_ago.reindex(sirna_onehot.index).fillna(0.0)
 
     mrna_ago = pd.read_csv(os.path.join(ago2_dir, "mRNA_AGO2.csv"), index_col=0)
+    _require_rows(mrna_ago, mrna_onehot.index, "RNA_AGO2/mRNA_AGO2.csv", allow_missing_ago2)
     mrna_ago = mrna_ago.reindex(mrna_onehot.index).fillna(0.0)
 
     sirna_gc = [utils.countGC(seq) for seq in data['siRNA_seq']]

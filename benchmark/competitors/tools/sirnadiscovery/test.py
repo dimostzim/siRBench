@@ -26,18 +26,33 @@ def main():
     p.add_argument("--output-csv", default="predictions.csv")
     p.add_argument("--metrics-json", default=None)
     p.add_argument("--src-root", default="sirnadiscovery_src/siRNA_split")
+    p.add_argument("--allow-missing-preprocess", action="store_true", help="Fill missing preprocess rows with zeros.")
+    p.add_argument("--allow-missing-ago2", action="store_true", help="Fill missing RNA_AGO2 rows with zeros.")
     args = p.parse_args()
 
     params = load_params(args.params_json)
 
     test_df = pd.read_csv(args.test_csv)
-    graph = build_graph(test_df, args.preprocess_dir, args.rna_ago2_dir, params, os.path.abspath(os.path.join(os.path.dirname(__file__), args.src_root)))
+    graph = build_graph(
+        test_df,
+        args.preprocess_dir,
+        args.rna_ago2_dir,
+        params,
+        os.path.abspath(os.path.join(os.path.dirname(__file__), args.src_root)),
+        allow_missing=args.allow_missing_preprocess,
+        allow_missing_ago2=args.allow_missing_ago2,
+    )
 
     generator = HinSAGENodeGenerator(graph, params["batch_size"], params["hop_samples"], head_node_type="interaction")
     test_interaction = pd.DataFrame(test_df['efficacy'].values, index=test_df['siRNA'] + "_" + test_df['mRNA'])
     test_gen = generator.flow(test_interaction.index, test_interaction)
 
     custom_objects = {"HinSAGE": HinSAGE}
+    def r2_metric(y_true, y_pred):
+        ss_res = tf.reduce_sum(tf.square(y_true - y_pred))
+        ss_tot = tf.reduce_sum(tf.square(y_true - tf.reduce_mean(y_true)))
+        return tf.where(tf.equal(ss_tot, 0.0), 0.0, 1.0 - ss_res / ss_tot)
+    custom_objects["r2_metric"] = r2_metric
     try:
         from stellargraph.layer import MeanHinAggregator, MeanPoolingAggregator, AttentionalAggregator
         custom_objects.update({
@@ -47,7 +62,7 @@ def main():
         })
     except Exception:
         pass
-    model = tf.keras.models.load_model(args.model_path, custom_objects=custom_objects)
+    model = tf.keras.models.load_model(args.model_path, custom_objects=custom_objects, compile=False)
     preds = model.predict(test_gen).squeeze()
 
     out_df = pd.DataFrame({

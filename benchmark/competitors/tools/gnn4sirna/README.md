@@ -13,6 +13,7 @@ python3 prepare.py --input-csv /path/to/train.csv --output-dir data --dataset-na
 ```
 
 Preprocessing runs automatically if processed files are missing; use `--run-preprocess` to force regeneration.
+For strict evaluation, preprocess train/val and test/leftout separately.
 
 ## Train
 

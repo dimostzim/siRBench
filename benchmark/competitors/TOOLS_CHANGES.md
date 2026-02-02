@@ -7,6 +7,7 @@ Global decisions
 - When papers use longer targets (AttSiOff 59 nt, ENsiRNA 61 nt, GNN4siRNA/siRNADiscovery full-length), we document the deviation below.
 - Reproducibility: all wrappers accept `--seed` (default 42) and `--deterministic` for best-effort reproducibility; ENsiRNA upstream uses a fixed seed (12) and deterministic algorithms.
   - Example: `python3 benchmark/competitors/scripts/train.py --tool oligoformer --seed 42 --deterministic ...`
+- `benchmark/competitors/run_tool.sh` skips training if the model file exists, and skips testing if the metrics JSON exists (delete outputs to force reruns).
 
 ## Oligoformer
 
@@ -27,7 +28,7 @@ Global decisions
 - RNA-FM embeddings are padded/truncated to 21/59 to match the original model input width (21*4 + 59*1 + 110).
 - Optional columns `s-Biopredsi`, `DSIR`, `i-score` are filled with 0.0 if missing (the model does not consume them).
 - Hyperparams: batch 128, lr 0.005, epochs 1000, early stopping 20 (paper defaults).
-- Validation: optimize MSE (override paper PCC-based early stopping).
+- Validation: optimize Spearman (SPCC) for early stopping (matches upstream).
 - Reproducibility: wrapper seeds Python/NumPy/Torch; `--deterministic` enables cudnn + deterministic algorithms.
 
 ## GNN4siRNA
@@ -36,14 +37,17 @@ Global decisions
 - Preprocess uses k_sirna=3, k_mrna=4; hop [8,4], layer [32,16], dropout 0.15 (paper).
 - Optimizer: Adamax lr 1e-3 (paper); epochs 10 (repo default).
 - Stable IDs use sequence hashes to avoid collisions across splits.
+- Preprocess is done per split (train/val and test/leftout separately) for strict inductive evaluation.
 - Reproducibility: wrapper seeds Python/NumPy/TF; `--deterministic` enables TF op determinism when available.
 
 ## siRNADiscovery
 
 - Inputs: 19-nt siRNA, 57-nt target (paper uses full-length mRNA; deviation).
 - Params updated: sirna_length 19, max_mrna_len 57; other params match paper (dmodel 6, batch 64, epochs 26, hop [12,6], layers [64,32], dropout 0.1, lr 1e-3, MSE).
-- Missing preprocess/AGO2 feature rows are filled with 0.0 for alignment.
 - Stable IDs use sequence hashes to avoid collisions.
+- Preprocess matrices (RNAfold/RNAcofold) can be generated via `prepare.py --run-preprocess` (ViennaRNA required). AGO2/RPISeq features remain external inputs.
+- AGO2 features can be provided from `data/sirnadiscovery/RNA_AGO2`; the wrapper avoids copying if the source and destination are the same.
+- Preprocess is done per split (train/val and test/leftout separately) for strict inductive evaluation.
 - Reproducibility: wrapper seeds Python/NumPy/TF; `--deterministic` enables TF op determinism when available.
 
 ## ENsiRNA
@@ -55,4 +59,5 @@ Global decisions
 - Training wrapper defaults: `--embed_dim 128` (matches feature width) and `--num_workers 0` (avoids Docker shm crashes).
 - Testing: default to the best checkpoint (lowest val loss from `topk_map.txt`); use `--ensemble` to average multiple checkpoints.
 - Test patch: tolerate missing `siRNA` in JSONL by falling back to `id` or a row id.
+- Seed patch: `ENSIRNA_SEED` env var controls the upstream seed (default 12).
 - Reproducibility: upstream ENsiRNA sets a fixed seed (12) and enables deterministic algorithms; wrapper does not override.
