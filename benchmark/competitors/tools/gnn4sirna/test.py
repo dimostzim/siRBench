@@ -56,6 +56,11 @@ def main():
     test_gen = generator.flow(test_interaction.index, test_interaction)
 
     custom_objects = {"HinSAGE": HinSAGE}
+    def r2_metric(y_true, y_pred):
+        ss_res = tf.reduce_sum(tf.square(y_true - y_pred))
+        ss_tot = tf.reduce_sum(tf.square(y_true - tf.reduce_mean(y_true)))
+        return tf.where(tf.equal(ss_tot, 0.0), 0.0, 1.0 - ss_res / ss_tot)
+    custom_objects["r2_metric"] = r2_metric
     try:
         from stellargraph.layer import MeanHinAggregator, MeanPoolingAggregator, AttentionalAggregator
         custom_objects.update({
@@ -65,7 +70,7 @@ def main():
         })
     except Exception:
         pass
-    model = tf.keras.models.load_model(args.model_path, custom_objects=custom_objects)
+    model = tf.keras.models.load_model(args.model_path, custom_objects=custom_objects, compile=False)
     preds = model.predict(test_gen).squeeze()
 
     out_df = pd.DataFrame({
