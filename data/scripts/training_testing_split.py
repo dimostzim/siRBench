@@ -137,7 +137,7 @@ df = pd.read_csv(base_dir / "siRBench_train.csv")  # Use existing train set as b
 
 train, test, metrics = ks_min_split_save_plot(
     df,
-    target="efficacy",
+    target="efficiency",
     test_size=0.09,
     n_iters=2168,
     train_filename=base_dir / "siRBench_train.csv",

@@ -418,7 +418,7 @@ class E2EDataset(torch.utils.data.Dataset):
 
 
             # Store sense_seq_len and anti_seq_len for rebuilding sec_pos/chain in __getitem__
-            self.data.append([cplx,item['efficacy'],sense_seq_len,anti_seq_len,rna_pos,
+            self.data.append([cplx,item['efficiency'],sense_seq_len,anti_seq_len,rna_pos,
                               single_embeddings,duplex_embeddings,energys,mseq])
             #self.data.append([cplx,item['PCT'],atom_mask])
         if num_entry_per_file > 0 and len(self.data) >= num_entry_per_file:

@@ -38,7 +38,7 @@ def main():
     p.add_argument("--id-col", default="id")
     p.add_argument("--sirna-col", default="siRNA")
     p.add_argument("--mrna-col", default="extended_mRNA")
-    p.add_argument("--efficacy-col", default="efficacy")
+    p.add_argument("--efficiency-col", default="efficiency")
     p.add_argument("--pdb-path-col", default="pdb_data_path")
     p.add_argument("--chain-col", default="chain")
     p.add_argument("--start-col", default="start")
@@ -88,8 +88,8 @@ def main():
 
         pdb_input = df_pdb[df_pdb[pdb_col].isna() if have_pdb_col else df_pdb.index == df_pdb.index]
         pdb_csv = os.path.join(os.path.dirname(os.path.abspath(args.output_jsonl)), "pdb_input.csv")
-        pdb_input[["pdb_id", "mRNA_seq", "position", "sense seq", "anti seq", args.efficacy_col]].rename(
-            columns={"pdb_id": "siRNA", args.efficacy_col: "efficacy"}
+        pdb_input[["pdb_id", "mRNA_seq", "position", "sense seq", "anti seq", args.efficiency_col]].rename(
+            columns={"pdb_id": "siRNA", args.efficiency_col: "efficiency"}
         ).to_csv(pdb_csv, index=False)
 
         src_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "ensirna_src", "ENsiRNA"))
@@ -152,7 +152,7 @@ def main():
                 "mRNA_seq": mrna_seq,
                 "sense seq": sense_seq,
                 "anti seq": anti_seq,
-                "efficacy": float(row[args.efficacy_col]),
+                "efficiency": float(row[args.efficiency_col]),
             }
             f.write(json.dumps(item) + "\n")
 

@@ -12,7 +12,7 @@ uv sync
 
 ## Train
 
-Training expects an `efficacy` column in the input CSVs.
+Training expects an `efficiency` column in the input CSVs.
 
 ```bash
 uv run python train.py \
@@ -35,7 +35,7 @@ uv run python inference.py \
 Required columns:
 - `siRNA`
 - `mRNA`
-- `efficacy` (train only)
+- `efficiency` (train only)
 
 Optional columns:
 - `id` (passed through to output)

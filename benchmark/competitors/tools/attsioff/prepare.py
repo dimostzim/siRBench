@@ -73,7 +73,7 @@ def main():
     p.add_argument("--id-col", default="id")
     p.add_argument("--sirna-col", default="siRNA")
     p.add_argument("--mrna-col", default="extended_mRNA")
-    p.add_argument("--efficacy-col", default="efficacy")
+    p.add_argument("--efficiency-col", default="efficiency")
     p.add_argument("--source-col", default="source")
     p.add_argument("--biopred-col", default="s-Biopredsi")
     p.add_argument("--dsir-col", default="DSIR")
@@ -110,7 +110,7 @@ def main():
         "s-Biopredsi": df[args.biopred_col],
         "DSIR": df[args.dsir_col],
         "i-score": df[args.iscore_col],
-        "inhibition": df[args.efficacy_col],
+        "inhibition": df[args.efficiency_col],
         "RNAFM_ind": df["RNAFM_ind"],
         "source_paper": df[args.source_col] if args.source_col in df.columns else "NA",
         "id": df[args.id_col],

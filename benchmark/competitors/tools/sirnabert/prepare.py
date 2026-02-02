@@ -12,7 +12,7 @@ def main():
     p.add_argument("--dataset-name")
     p.add_argument("--id-col", default="id")
     p.add_argument("--sirna-col", default="siRNA")
-    p.add_argument("--efficacy-col", default="efficacy")
+    p.add_argument("--efficiency-col", default="efficiency")
     args = p.parse_args()
 
     df = pd.read_csv(args.input_csv)
@@ -24,7 +24,7 @@ def main():
     out_df = pd.DataFrame({
         "id": df[args.id_col],
         "siRNA": df[args.sirna_col].astype(str).str.upper().str.replace('T', 'U'),
-        "efficacy": df[args.efficacy_col].astype(float),
+        "efficiency": df[args.efficiency_col].astype(float),
     })
 
     os.makedirs(args.output_dir, exist_ok=True)

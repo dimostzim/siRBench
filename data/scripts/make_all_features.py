@@ -12,7 +12,7 @@ This replaces earlier placeholder mutations with proper constraint-based analyse
 removes RNA-FM embedding features entirely for portability and speed.
 
 Inputs: CSV with columns containing "siRNA" and "mRNA".
-Outputs: CSV with a feature set optimized for siRNA efficacy prediction.
+Outputs: CSV with a feature set optimized for siRNA efficiency prediction.
 """
 
 import argparse
@@ -290,8 +290,8 @@ def main():
         for i in range(min(3, len(df))):
             sirna = df.iloc[i]['siRNA']
             mrna = df.iloc[i]['mRNA']
-            efficacy = df.iloc[i].get('efficacy', 'N/A')
-            print(f"  {i+1}: siRNA={sirna[:20]}... mRNA={mrna[:20]}... efficacy={efficacy}")
+            efficiency = df.iloc[i].get('efficiency', 'N/A')
+            print(f"  {i+1}: siRNA={sirna[:20]}... mRNA={mrna[:20]}... efficiency={efficiency}")
 
     print("\nBuilding feature set...")
     out = build_unified_features(df)

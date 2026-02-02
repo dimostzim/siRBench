@@ -15,14 +15,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--val-out", required=True, help="Output val CSV path")
     parser.add_argument(
         "--stratify-cols",
-        default="cell_line,efficacy_bin",
-        help="Comma-separated columns for stratification (default: cell_line,efficacy_bin)",
+        default="cell_line,efficiency_bin",
+        help="Comma-separated columns for stratification (default: cell_line,efficiency_bin)",
     )
     parser.add_argument(
-        "--efficacy-bins",
+        "--efficiency-bins",
         type=int,
         default=5,
-        help="Number of quantile bins for efficacy (default: 5)",
+        help="Number of quantile bins for efficiency (default: 5)",
     )
     parser.add_argument(
         "--val-frac",
@@ -90,13 +90,13 @@ def main() -> None:
     if not stratify_cols:
         raise ValueError("No stratify columns provided")
 
-    if "efficacy_bin" in stratify_cols:
-        if "efficacy" not in df.columns:
-            raise ValueError("efficacy column is required for efficacy_bin stratification")
+    if "efficiency_bin" in stratify_cols:
+        if "efficiency" not in df.columns:
+            raise ValueError("efficiency column is required for efficiency_bin stratification")
         df = df.copy()
-        df["efficacy_bin"] = pd.qcut(
-            df["efficacy"],
-            q=args.efficacy_bins,
+        df["efficiency_bin"] = pd.qcut(
+            df["efficiency"],
+            q=args.efficiency_bins,
             duplicates="drop",
         ).astype(str)
 

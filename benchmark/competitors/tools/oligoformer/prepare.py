@@ -129,7 +129,7 @@ def main():
     p.add_argument("--id-col", default="id")
     p.add_argument("--sirna-col", default="siRNA")
     p.add_argument("--mrna-col", default="extended_mRNA")
-    p.add_argument("--efficacy-col", default="efficacy")
+    p.add_argument("--efficiency-col", default="efficiency")
     p.add_argument("--binary-col", default="binary")
     p.add_argument("--binary-threshold", type=float, default=0.7)
     p.add_argument("--run-rnafm", action="store_true")
@@ -157,13 +157,13 @@ def main():
     if args.binary_col in df.columns:
         y_vals = df[args.binary_col].astype(int)
     else:
-        y_vals = (df[args.efficacy_col].astype(float) >= args.binary_threshold).astype(int)
+        y_vals = (df[args.efficiency_col].astype(float) >= args.binary_threshold).astype(int)
 
     out_df = pd.DataFrame({
         "id": df[args.id_col],
         "siRNA": df[args.sirna_col],
         "mRNA": df[args.mrna_col],
-        "label": df[args.efficacy_col].astype(float),
+        "label": df[args.efficiency_col].astype(float),
         "y": y_vals,
         "td": td_str,
     })

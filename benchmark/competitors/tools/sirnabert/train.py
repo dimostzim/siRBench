@@ -35,7 +35,7 @@ def seq2kmer(seq, k=6):
 
 class SiRNADataset(torch.utils.data.Dataset):
     def __init__(self, df, tokenizer, max_len):
-        self.labels = df['efficacy'].astype(float).tolist()
+        self.labels = df['efficiency'].astype(float).tolist()
         self.texts = [seq2kmer(s.replace('U', 'T'), 6) for s in df['siRNA']]
         self.tokenizer = tokenizer
         self.max_len = max_len

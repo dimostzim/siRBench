@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Generate KDE density plot for train/val/test/leftout efficacy distributions."""
+"""Generate KDE density plot for train/val/test/leftout efficiency distributions."""
 import argparse
 import os
 from pathlib import Path
@@ -45,7 +45,7 @@ def main():
     repo_root = Path(os.environ.get("SIRBENCH_REPO_ROOT") or Path(__file__).resolve().parents[3])
     p.add_argument("--data-dir", default=str(repo_root / "data"))
     p.add_argument("--output", default=None)
-    p.add_argument("--efficacy-col", default="efficacy")
+    p.add_argument("--efficiency-col", default="efficiency")
     args = p.parse_args()
 
     # Load datasets
@@ -61,7 +61,7 @@ def main():
     for name, path in datasets.items():
         if path.exists():
             df = pd.read_csv(path)
-            data[name] = df[args.efficacy_col].dropna().values
+            data[name] = df[args.efficiency_col].dropna().values
             print(f"{name}: {len(data[name])} samples")
         else:
             print(f"Warning: {path} not found")
@@ -80,7 +80,7 @@ def main():
         density = kde(x_range)
         ax.plot(x_range, density, label=LABELS[name], color=COLORS[name], linewidth=2.5)
 
-    ax.set_xlabel("Efficacy")
+    ax.set_xlabel("Efficiency")
     ax.set_ylabel("Density")
     ax.set_xlim(0, 1)
     ax.set_ylim(bottom=0)
@@ -92,7 +92,7 @@ def main():
     plt.tight_layout()
 
     # Save
-    output_path = Path(args.output) if args.output else data_dir / "plots" / "efficacy_kde.png"
+    output_path = Path(args.output) if args.output else data_dir / "plots" / "efficiency_kde.png"
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     fig.savefig(output_path, dpi=150, facecolor='white', edgecolor='none')

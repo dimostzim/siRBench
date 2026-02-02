@@ -53,6 +53,12 @@ def group_bias(df, group_col):
     return rows
 
 
+def get_label_series(df):
+    if "efficiency" in df.columns:
+        return df["efficiency"]
+    raise ValueError("Missing required label column: efficiency")
+
+
 def try_xgb_gpu():
     # Attempt to use GPU; fallback handled by caller if training fails
     return 'gpu_hist', 'gpu_predictor'
@@ -68,9 +74,9 @@ def train(train_path: str, val_path: str, artifacts_dir: str):
     X_train, feature_names, encoder = build_feature_matrix(train_df, fit_encoder=True, artifacts_path=os.path.join(artifacts_dir, 'feature_artifacts.json'))
     X_val, _, _ = build_feature_matrix(val_df, encoder=encoder, fit_encoder=False)
 
-    # Use efficacy column for training targets
-    y_train = train_df['efficacy'].to_numpy(dtype=np.float32)
-    y_val = val_df['efficacy'].to_numpy(dtype=np.float32)
+    # Use efficiency column for training targets
+    y_train = train_df['efficiency'].to_numpy(dtype=np.float32)
+    y_val = val_df['efficiency'].to_numpy(dtype=np.float32)
 
     sample_weight_train = 1.0 + 3.5 * np.abs(y_train - 0.5)
     sample_weight_val = 1.0 + 3.5 * np.abs(y_val - 0.5)

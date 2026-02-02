@@ -210,10 +210,10 @@ class Data_Prepare:
         #df=df.drop(index=drops)
         if self.json==True:
 
-            dfj=df[['siRNA','mRNA_seq','position','sense seq','anti seq','efficacy','start','chain']] #delect marker
+            dfj=df[['siRNA','mRNA_seq','position','sense seq','anti seq','efficiency','start','chain']] #delect marker
 
             dfj['pdb_data_path']=dfj['siRNA'].apply(self.get_path)
-            dfj['efficacy']=dfj['efficacy'].apply(lambda x: x if x > 0 else 0)
+            dfj['efficiency']=dfj['efficiency'].apply(lambda x: x if x > 0 else 0)
             dfj=dfj.dropna()
             dfj.to_json(self.json_dir, orient='records', lines=True)
 

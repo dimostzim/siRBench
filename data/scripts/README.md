@@ -17,18 +17,18 @@ Quick reference for helper scripts in `data/scripts/`.
 - Input/Output: Imported by `make_all_features.py`.
 
 ## ecdf_visualization.py
-- Plot CDFs for train/test/leftout efficacy distributions.
+- Plot CDFs for train/test/leftout efficiency distributions.
 - Input: `data/siRBench_train.csv`, `data/siRBench_test.csv`, `data/leftout/siRBench_leftout.csv`.
 - Output: `data/plots/ecdf_comparison.png`.
 
 ## KS_&_p-value_calculation.py
-- KS test between train and leftout efficacy distributions.
+- KS test between train and leftout efficiency distributions.
 - Input: `data/siRBench_train.csv`, `data/leftout/siRBench_leftout.csv`.
 - Output: Prints KS statistic and p-value to stdout.
 
 ## split_train_val.py
 - Split a CSV into train/val with stratification (CLI).
-- Input: `--input-csv <path>` (expects `cell_line` and `efficacy` if using default stratify cols).
+- Input: `--input-csv <path>` (expects `cell_line` and `efficiency` if using default stratify cols).
 - Output: `--train-out <path>`, `--val-out <path>`.
 - Usage:
   ```bash

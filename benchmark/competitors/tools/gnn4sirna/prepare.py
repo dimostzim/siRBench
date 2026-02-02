@@ -101,7 +101,7 @@ def main():
     p.add_argument("--id-col", default="id")
     p.add_argument("--sirna-col", default="siRNA")
     p.add_argument("--mrna-col", default="extended_mRNA")
-    p.add_argument("--efficacy-col", default="efficacy")
+    p.add_argument("--efficiency-col", default="efficiency")
     p.add_argument("--run-preprocess", action="store_true")
     p.add_argument("--gnn-src", default="gnn4sirna_src")
     args = p.parse_args()
@@ -122,7 +122,7 @@ def main():
         "id": df[args.id_col],
         "siRNA": df["sirna_id"],
         "mRNA": df["mrna_id"],
-        "efficacy": df[args.efficacy_col].astype(float),
+        "efficiency": df[args.efficiency_col].astype(float),
         "siRNA_seq": df[args.sirna_col],
         "mRNA_seq": df[args.mrna_col],
     })
@@ -139,7 +139,7 @@ def main():
     write_fasta(mrna_fa, zip(out_df["mRNA"], out_df["mRNA_seq"]))
 
     eff_csv = os.path.join(raw_dir, "sirna_mrna_efficacy.csv")
-    out_df[["siRNA", "mRNA", "efficacy", "siRNA_seq", "mRNA_seq"]].to_csv(eff_csv, index=False)
+    out_df[["siRNA", "mRNA", "efficiency", "siRNA_seq", "mRNA_seq"]].to_csv(eff_csv, index=False)
 
     processed_dir = os.path.join(args.output_dir, "processed", dataset_name)
     if args.run_preprocess or not processed_ready(processed_dir):

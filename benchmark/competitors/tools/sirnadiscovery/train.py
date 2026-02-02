@@ -94,8 +94,8 @@ def main():
         metrics=[r2_metric],
     )
 
-    train_interaction = pd.DataFrame(train_df['efficacy'].values, index=train_df['siRNA'] + "_" + train_df['mRNA'])
-    val_interaction = pd.DataFrame(val_df['efficacy'].values, index=val_df['siRNA'] + "_" + val_df['mRNA'])
+    train_interaction = pd.DataFrame(train_df['efficiency'].values, index=train_df['siRNA'] + "_" + train_df['mRNA'])
+    val_interaction = pd.DataFrame(val_df['efficiency'].values, index=val_df['siRNA'] + "_" + val_df['mRNA'])
 
     train_gen = generator.flow(train_interaction.index, train_interaction, shuffle=True)
     val_gen = generator.flow(val_interaction.index, val_interaction)

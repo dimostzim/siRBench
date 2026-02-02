@@ -17,7 +17,7 @@ def main():
     p.add_argument("--id-col", default="id")
     p.add_argument("--sirna-col", default="siRNA")
     p.add_argument("--mrna-col", default="extended_mRNA")
-    p.add_argument("--efficacy-col", default="efficacy")
+    p.add_argument("--efficiency-col", default="efficiency")
     p.add_argument("--preprocess-dir")
     p.add_argument("--rna-ago2-dir")
     p.add_argument("--run-preprocess", action="store_true", help="Generate preprocess matrices with ViennaRNA.")
@@ -48,7 +48,7 @@ def main():
         "id": df[args.id_col],
         "siRNA": df["sirna_id"],
         "mRNA": df["mrna_id"],
-        "efficacy": df[args.efficacy_col].astype(float),
+        "efficiency": df[args.efficiency_col].astype(float),
         "siRNA_seq": df[args.sirna_col],
         "mRNA_seq": df[args.mrna_col],
     })

@@ -15,7 +15,7 @@ train_df = pd.read_csv(base_dir / "siRBench_train.csv")
 test_seen_df = pd.read_csv(base_dir / "siRBench_test.csv")
 test_loco_df = pd.read_csv(base_dir / "leftout" / "siRBench_leftout.csv")  # HeLa
 
-label_col = "efficacy" 
+label_col = "efficiency" 
 
 
 x_train, y_train = ecdf(train_df[label_col].values)

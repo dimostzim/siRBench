@@ -86,9 +86,9 @@ def main():
     val_df = pd.read_csv(args.val_csv)
     val_source = "val_csv"
 
-    train_interaction = pd.DataFrame(train_df["efficacy"].values,
+    train_interaction = pd.DataFrame(train_df["efficiency"].values,
                                      index=train_df["siRNA"] + "_" + train_df["mRNA"])
-    val_interaction = pd.DataFrame(val_df["efficacy"].values,
+    val_interaction = pd.DataFrame(val_df["efficiency"].values,
                                    index=val_df["siRNA"] + "_" + val_df["mRNA"])
 
     generator = HinSAGENodeGenerator(graph, args.batch_size, [8, 4], head_node_type="interaction")

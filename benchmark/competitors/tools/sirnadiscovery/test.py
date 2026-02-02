@@ -44,7 +44,7 @@ def main():
     )
 
     generator = HinSAGENodeGenerator(graph, params["batch_size"], params["hop_samples"], head_node_type="interaction")
-    test_interaction = pd.DataFrame(test_df['efficacy'].values, index=test_df['siRNA'] + "_" + test_df['mRNA'])
+    test_interaction = pd.DataFrame(test_df['efficiency'].values, index=test_df['siRNA'] + "_" + test_df['mRNA'])
     test_gen = generator.flow(test_interaction.index, test_interaction)
 
     custom_objects = {"HinSAGE": HinSAGE}
@@ -67,7 +67,7 @@ def main():
 
     out_df = pd.DataFrame({
         "id": test_df.get("id", pd.Series([f"row_{i}" for i in range(len(test_df))])),
-        "label": test_df["efficacy"].astype(float),
+        "label": test_df["efficiency"].astype(float),
         "pred_label": preds,
     })
     out_df.to_csv(args.output_csv, index=False)

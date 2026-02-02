@@ -110,7 +110,7 @@ def main():
         for line in f:
             item = json.loads(line)
             ids.append(item.get('id', f"row_{len(ids)}"))
-            labels.append(float(item.get('efficacy', 0.0)))
+            labels.append(float(item.get('efficiency', 0.0)))
 
     out_df = pd.DataFrame({
         "id": ids,

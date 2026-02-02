@@ -7,7 +7,7 @@ base_dir = Path(__file__).resolve().parents[1]
 train_df = pd.read_csv(base_dir / "siRBench_train.csv")
 left_out_df = pd.read_csv(base_dir / "leftout" / "siRBench_leftout.csv")
 
-label_col = "efficacy"
+label_col = "efficiency"
 
 x = train_df[label_col].dropna().values
 y = left_out_df[label_col].dropna().values
