@@ -1,5 +1,7 @@
 import argparse
 import json
+import os
+import warnings
 from pathlib import Path
 
 import joblib
@@ -12,8 +14,11 @@ from sklearn.preprocessing import OneHotEncoder
 # Reuse feature builder utilities
 from feature_builder import build_feature_matrix, BASES
 
+warnings.filterwarnings("ignore")
+os.environ.setdefault("PYTHONWARNINGS", "ignore")
 
-def load_artifacts(artifacts_dir: Path):
+
+def load_artifacts(artifacts_dir: Path, use_gpu_predictor: bool = False):
     artifacts_dir = Path(artifacts_dir)
     feat_art_path = artifacts_dir / 'feature_artifacts.json'
     with open(feat_art_path, 'r') as f:
@@ -34,11 +39,11 @@ def load_artifacts(artifacts_dir: Path):
     # Load models
     xgb_model = xgb.XGBRegressor()
     xgb_model.load_model(artifacts_dir / 'xgb_model.json')
-    # Try to prefer GPU predictor if available
-    try:
-        xgb_model.set_params(predictor='gpu_predictor')
-    except Exception:
-        pass
+    if use_gpu_predictor:
+        try:
+            xgb_model.set_params(predictor='gpu_predictor')
+        except Exception:
+            pass
 
     lgb_model = lgb.Booster(model_file=str(artifacts_dir / 'lgbm_model.txt'))
 
@@ -115,10 +120,14 @@ def main():
     parser.add_argument('--input', required=True, help='Input CSV path')
     parser.add_argument('--output', required=True, help='Output CSV path')
     parser.add_argument('--artifacts-dir', default='./training_artifacts', help='Artifacts directory')
+    parser.add_argument('--use-gpu-predictor', action='store_true', help='Use XGBoost GPU predictor if available.')
     args = parser.parse_args()
 
     artifacts_dir = Path(args.artifacts_dir)
-    encoder, numeric_cols, feature_names, xgb_model, lgb_model, calibrator = load_artifacts(artifacts_dir)
+    encoder, numeric_cols, feature_names, xgb_model, lgb_model, calibrator = load_artifacts(
+        artifacts_dir,
+        use_gpu_predictor=args.use_gpu_predictor,
+    )
 
     df = pd.read_csv(args.input)
     # Require siRNA and mRNA columns

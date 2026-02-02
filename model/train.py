@@ -1,6 +1,8 @@
 import argparse
 import json
 import os
+import random
+import warnings
 from pathlib import Path
 
 import joblib
@@ -13,6 +15,9 @@ from sklearn.isotonic import IsotonicRegression
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 from feature_builder import build_feature_matrix
+
+warnings.filterwarnings("ignore")
+os.environ.setdefault("PYTHONWARNINGS", "ignore")
 
 
 def compute_metrics(y_true, y_pred):
@@ -59,18 +64,43 @@ def get_label_series(df):
     raise ValueError("Missing required label column: efficiency")
 
 
+def xgb_r2_metric(y_true, y_pred):
+    return r2_score(y_true, y_pred)
+
+
+def lgb_r2_metric(y_true, y_pred):
+    return "r2", r2_score(y_true, y_pred), True
+
+
 def try_xgb_gpu():
     # Attempt to use GPU; fallback handled by caller if training fails
     return 'gpu_hist', 'gpu_predictor'
 
 
-def train(train_path: str, val_path: str, artifacts_dir: str):
+def train(
+    train_path: str,
+    val_path: str,
+    artifacts_dir: str,
+    early_stop_metric: str = "rmse",
+    seed: int = 42,
+    deterministic: bool = False,
+):
     Path(artifacts_dir).mkdir(parents=True, exist_ok=True)
 
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    random.seed(seed)
+    np.random.seed(seed)
+    if deterministic:
+        os.environ.setdefault("OMP_NUM_THREADS", "1")
+        os.environ.setdefault("MKL_NUM_THREADS", "1")
+
+    print(f"[train] loading data: train={train_path} val={val_path}")
+    print(f"[train] seed={seed} deterministic={deterministic}")
     train_df = pd.read_csv(train_path)
     val_df = pd.read_csv(val_path)
 
     # Build features
+    print("[train] building features")
     X_train, feature_names, encoder = build_feature_matrix(train_df, fit_encoder=True, artifacts_path=os.path.join(artifacts_dir, 'feature_artifacts.json'))
     X_val, _, _ = build_feature_matrix(val_df, encoder=encoder, fit_encoder=False)
 
@@ -81,7 +111,13 @@ def train(train_path: str, val_path: str, artifacts_dir: str):
     sample_weight_train = 1.0 + 3.5 * np.abs(y_train - 0.5)
     sample_weight_val = 1.0 + 3.5 * np.abs(y_val - 0.5)
 
+    early_stop_metric = early_stop_metric.lower()
+    if early_stop_metric not in {"rmse", "r2"}:
+        raise ValueError("early_stop_metric must be 'rmse' or 'r2'")
+    use_r2 = early_stop_metric == "r2"
+
     # XGBoost DART
+    print(f"[train] training XGBoost (early_stop_metric={early_stop_metric})")
     tree_method, predictor = try_xgb_gpu()
     xgb_params = dict(
         n_estimators=2600,
@@ -99,12 +135,18 @@ def train(train_path: str, val_path: str, artifacts_dir: str):
         rate_drop=0.1,
         skip_drop=0.5,
         objective='reg:squarederror',
-        eval_metric='rmse',
         tree_method=tree_method,
         predictor=predictor,
-        n_jobs=-1,
-        random_state=42,
+        n_jobs=1 if deterministic else -1,
+        verbosity=0,
+        random_state=seed,
     )
+    if use_r2:
+        xgb_params["eval_metric"] = xgb_r2_metric
+        xgb_params["callbacks"] = [xgb.callback.EarlyStopping(rounds=250, maximize=True, save_best=True)]
+    else:
+        xgb_params["eval_metric"] = "rmse"
+        xgb_params["early_stopping_rounds"] = 250
     try:
         xgb_model = xgb.XGBRegressor(**xgb_params)
         xgb_model.fit(
@@ -114,7 +156,6 @@ def train(train_path: str, val_path: str, artifacts_dir: str):
             eval_set=[(X_val, y_val)],
             sample_weight_eval_set=[sample_weight_val],
             verbose=False,
-            early_stopping_rounds=250,
         )
     except Exception:
         # Fallback to CPU
@@ -128,15 +169,14 @@ def train(train_path: str, val_path: str, artifacts_dir: str):
             eval_set=[(X_val, y_val)],
             sample_weight_eval_set=[sample_weight_val],
             verbose=False,
-            early_stopping_rounds=250,
         )
     xgb_model.save_model(os.path.join(artifacts_dir, 'xgb_model.json'))
 
     # LightGBM
+    print(f"[train] training LightGBM (early_stop_metric={early_stop_metric})")
     lgb_device = 'gpu'
     lgb_params = dict(
         objective='regression',
-        metric='rmse',
         boosting_type='gbdt',
         device=lgb_device,
         n_estimators=7000,
@@ -150,10 +190,18 @@ def train(train_path: str, val_path: str, artifacts_dir: str):
         colsample_bytree=0.85,
         reg_alpha=0.0,
         reg_lambda=0.7,
-        random_state=42,
-        n_jobs=-1,
+        random_state=seed,
+        n_jobs=1 if deterministic else -1,
+        verbosity=-1,
+        verbose=-1,
     )
-    lgb_callbacks = [lgb.early_stopping(500, verbose=False)]
+    if use_r2:
+        lgb_params.pop("metric", None)
+        lgb_eval_metric = lgb_r2_metric
+    else:
+        lgb_params["metric"] = "rmse"
+        lgb_eval_metric = "rmse"
+    lgb_callbacks = [lgb.early_stopping(500, verbose=False, first_metric_only=True)]
     try:
         lgb_model = lgb.LGBMRegressor(**lgb_params)
         lgb_model.fit(
@@ -162,7 +210,7 @@ def train(train_path: str, val_path: str, artifacts_dir: str):
             sample_weight=sample_weight_train,
             eval_set=[(X_val, y_val)],
             eval_sample_weight=[sample_weight_val],
-            eval_metric='rmse',
+            eval_metric=lgb_eval_metric,
             callbacks=lgb_callbacks,
         )
     except Exception:
@@ -174,13 +222,14 @@ def train(train_path: str, val_path: str, artifacts_dir: str):
             sample_weight=sample_weight_train,
             eval_set=[(X_val, y_val)],
             eval_sample_weight=[sample_weight_val],
-            eval_metric='rmse',
+            eval_metric=lgb_eval_metric,
             callbacks=lgb_callbacks,
         )
     booster = lgb_model.booster_
     booster.save_model(os.path.join(artifacts_dir, 'lgbm_model.txt'), num_iteration=lgb_model.best_iteration_)
 
     # Predictions
+    print("[train] calibrating ensemble")
     xgb_pred = xgb_model.predict(X_val)
     lgb_pred = lgb_model.predict(X_val, num_iteration=lgb_model.best_iteration_)
     avg_pred = (xgb_pred + lgb_pred) / 2.0
@@ -196,6 +245,7 @@ def train(train_path: str, val_path: str, artifacts_dir: str):
     metrics = compute_metrics(y_val, calibrated_pred)
     with open(os.path.join(artifacts_dir, 'metrics.json'), 'w') as f:
         json.dump(metrics, f, indent=2)
+    print(f"[train] metrics: {metrics}")
 
     # Quintile bias
     quint_bias = quintile_bias(y_val, calibrated_pred)
@@ -234,6 +284,7 @@ def train(train_path: str, val_path: str, artifacts_dir: str):
     }
     with open(os.path.join(artifacts_dir, 'training_summary.json'), 'w') as f:
         json.dump(summary, f, indent=2)
+    print(f"[train] saved artifacts to {artifacts_dir}")
 
 
 def main():
@@ -241,9 +292,28 @@ def main():
     parser.add_argument('--train-data', required=True)
     parser.add_argument('--validation-data', required=True)
     parser.add_argument('--artifacts-dir', required=True)
+    parser.add_argument(
+        '--early-stop-metric',
+        choices=['rmse', 'r2'],
+        default='rmse',
+        help='Metric to monitor for early stopping on the validation set.',
+    )
+    parser.add_argument('--seed', type=int, default=42, help='Random seed for reproducibility.')
+    parser.add_argument(
+        '--deterministic',
+        action='store_true',
+        help='Force CPU + single-threaded training for more deterministic results.',
+    )
     args = parser.parse_args()
 
-    train(args.train_data, args.validation_data, args.artifacts_dir)
+    train(
+        args.train_data,
+        args.validation_data,
+        args.artifacts_dir,
+        early_stop_metric=args.early_stop_metric,
+        seed=args.seed,
+        deterministic=args.deterministic,
+    )
 
 
 if __name__ == '__main__':

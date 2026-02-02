@@ -173,51 +173,38 @@ def plot_metric_panel(ax, tools, test_values, leftout_values, metric_name, highe
     return sorted_tools
 
 
-def main():
-    # Default results dir is benchmark/competitors/updated_validation_results relative to this script
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    default_results_dir = os.path.join(script_dir, "..", "updated_validation_results")
-
-    p = argparse.ArgumentParser()
-    p.add_argument("--results-dir", default=default_results_dir)
-    p.add_argument("--output", default=os.path.join(default_results_dir, "metrics_panels.png"))
-    p.add_argument("--tools", nargs="+", default=TOOLS)
-    args = p.parse_args()
-
+def render_metrics(results_dir, output_path, tools):
     # Load metrics
     test_metrics = {}
     leftout_metrics = {}
-    for tool in args.tools:
+    for tool in tools:
         if tool == "srm":
-            # siRBench-Model uses txt files in results/sirbench-model/
             test_metrics[tool] = load_txt_metrics(
-                os.path.join(args.results_dir, "sirbench-model", "test_metrics.txt")
+                os.path.join(results_dir, "sirbench-model", "test_metrics.txt")
             )
             leftout_metrics[tool] = load_txt_metrics(
-                os.path.join(args.results_dir, "sirbench-model", "leftout_metrics.txt")
+                os.path.join(results_dir, "sirbench-model", "leftout_metrics.txt")
             )
         else:
             test_metrics[tool] = load_metrics(
-                os.path.join(args.results_dir, tool, "metrics.json")
+                os.path.join(results_dir, tool, "metrics.json")
             )
             leftout_metrics[tool] = load_metrics(
-                os.path.join(args.results_dir, tool, "metrics_leftout.json")
+                os.path.join(results_dir, tool, "metrics_leftout.json")
             )
 
-    # Filter tools with data
     tools_with_data = [
-        t for t in args.tools
+        t for t in tools
         if test_metrics[t] is not None and leftout_metrics[t] is not None
     ]
+    if not tools_with_data:
+        print(f"No tools with both test/leftout metrics in {results_dir}")
+        return
 
-    # Create figure: slightly larger to give panels more room
     fig = plt.figure(figsize=(20.5, 11.5), dpi=100)
-
-    # Layout: 2 rows x 3 cols of equal-sized panels
     gs = GridSpec(2, 3, figure=fig, wspace=0.18, hspace=0.22,
                   left=0.04, right=0.98, top=0.96, bottom=0.12)
 
-    # Plot all 6 metrics
     for i, metric in enumerate(ALL_METRICS):
         row = i // 3
         col = i % 3
@@ -233,7 +220,6 @@ def main():
         plot_metric_panel(ax, tools_with_data, test_values, leftout_values,
                           display_name, higher_is_better)
 
-        # Add dataset legend to R² panel (top right)
         if metric == "r2":
             legend_handles = [
                 Patch(facecolor=TOOL_COLORS["srm"], edgecolor='black', label='Test'),
@@ -241,7 +227,6 @@ def main():
             ]
             ax.legend(handles=legend_handles, loc='upper right', frameon=False, fontsize=13)
 
-    # Add legend with letter codes
     tool_display_names = {
         "srm": "siRBench-Model",
         "oligoformer": "OligoFormer",
@@ -256,18 +241,33 @@ def main():
     )
     fig.text(0.5, 0.03, legend_text, ha='center', va='center', fontsize=16, fontweight='bold')
 
-    # Save PNG
-    out_dir = os.path.dirname(os.path.abspath(args.output))
+    out_dir = os.path.dirname(os.path.abspath(output_path))
     if out_dir:
         os.makedirs(out_dir, exist_ok=True)
 
-    fig.savefig(args.output, dpi=100, facecolor='white', edgecolor='none')
-    print(f"Saved: {args.output}")
+    fig.savefig(output_path, dpi=100, facecolor='white', edgecolor='none')
+    print(f"Saved: {output_path}")
 
-    # Also save PDF version
-    pdf_path = args.output.rsplit(".", 1)[0] + ".pdf"
+    pdf_path = output_path.rsplit(".", 1)[0] + ".pdf"
     fig.savefig(pdf_path, dpi=300, facecolor='white', edgecolor='none')
     print(f"Saved: {pdf_path}")
+
+
+def main():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    default_updated_dir = os.path.join(script_dir, "..", "updated_validation_results")
+    default_original_dir = os.path.join(script_dir, "..", "original_results")
+
+    p = argparse.ArgumentParser()
+    p.add_argument("--results-dir", default=default_updated_dir, help="Updated results dir")
+    p.add_argument("--output", default=os.path.join(default_updated_dir, "metrics_panels.png"))
+    p.add_argument("--original-results-dir", default=default_original_dir)
+    p.add_argument("--output-original", default=os.path.join(default_original_dir, "original_metrics_panels.png"))
+    p.add_argument("--tools", nargs="+", default=TOOLS)
+    args = p.parse_args()
+
+    render_metrics(args.results_dir, args.output, args.tools)
+    render_metrics(args.original_results_dir, args.output_original, args.tools)
 
 
 if __name__ == "__main__":

@@ -34,7 +34,6 @@
     "cell_line_t24"
   ],
   "numeric_cols": [
-    "efficacy",
     "ends",
     "DG_total",
     "DH_total",
@@ -391,7 +390,6 @@
     "mr_di_13",
     "mr_di_14",
     "mr_di_15",
-    "efficacy",
     "ends",
     "DG_total",
     "DH_total",

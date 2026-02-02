@@ -18,7 +18,9 @@ Training expects an `efficiency` column in the input CSVs.
 uv run python train.py \
   --train-data ../data/val_split/siRBench_train_split.csv \
   --validation-data ../data/val_split/siRBench_val_split.csv \
-  --artifacts-dir training_artifacts
+  --artifacts-dir training_artifacts \
+  --early-stop-metric rmse \
+  --seed 42
 ```
 
 ## Inference
