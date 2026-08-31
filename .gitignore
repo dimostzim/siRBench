@@ -19,8 +19,7 @@ benchmark/competitors/tools/*/*.pyo
 benchmark/competitors/scripts/__pycache__/
 benchmark/competitors/tools/ensirna/rosetta
 *.pdf
-siRBench-model/.venv
-siRBench-model/__pycache__
+model/.venv
 benchmark/competitors/original_results/
 benchmark/competitors/updated_validation_results/
 model/__pycache__

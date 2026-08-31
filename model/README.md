@@ -5,7 +5,7 @@ Baseline model for siRBench (XGBoost + LightGBM with calibration).
 ## Setup (uv)
 
 ```bash
-cd /home/dtzim01/siRBench/siRBench-model
+cd model
 uv venv
 uv sync
 ```
