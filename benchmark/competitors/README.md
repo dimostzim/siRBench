@@ -125,3 +125,21 @@ python3 tools/sirnadiscovery/scripts/rpiseq_convert.py \
 ```
 
 The converter will infer the RF classifier column (or use `--rf-col` if needed) and strip any leading `>` from IDs.
+
+## Paired uncertainty analysis
+
+The released result archive contains record-level predictions for all six
+comparators and the siRBench model. After extracting the archive, calculate
+paired row-bootstrap intervals with:
+
+```bash
+python3 scripts/paired_bootstrap.py \
+  --results-dir /path/to/benchmarking_results \
+  --samples 10000 \
+  --seed 20260902
+```
+
+The output reports 95% percentile intervals for the difference between
+siRBench and each comparator. Differences are oriented so that positive values
+favour siRBench for every metric. Resampling is paired because every model is
+evaluated on the same sampled row indices.
