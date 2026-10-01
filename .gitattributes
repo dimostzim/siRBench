@@ -8,4 +8,4 @@
 *.pth filter=lfs diff=lfs merge=lfs -text
 
 # Preserve the imported runtime source unchanged.
-benchmark/competitors/tools/ensirna/patches/RNAmaskModel_trainer.py -whitespace
+benchmark/predictors/tools/ensirna/patches/RNAmaskModel_trainer.py -whitespace

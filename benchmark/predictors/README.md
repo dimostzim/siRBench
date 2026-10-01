@@ -1,4 +1,4 @@
-# siRBench competitors
+# siRBench predictors
 
 Docker wrappers for OligoFormer, GNN4siRNA, siRNADiscovery, AttSiOff, BERT-siRNA
 and ENsiRNA. Use Linux x86-64 with Docker, NVIDIA Container Toolkit and a GPU.
@@ -11,7 +11,7 @@ From the repository root:
 
 ```bash
 tool=gnn4sirna
-bash "benchmark/competitors/tools/$tool/setup.sh" --docker
+bash "benchmark/predictors/tools/$tool/setup.sh" --docker
 ```
 
 Tool names are `oligoformer`, `gnn4sirna`, `sirnadiscovery`, `attsioff`,
@@ -26,13 +26,13 @@ Prepare the data using [the data scripts](../../data/scripts/README.md).
 ```bash
 export PROTOCOL="$PWD/data/processed/evaluation/protocol-v1"
 uv run --locked --project data \
-  bash benchmark/competitors/run_tool.sh \
+  bash benchmark/predictors/run_tool.sh \
   --tool gnn4sirna --seed 0 \
   --train "$PROTOCOL/grouped/fold_0/train.csv" \
   --val "$PROTOCOL/grouped/fold_0/val.csv" \
   --test "$PROTOCOL/grouped/fold_0/test.csv" \
   --leftout "$PROTOCOL/hela_full.csv" \
-  --run-dir "$PWD/benchmark/competitors/runs/gnn4sirna_grouped0_seed0"
+  --run-dir "$PWD/benchmark/predictors/runs/gnn4sirna_grouped0_seed0"
 ```
 
 Use a new run directory under the repository for each tool, axis, fold and seed.

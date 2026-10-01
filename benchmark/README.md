@@ -1,6 +1,6 @@
 # Benchmark
 
-- [competitors/](competitors/README.md): Docker setup, training and inference for the six published predictors.
+- [predictors/](predictors/README.md): Docker setup, training and inference for the six published predictors.
 - `baselines.py`: sequence scores and fitted reference baselines.
 - `evaluate_predictions.py`: performance metrics, confidence intervals and paired comparisons.
 - `evaluate.py`: reproduce the paper's result tables from archived predictions.

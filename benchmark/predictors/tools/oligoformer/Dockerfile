@@ -16,11 +16,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
     python3-dev \
+    python-is-python3 \
     git \
     wget \
     build-essential \
-    python3-rna \
-    vienna-rna \
     && rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m pip install --no-cache-dir --upgrade pip
@@ -33,7 +32,7 @@ RUN python3 -m pip install --no-cache-dir \
     torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 RUN python3 -m pip install --no-cache-dir \
-    numpy pandas scipy scikit-learn biopython tqdm fair-esm matplotlib \
+    numpy pandas scikit-learn scipy biopython tqdm fair-esm \
     ptflops yacs pyyaml pytorch-ignite
 
 ENV TORCH_HOME=/opt/torch
@@ -41,4 +40,4 @@ ENV TORCH_HOME=/opt/torch
 RUN mkdir -p "${TORCH_HOME}/hub/checkpoints"
 COPY checkpoints/RNA-FM_pretrained.pth ${TORCH_HOME}/hub/checkpoints/RNA-FM_pretrained.pth
 
-WORKDIR /work/competitors/tools/attsioff
+WORKDIR /work/predictors/tools/oligoformer

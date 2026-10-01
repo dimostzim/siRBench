@@ -49,7 +49,7 @@ def main():
         parser.add_argument("--" + name, type=Path, required=name != "leftout")
     args = parser.parse_args()
     args.run_dir.resolve().relative_to(args.repo_root.resolve())
-    comp = args.repo_root / "benchmark/competitors"
+    comp = args.repo_root / "benchmark/predictors"
     code = [comp / "run_tool.sh", *sorted((comp / "scripts").glob("*.py"))]
     for tool in args.tool:
         code.extend(path for path in sorted((comp / "tools" / tool).rglob("*"))

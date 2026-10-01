@@ -2,7 +2,7 @@
 
 Repository layout:
 
-- `benchmark/`: Docker-based competitor prepare/train/test wrappers, baselines and evaluation scripts. See [benchmark setup](benchmark/README.md).
+- `benchmark/`: Docker-based predictor prepare/train/test wrappers, baselines and evaluation scripts. See [benchmark setup](benchmark/README.md).
 - `data/`: Dataset reconstruction, feature generation and grouped/random splits. See [data scripts](data/scripts/README.md).
 - `models/`: The five Agentomics models and frozen/fine-tuned TabPFN, with uv environments and training/inference scripts. See [model setup](models/README.md).
 
