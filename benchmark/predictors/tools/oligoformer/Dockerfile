@@ -40,4 +40,4 @@ ENV TORCH_HOME=/opt/torch
 RUN mkdir -p "${TORCH_HOME}/hub/checkpoints"
 COPY checkpoints/RNA-FM_pretrained.pth ${TORCH_HOME}/hub/checkpoints/RNA-FM_pretrained.pth
 
-WORKDIR /work/predictors/tools/oligoformer
+WORKDIR /work/benchmark/predictors/tools/oligoformer

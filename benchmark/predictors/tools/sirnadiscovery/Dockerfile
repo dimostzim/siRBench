@@ -46,4 +46,4 @@ RUN python3 -m pip install --no-cache-dir \
     pandas scikit-learn chardet biopython \
     tensorflow==2.4.1 stellargraph==1.2.1
 
-WORKDIR /work/predictors/tools/sirnadiscovery
+WORKDIR /work/benchmark/predictors/tools/sirnadiscovery

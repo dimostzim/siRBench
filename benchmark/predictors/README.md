@@ -2,16 +2,14 @@
 
 Docker wrappers for OligoFormer, GNN4siRNA, siRNADiscovery, AttSiOff, BERT-siRNA
 and ENsiRNA. Use Linux x86-64 with Docker, NVIDIA Container Toolkit and a GPU.
-The setup scripts pin upstream commits; Dockerfiles pin the observed package
-versions. Existing checkouts at different commits are rejected.
+The setup scripts and Dockerfiles pin the source commits and package versions.
 
 ## Setup
 
 From the repository root:
 
 ```bash
-tool=gnn4sirna
-bash "benchmark/predictors/tools/$tool/setup.sh" --docker
+bash benchmark/predictors/setup.sh --tool gnn4sirna
 ```
 
 Tool names are `oligoformer`, `gnn4sirna`, `sirnadiscovery`, `attsioff`,
@@ -21,7 +19,7 @@ ENsiRNA also obtains the pinned Rosetta release 371 runtime and uses ViennaRNA
 
 ## Train and evaluate
 
-Prepare the data using [the data scripts](../../data/scripts/README.md).
+Prepare the data using [data/](../../data/README.md).
 
 ```bash
 export PROTOCOL="$PWD/data/processed/evaluation/protocol-v1"
@@ -38,8 +36,8 @@ uv run --locked --project data \
 Use a new run directory under the repository for each tool, axis, fold and seed.
 The primary comparison uses a 100-epoch cap and validation-R² stopping with
 patience 20. Results go under the run directory's `results/<tool>/`; fitted
-models go under `models/<tool>/`. The `prepare.py`, `train.py` and `test.py`
-files provide separate preparation, training and saved-model inference commands.
+models go under `models/<tool>/`. The `scripts/prepare.py`, `scripts/train.py`
+and `scripts/test.py` wrappers run these steps separately through Docker.
 Use `--help` for their arguments.
 
 For siRNADiscovery, copy the frozen RPISeq features before running:

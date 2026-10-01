@@ -27,7 +27,7 @@ def repo_root(base_dir):
     base_dir = os.path.abspath(base_dir)
     if os.path.basename(base_dir) == "scripts":
         base_dir = os.path.dirname(base_dir)
-    return os.path.abspath(os.path.join(base_dir, ".."))
+    return os.path.abspath(os.path.join(base_dir, "..", ".."))
 
 
 def to_container_path(path, host_root, container_root="/work"):

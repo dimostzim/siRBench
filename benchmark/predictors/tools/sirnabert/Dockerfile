@@ -49,4 +49,4 @@ for name in os.listdir(target):
     os.chmod(os.path.join(target, name), 0o644)
 PY
 
-WORKDIR /work/predictors/tools/sirnabert
+WORKDIR /work/benchmark/predictors/tools/sirnabert

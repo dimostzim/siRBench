@@ -4,8 +4,8 @@
 - `tabpfn/`: frozen and fine-tuned TabPFN-3.5.
 
 Each model directory has `train.py`, `inference.py`, `pyproject.toml` and `uv.lock`.
-Use Linux x86-64. TabPFN requires an NVIDIA GPU. Agentomics neural models use a
-GPU when available and support CPU inference.
+Use Linux x86-64. TabPFN and Agentomics fold_0/fold_2 training require an NVIDIA
+GPU. All Agentomics models support CPU inference.
 
 ## Agentomics setup
 
@@ -23,7 +23,7 @@ No Agentomics or LLM account is needed.
 
 ## Agentomics training
 
-Prepare the data using [the data scripts](../data/scripts/README.md), then:
+Prepare the data using [data/](../data/README.md), then:
 
 ```bash
 uv run --frozen --project models/agentomics/fold_0 \
@@ -34,9 +34,8 @@ uv run --frozen --project models/agentomics/fold_0 \
 ```
 
 Training directories contain `input/data.csv` and `labels.csv` with `id,label`.
-This refits the selected pipeline; it does not repeat the Agentomics search.
-There is one selected model per grouped fold, with 19/20/18/18/20 completed
-search iterations respectively. The five models are not a prediction ensemble.
+Training refits the selected pipeline for one grouped fold. The five models
+are used independently. The Agentomics search is not repeated.
 
 ## Agentomics inference
 

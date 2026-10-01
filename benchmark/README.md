@@ -5,7 +5,7 @@
 - `evaluate_predictions.py`: performance metrics, confidence intervals and paired comparisons.
 - `evaluate.py`: reproduce the paper's result tables from archived predictions.
 
-Prepare the dataset using [the data scripts](../data/scripts/README.md).
+Download and prepare the dataset using [data/](../data/README.md).
 Agentomics and TabPFN training and inference are in [models/](../models/README.md).
 
 To reproduce the result tables, run from the repository root on Linux x86-64:

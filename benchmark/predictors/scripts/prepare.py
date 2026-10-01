@@ -3,9 +3,6 @@ import argparse
 import os
 import sys
 
-SCRIPTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts")
-sys.path.insert(0, SCRIPTS_DIR)
-
 from runner import TOOL_CHOICES, tool_dir, repo_root, to_container_path, run_docker
 
 PATH_FLAGS = {
@@ -28,7 +25,6 @@ PATH_FLAGS = {
 
 def rewrite_args(argv, host_root):
     out = []
-    it = iter(range(len(argv)))
     i = 0
     while i < len(argv):
         arg = argv[i]

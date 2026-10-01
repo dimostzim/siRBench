@@ -1,10 +1,12 @@
 # siRBench
 
-Repository layout:
+Data and code for benchmarking siRNA efficacy predictors.
 
-- `benchmark/`: Docker-based predictor prepare/train/test wrappers, baselines and evaluation scripts. See [benchmark setup](benchmark/README.md).
-- `data/`: Dataset reconstruction, feature generation and grouped/random splits. See [data scripts](data/scripts/README.md).
-- `models/`: The five Agentomics models and frozen/fine-tuned TabPFN, with uv environments and training/inference scripts. See [model setup](models/README.md).
+- [data/](data/README.md): Download and prepare the dataset, features and splits.
+- [benchmark/](benchmark/README.md): Run the published predictors and baselines, and evaluate predictions.
+- [models/](models/README.md): Train and run the five Agentomics models and TabPFN.
+
+The published predictors use Docker. Data scripts, Agentomics and TabPFN use uv.
 
 Datasets, training outputs, predictions and the experimental code snapshot are in
 [Zenodo version 2](https://doi.org/10.5281/zenodo.23001225).
