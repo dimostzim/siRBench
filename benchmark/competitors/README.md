@@ -11,8 +11,7 @@ From the repository root:
 
 ```bash
 tool=gnn4sirna
-IMAGE_TAG="$tool:revision" bash "benchmark/competitors/tools/$tool/setup.sh" --docker
-export SIRBENCH_IMAGE_TAG=revision
+bash "benchmark/competitors/tools/$tool/setup.sh" --docker
 ```
 
 Tool names are `oligoformer`, `gnn4sirna`, `sirnadiscovery`, `attsioff`,
@@ -22,11 +21,11 @@ ENsiRNA also obtains the pinned Rosetta release 371 runtime and uses ViennaRNA
 
 ## Train and evaluate
 
-Prepare the corrected data using [the data scripts](../../data/scripts/README.md).
+Prepare the data using [the data scripts](../../data/scripts/README.md).
 
 ```bash
 export PROTOCOL="$PWD/data/processed/evaluation/protocol-v1"
-SIRBENCH_IMAGE_TAG=revision uv run --locked --project data \
+uv run --locked --project data \
   bash benchmark/competitors/run_tool.sh \
   --tool gnn4sirna --seed 0 \
   --train "$PROTOCOL/grouped/fold_0/train.csv" \

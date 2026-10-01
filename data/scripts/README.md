@@ -20,7 +20,7 @@ uv run --locked --project data python data/scripts/prepare.py \
   --output data/processed
 ```
 
-Rebuilds the 4,098 corrected records and five grouped/random partitions from
+Rebuilds the 4,098 records and five grouped/random partitions from
 the archived harmonized records, strand corrections and target mappings.
 All 1,047 HeLa records are retained. Numeric features are reused from the archive.
 Add `--features regenerate --workers 8` to recompute them with `RNAfold`,

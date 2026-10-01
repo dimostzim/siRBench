@@ -38,7 +38,7 @@ RUN wget -q https://github.com/ViennaRNA/ViennaRNA/releases/download/v${VIENNA_V
 
 RUN python3 -m pip install --no-cache-dir --upgrade pip
 
-# Package versions observed in the revision training image.
+# Package versions observed in the benchmark training image.
 COPY requirements.frozen.txt /opt/sirbench-requirements.frozen.txt
 ENV PIP_CONSTRAINT=/opt/sirbench-requirements.frozen.txt
 

@@ -1,4 +1,4 @@
-"""Rebuild corrected records and label-blind splits, then verify the published hashes.
+"""Prepare dataset records and label-blind splits, then verify the published hashes.
 
 The starting point is the released harmonized data, not a reconstruction of
 unavailable historical curation decisions. Features may be reused or regenerated.
@@ -13,8 +13,8 @@ import sys
 
 from download import digest, verify_files
 
-REVISION = Path(__file__).resolve().parent
-sys.path.insert(0, str(REVISION))
+SCRIPT_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(SCRIPT_DIR))
 from audit_data import audit, normalize, write_csv
 from correct_takayuki import FIELDS, correct_records, read_csv
 
@@ -86,7 +86,7 @@ def main():
             version = subprocess.check_output([tool, "--version"], text=True).strip()
             if version != f"{tool} 2.4.18":
                 raise ValueError(f"Benchmark requires {tool} 2.4.18, found {version}")
-        subprocess.run([sys.executable, str(REVISION / "regenerate_features.py"),
+        subprocess.run([sys.executable, str(SCRIPT_DIR / "regenerate_features.py"),
                         "--input", str(dataset / "records_base.csv"), "--output", str(features),
                         "--workers", str(args.workers)], check=True)
     else:
@@ -95,7 +95,7 @@ def main():
     # Preserve the sealed feature manifest expected by TabPFN's input guards.
     shutil.copy2(frozen / "records_features.manifest.json", dataset / "records_features.manifest.json")
     protocol = output / "evaluation/protocol-v1"
-    subprocess.run([sys.executable, str(REVISION / "make_splits.py"),
+    subprocess.run([sys.executable, str(SCRIPT_DIR / "make_splits.py"),
                     "--records", str(features), "--targets", str(work / "audit/targets/record_targets.csv"),
                     "--output-dir", str(protocol)], check=True)
     expected = json.loads((work / "evaluation/protocol-v1/manifest.json").read_text())

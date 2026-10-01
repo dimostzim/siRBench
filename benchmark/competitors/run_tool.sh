@@ -219,7 +219,7 @@ if [ "${USE_ORIGINAL}" = "1" ]; then
     RESULTS_ROOT="${SCRIPT_DIR}/original_results"
 fi
 
-# Revision runs must not reuse another seed, split, or parameter mode's caches.
+# Benchmark runs must not reuse another seed, split, or parameter mode's caches.
 if [ -n "${RUN_DIR}" ]; then
     RUN_DIR="$(python3 -c 'import pathlib,sys; print(pathlib.Path(sys.argv[1]).resolve())' "$(make_abs "${RUN_DIR}")")"
     if [[ "${RUN_DIR}" != "${REPO_ROOT}/"* ]]; then

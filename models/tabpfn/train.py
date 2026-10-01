@@ -127,8 +127,8 @@ def main():
     parser.add_argument('--seed', type=int, choices=range(3), required=True)
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
-    revision = Path(__file__).resolve().parents[2] / 'benchmark'
-    sys.path.insert(0, str(revision))
+    benchmark_dir = Path(__file__).resolve().parents[2] / 'benchmark'
+    sys.path.insert(0, str(benchmark_dir))
     from baselines import sequence_features
     from evaluate_predictions import metrics
     import torch
@@ -167,7 +167,7 @@ def main():
         'train_ids': train.record_id.tolist(), 'validation_ids': validation.record_id.tolist(),
         'input_sha256': {part: protocol_manifest['outputs'][prefix + '/' + part + '.csv'] for part in ['train', 'val']},
         'source_commit': '9393b12a46bfc32369a89a53f6c578d22e41faba',
-        'code_sha256': {path.name: sha256(path) for path in [Path(__file__), Path(__file__).with_name('common.py'), revision/'baselines.py']},
+        'code_sha256': {path.name: sha256(path) for path in [Path(__file__), Path(__file__).with_name('common.py'), benchmark_dir/'baselines.py']},
         'package_versions': {name: importlib.metadata.version(name) for name in ['tabpfn','torch','numpy','pandas','scikit-learn','scipy']},
     }
     write_json(args.output/'policy_lock.json', common)

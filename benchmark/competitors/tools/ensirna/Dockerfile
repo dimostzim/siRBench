@@ -33,7 +33,7 @@ RUN cd /tmp && tar -xzf ViennaRNA-2.6.4.tar.gz && cd ViennaRNA-2.6.4 \
 
 RUN python3 -m pip install --no-cache-dir --upgrade pip
 
-# Package versions observed in the revision training image.
+# Package versions observed in the benchmark training image.
 COPY requirements.frozen.txt /opt/sirbench-requirements.frozen.txt
 ENV PIP_CONSTRAINT=/opt/sirbench-requirements.frozen.txt
 

@@ -14,7 +14,7 @@ From the repository root:
 ```bash
 git lfs install
 git lfs pull
-uv sync --frozen --project model/agentomics/fold_0
+uv sync --frozen --project models/agentomics/fold_0
 ```
 
 Replace `fold_0` with the desired fold. Each directory includes its fitted
@@ -26,8 +26,8 @@ No Agentomics or LLM account is needed.
 Prepare the data using [the data scripts](../data/scripts/README.md), then:
 
 ```bash
-uv run --frozen --project model/agentomics/fold_0 \
-  python model/agentomics/fold_0/train.py \
+uv run --frozen --project models/agentomics/fold_0 \
+  python models/agentomics/fold_0/train.py \
   --train-data data/processed/reference-training/fold_0/train \
   --validation-data data/processed/reference-training/fold_0/validation \
   --artifacts-dir outputs/fold_0/training_artifacts
@@ -42,8 +42,8 @@ search iterations respectively. The five models are not a prediction ensemble.
 
 ```bash
 mkdir -p outputs
-uv run --frozen --project model/agentomics/fold_0 \
-  python model/agentomics/fold_0/inference.py \
+uv run --frozen --project models/agentomics/fold_0 \
+  python models/agentomics/fold_0/inference.py \
   --input data/processed/reference-training/fold_0/test/input \
   --output outputs/fold_0_predictions.csv
 ```
@@ -55,7 +55,7 @@ Output columns are `id,prediction`. Add `--artifacts-dir` to use a refitted mode
 ## TabPFN setup and training
 
 ```bash
-uv sync --locked --project model/tabpfn
+uv sync --locked --project models/tabpfn
 export R="$PWD/data/archive/siRBench-v2-2026-09-27/workspace"
 ```
 
@@ -67,7 +67,7 @@ The required SHA256 is
 The locked environment and runner preserve the published settings.
 
 ```bash
-uv run --locked --project model/tabpfn python model/tabpfn/train.py \
+uv run --locked --project models/tabpfn python models/tabpfn/train.py \
   --root "$R" --axis grouped --fold 0 --seed 0 \
   --output "$PWD/outputs/tabpfn-grouped-0-seed-0"
 ```
@@ -78,7 +78,7 @@ output directory. The full matrix uses `grouped`/`random`, folds 0–4 and seeds
 ## TabPFN inference
 
 ```bash
-uv run --locked --project model/tabpfn python model/tabpfn/inference.py \
+uv run --locked --project models/tabpfn python models/tabpfn/inference.py \
   --root "$R" \
   --model-dir outputs/tabpfn-grouped-0-seed-0/tabpfn35_frozen \
   --partition grouped/fold_0/test.csv \

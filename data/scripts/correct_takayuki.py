@@ -1,4 +1,4 @@
-"""Build revision base records using OligoFormer's documented strand correction.
+"""Build dataset records using OligoFormer's documented strand correction.
 
 Input is audit_data.py's canonical records.csv. Feature columns are deliberately
 omitted: they describe the old sequences and must be regenerated separately.
