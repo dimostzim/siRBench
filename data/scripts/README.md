@@ -1,51 +1,47 @@
-> These scripts/splits describe the historical release. Reproduce the corrected version 2 dataset using [the current guide](../../REPRODUCING.md#dataset-and-partitions).
+# Data scripts
 
-# Data Scripts
+Run from the repository root.
 
-Quick reference for helper scripts in `data/scripts/`.
+## Setup and download
 
-## make_all_features.py
-- Build the full feature table (thermo + RNAup + sequence features).
-- Input: CSV with `siRNA` and `mRNA` columns (default `data/siRBench_base.csv`).
-- Output: CSV with added feature columns (default `data/siRBench_with_features.csv`).
-- Usage:
-  ```bash
-  python3 make_all_features.py
-  python3 make_all_features.py ../siRBench_full_base.csv -o ../siRBench_with_features.csv
-  ```
+```bash
+uv sync --locked --project data
+uv run --locked --project data python data/scripts/download.py
+```
 
-## features_calculator.py
-- Utility functions for thermodynamic features (no CLI).
-- Input/Output: Imported by `make_all_features.py`.
+The archive is downloaded to `data/archive/`. Use `--zip /path/to/archive.zip`
+if it is already downloaded.
 
-## ecdf_visualization.py
-- Plot CDFs for train/test/leftout efficiency distributions.
-- Input: `data/siRBench_train.csv`, `data/siRBench_test.csv`, `data/leftout/siRBench_leftout.csv`.
-- Output: `data/plots/ecdf_comparison.png`.
+## Prepare the dataset
 
-## KS_&_p-value_calculation.py
-- KS test between train and leftout efficiency distributions.
-- Input: `data/siRBench_train.csv`, `data/leftout/siRBench_leftout.csv`.
-- Output: Prints KS statistic and p-value to stdout.
+```bash
+uv run --locked --project data python data/scripts/prepare.py \
+  --package data/archive/siRBench-v2-2026-09-27 \
+  --output data/processed
+```
 
-## split_train_val.py
-- Split a CSV into train/val with stratification (CLI).
-- Input: `--input-csv <path>` (expects `cell_line` and `efficiency` if using default stratify cols).
-- Output: `--train-out <path>`, `--val-out <path>`.
-- Usage:
-  ```bash
-  python3 split_train_val.py --input-csv ../siRBench_train.csv \
-    --train-out ../val_split/siRBench_train_split.csv \
-    --val-out ../val_split/siRBench_val_split.csv
-  ```
+Rebuilds the 4,098 corrected records and five grouped/random partitions from
+the archived harmonized records, strand corrections and target mappings.
+All 1,047 HeLa records are retained. Numeric features are reused from the archive.
+Add `--features regenerate --workers 8` to recompute them with `RNAfold`,
+`RNAcofold` and `RNAup` 2.4.18 on PATH. Use a new output directory for each run.
+The original complete raw-publication curation script is unavailable.
 
-## training_testing_split.py
-- Make a train/test split that minimizes distribution shift; prints metrics and shows a CDF plot.
-- Input: `data/siRBench_train.csv`.
-- Output: Overwrites `data/siRBench_train.csv` and `data/siRBench_test.csv`; prints metrics.
-- Note: Run with caution since it overwrites existing files.
+Outputs:
 
-## find_dropped_leftout.py
-- Identify leftout rows dropped during filtering.
-- Input: `data/leftout/siRBench_hela.csv`, `data/leftout/siRBench_leftout.csv`.
-- Output: `data/leftout/siRBench_leftout_dropped.csv`.
+- `data/processed/datasets/corrected-v1/records_features.csv`
+- `data/processed/evaluation/protocol-v1/{grouped,random}/fold_N/{train,val,test}.csv`
+- `data/processed/evaluation/protocol-v1/hela_full.csv`
+- `data/processed/reference-training/fold_N/{train,validation,test}/` for Agentomics.
+
+## Reproduce the result tables
+
+On Linux x86-64:
+
+```bash
+uv run --locked --project data python benchmark/evaluate.py \
+  --package data/archive/siRBench-v2-2026-09-27 \
+  --output outputs/results
+```
+
+This recomputes the paper's tables from archived predictions, without retraining.

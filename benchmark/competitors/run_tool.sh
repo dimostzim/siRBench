@@ -291,7 +291,7 @@ if [ "$RUN_SIRNADISCOVERY" = "1" ]; then
     fi
     if [ ! -d "${RNA_AGO2_DIR}" ]; then
         echo "[sirnadiscovery] missing RNA_AGO2 features at ${RNA_AGO2_DIR}"
-        echo "Provide RPISeq outputs per benchmark/competitors/tools/sirnadiscovery/README.md, then retry."
+        echo "Provide RPISeq outputs per benchmark/competitors/README.md, then retry."
         exit 1
     fi
 

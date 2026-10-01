@@ -1,147 +1,58 @@
-> For the revised paper, start with [the current reproduction guide](../../REPRODUCING.md#six-published-predictors). Use corrected version 2 partitions and `--run-dir` for a fresh run. The commands below retain the legacy wrapper interface.
-
 # siRBench competitors
 
-Unified wrappers to prepare/train/test competitor models. Commands run inside Docker by default.
-
-GPU is required; Docker runs with `--gpus all`.
-Images bake required pretrained weights (RNA-FM, DNABERT for siRNABERT) to avoid runtime downloads.
-ENsiRNA `prepare.py` will generate PDBs if `pdb_data_path` is missing and Rosetta is available.
+Docker wrappers for OligoFormer, GNN4siRNA, siRNADiscovery, AttSiOff, BERT-siRNA
+and ENsiRNA. Use Linux x86-64 with Docker, NVIDIA Container Toolkit and a GPU.
+The setup scripts pin upstream commits; Dockerfiles pin the observed package
+versions. Existing checkouts at different commits are rejected.
 
 ## Setup
 
-Setup builds the Docker image and clones the upstream tool repository into each `tools/<tool>` directory.
-Use `--tool <name>...` to limit setup to specific tools.
+From the repository root:
 
 ```bash
-./setup.sh
+tool=gnn4sirna
+IMAGE_TAG="$tool:revision" bash "benchmark/competitors/tools/$tool/setup.sh" --docker
+export SIRBENCH_IMAGE_TAG=revision
 ```
 
-## Run tools
+Tool names are `oligoformer`, `gnn4sirna`, `sirnadiscovery`, `attsioff`,
+`sirnabert` and `ensirna`. RNA-FM is downloaded by the relevant setup scripts.
+ENsiRNA also obtains the pinned Rosetta release 371 runtime and uses ViennaRNA
+2.6.4; authorized access and the upstream terms apply.
 
-Use the wrapper to run prepare/train/test in one go (benchmark defaults: epochs=100, early-stop=20, metric=R2):
+## Train and evaluate
+
+Prepare the corrected data using [the data scripts](../../data/scripts/README.md).
 
 ```bash
-./run_tool.sh --tool oligoformer gnn4sirna sirnadiscovery \
-  --train /path/to/train.csv \
-  --val /path/to/val.csv \
-  --test /path/to/test.csv \
-  --seed 42 --deterministic
+export PROTOCOL="$PWD/data/processed/evaluation/protocol-v1"
+SIRBENCH_IMAGE_TAG=revision uv run --locked --project data \
+  bash benchmark/competitors/run_tool.sh \
+  --tool gnn4sirna --seed 0 \
+  --train "$PROTOCOL/grouped/fold_0/train.csv" \
+  --val "$PROTOCOL/grouped/fold_0/val.csv" \
+  --test "$PROTOCOL/grouped/fold_0/test.csv" \
+  --leftout "$PROTOCOL/hela_full.csv" \
+  --run-dir "$PWD/benchmark/competitors/runs/gnn4sirna_grouped0_seed0"
 ```
 
-To evaluate an additional unseen set, pass `--leftout /path/to/leftout.csv`.
-To run upstream defaults, add `--original` (results go to `benchmark/competitors/original_results/`).
+Use a new run directory under the repository for each tool, axis, fold and seed.
+The primary comparison uses a 100-epoch cap and validation-R² stopping with
+patience 20. Results go under the run directory's `results/<tool>/`; fitted
+models go under `models/<tool>/`. The `prepare.py`, `train.py` and `test.py`
+files provide separate preparation, training and saved-model inference commands.
+Use `--help` for their arguments.
 
-## Prepare (standalone)
+For siRNADiscovery, copy the frozen RPISeq features before running:
 
 ```bash
-python3 scripts/prepare.py --tool oligoformer \
-  --input-csv /path/to/train.csv \
-  --output-dir data \
-  --dataset-name train
+mkdir -p data/sirnadiscovery
+cp -R data/archive/siRBench-v2-2026-09-27/workspace/datasets/corrected-v1/RNA_AGO2 \
+  data/sirnadiscovery/
 ```
 
-Each tool has its own `prepare.py` with extra flags; see `tools/<tool>/README.md`.
-
-## Train (standalone)
-
-```bash
-python3 scripts/train.py --tool oligoformer \
-  --train-csv data/train.csv \
-  --val-csv data/val.csv \
-  --data-dir data \
-  --model-dir models/oligoformer
-```
-
-All tools expect an explicit validation set for training. Run `test.py` separately on a held-out test set.
-
-## Test (standalone)
-
-```bash
-python3 scripts/test.py --tool oligoformer \
-  --test-csv data/test.csv \
-  --data-dir data \
-  --model-path models/oligoformer/model.pt \
-  --output-csv ../updated_validation_results/oligoformer/preds.csv
-```
-
-`scripts/test.py` prints common regression metrics (MAE, MSE, RMSE, R2, Pearson, Spearman).
-Use `--metrics-json /path/to/metrics.json` to save the metrics to disk.
-
-## After testing
-
-Outputs are written under `models/` and `updated_validation_results/` by default:
-
-- `models/<tool>/` contains trained model weights (e.g., `model.pt` or `model.keras`).
-- `updated_validation_results/<tool>/preds.csv` contains predictions for the test set.
-- `updated_validation_results/<tool>/metrics.json` contains the regression metrics for that run.
-
-If you run with `--original`, outputs go to `original_results/`.
-
-## Plot metrics
-
-Generate a 3x3 panel PNG (one tool per panel) from the saved metrics:
-
-```bash
-python3 scripts/plot_metrics.py
-```
-
-The output is written to `updated_validation_results/metrics_panels.png` by default; pass `--results-dir ../original_results` to plot original runs.
-
-## siRNADiscovery: RPISeq / AGO2 inputs
-
-siRNADiscovery requires external AGO2 features from the RPISeq web tool. You must provide:
-
-```
-benchmark/competitors/data/sirnadiscovery/RNA_AGO2/
-  ├─ siRNA_AGO2.csv
-  └─ mRNA_AGO2.csv
-```
-
-Expected format for each file:
-- CSV with an ID column (index) and a single numeric column named `RF_Classifier_prob`.
-- The IDs must match the hashed `siRNA` / `mRNA` IDs produced by the siRNADiscovery `prepare.py`.
-
-To generate batches for RPISeq submission from a prepared CSV (with columns `siRNA`, `mRNA`, `siRNA_seq`, `mRNA_seq`):
-
-```bash
-python3 tools/sirnadiscovery/scripts/rpiseq_export.py \
-  --input-csv /path/to/prepared.csv \
-  --out-dir /tmp/rpiseq_batches --type sirna
-
-python3 tools/sirnadiscovery/scripts/rpiseq_export.py \
-  --input-csv /path/to/prepared.csv \
-  --out-dir /tmp/rpiseq_batches --type mrna
-```
-
-After running RPISeq, convert the output tables:
-
-```bash
-python3 tools/sirnadiscovery/scripts/rpiseq_convert.py \
-  --input /path/to/rpiseq_output.csv \
-  --output benchmark/competitors/data/sirnadiscovery/RNA_AGO2/siRNA_AGO2.csv
-
-python3 tools/sirnadiscovery/scripts/rpiseq_convert.py \
-  --input /path/to/rpiseq_output.csv \
-  --output benchmark/competitors/data/sirnadiscovery/RNA_AGO2/mRNA_AGO2.csv
-```
-
-The converter will infer the RF classifier column (or use `--rf-col` if needed) and strip any leading `>` from IDs.
-
-## Paired uncertainty analysis
-
-The released result archive contains record-level predictions for all six
-comparators and the siRBench model. After extracting the archive, calculate
-paired row-bootstrap intervals with:
-
-```bash
-python3 scripts/paired_bootstrap.py \
-  --results-dir /path/to/benchmarking_results \
-  --samples 10000 \
-  --seed 20260902
-```
-
-The output reports 95% percentile intervals for the difference between
-siRBench and each comparator. Differences are oriented so that positive values
-favour siRBench for every metric. Resampling is paired because every model is
-evaluated on the same sampled row indices.
+Graph wrappers use training-only neighborhoods and isolated-query inference.
+The upstream OligoFormer and AttSiOff batch/order-dependent behaviors are
+preserved in the primary comparison. Keep prediction order and batch sizes fixed.
+The separate input-extent and original-schedule experiments remain in the Zenodo
+snapshot; `--original` is not used for the main comparison.

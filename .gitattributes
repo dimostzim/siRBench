@@ -7,7 +7,5 @@
 *.pt filter=lfs diff=lfs merge=lfs -text
 *.pth filter=lfs diff=lfs merge=lfs -text
 
-# Preserve the bytes of imported provenance, licence and runtime source files.
-provenance/external-model-artifacts.csv whitespace=cr-at-eol
-licenses/Rosetta-LICENSE.md -whitespace
+# Preserve the imported runtime source unchanged.
 benchmark/competitors/tools/ensirna/patches/RNAmaskModel_trainer.py -whitespace
