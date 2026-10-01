@@ -1,0 +1,39 @@
+{
+  "case": "sirnadiscovery_extent_standardized",
+  "tool": "sirnadiscovery",
+  "seed": 0,
+  "inputs": {
+    "train": "evaluation/sensitivity-v1/sirnadiscovery_full_mrna/standardized/fold_0/train.csv",
+    "val": "evaluation/sensitivity-v1/sirnadiscovery_full_mrna/standardized/fold_0/val.csv",
+    "test": "evaluation/sensitivity-v1/sirnadiscovery_full_mrna/standardized/fold_0/test.csv",
+    "leftout": "evaluation/sensitivity-v1/sirnadiscovery_full_mrna/standardized/fold_0/hela_full.csv"
+  },
+  "assets_relative": "benchmark/competitors/runs/_assets/sirnadiscovery",
+  "train_flags": [
+    "--epochs",
+    "100",
+    "--early-stopping",
+    "20",
+    "--early-stop-metric",
+    "val_r2_metric"
+  ],
+  "run_relative": "benchmark/competitors/runs/sensitivity_v1/sirnadiscovery/sirnadiscovery_extent_standardized_fold0_seed0",
+  "params": {
+    "dmodel": 6,
+    "sirna_length": 19,
+    "max_mrna_len": 57,
+    "batch_size": 64,
+    "epochs": 26,
+    "hinsage_layer_sizes": [
+      64,
+      32
+    ],
+    "hop_samples": [
+      12,
+      6
+    ],
+    "dropout": 0.1,
+    "lr": 0.001,
+    "loss": "mse"
+  }
+}

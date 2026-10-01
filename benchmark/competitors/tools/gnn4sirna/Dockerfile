@@ -9,6 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 
 ARG VIENNA_VERSION=2.4.18
+ARG BUILD_JOBS=8
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
@@ -29,13 +30,17 @@ RUN wget -q https://github.com/ViennaRNA/ViennaRNA/releases/download/v${VIENNA_V
     && tar -xzf ViennaRNA-${VIENNA_VERSION}.tar.gz \
     && cd ViennaRNA-${VIENNA_VERSION} \
     && ./configure --without-perl --without-python --without-forester \
-    && make -j"$(nproc)" \
+    && make -j"${BUILD_JOBS}" \
     && make install \
     && cd .. \
     && rm -rf ViennaRNA-${VIENNA_VERSION} ViennaRNA-${VIENNA_VERSION}.tar.gz \
     && ldconfig
 
 RUN python3 -m pip install --no-cache-dir --upgrade pip
+
+# Package versions observed in the revision training image.
+COPY requirements.frozen.txt /opt/sirbench-requirements.frozen.txt
+ENV PIP_CONSTRAINT=/opt/sirbench-requirements.frozen.txt
 
 RUN python3 -m pip install --no-cache-dir \
     pandas scikit-learn biopython chardet \

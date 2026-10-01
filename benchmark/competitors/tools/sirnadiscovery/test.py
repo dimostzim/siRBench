@@ -14,6 +14,7 @@ ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SCRIPTS_DIR = os.path.join(ROOT_DIR, "scripts")
 sys.path.insert(0, SCRIPTS_DIR)
 from metrics import format_metrics, regression_metrics, save_metrics
+from graph_protocol import isolated_queries
 
 
 def main():
@@ -28,6 +29,7 @@ def main():
     p.add_argument("--src-root", default="sirnadiscovery_src/siRNA_split")
     p.add_argument("--allow-missing-preprocess", action="store_true", help="Fill missing preprocess rows with zeros.")
     p.add_argument("--allow-missing-ago2", action="store_true", help="Fill missing RNA_AGO2 rows with zeros.")
+    p.add_argument("--transductive", action="store_true", help="Reproduce legacy joint evaluation graphs.")
     args = p.parse_args()
 
     params = load_params(args.params_json)
@@ -43,8 +45,10 @@ def main():
         allow_missing_ago2=args.allow_missing_ago2,
     )
 
-    generator = HinSAGENodeGenerator(graph, params["batch_size"], params["hop_samples"], head_node_type="interaction")
     test_interaction = pd.DataFrame(test_df['efficiency'].values, index=test_df['siRNA'] + "_" + test_df['mRNA'])
+    if not args.transductive:
+        graph = isolated_queries(graph, test_interaction.index)
+    generator = HinSAGENodeGenerator(graph, params["batch_size"], params["hop_samples"], head_node_type="interaction")
     test_gen = generator.flow(test_interaction.index, test_interaction)
 
     custom_objects = {"HinSAGE": HinSAGE}

@@ -13,6 +13,13 @@ from stellargraph.layer import HinSAGE
 from common import build_graph, load_params
 
 
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.insert(0, os.path.join(ROOT_DIR, "scripts"))
+from graph_protocol import training_graph, isolated_queries
+from keras_metrics import GlobalR2
+from keras_callbacks import RestoreBestAtEnd
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--train-csv", required=True)
@@ -34,6 +41,7 @@ def main():
     p.add_argument("--allow-missing-ago2", action="store_true", help="Fill missing RNA_AGO2 rows with zeros.")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--deterministic", action="store_true")
+    p.add_argument("--transductive", action="store_true", help="Reproduce the legacy joint-graph protocol.")
     args = p.parse_args()
 
     os.environ["PYTHONHASHSEED"] = str(args.seed)
@@ -77,28 +85,28 @@ def main():
         allow_missing_ago2=args.allow_missing_ago2,
     )
 
-    generator = HinSAGENodeGenerator(graph, params["batch_size"], params["hop_samples"], head_node_type="interaction")
+    train_interaction = pd.DataFrame(train_df['efficiency'].values, index=train_df['siRNA'] + "_" + train_df['mRNA'])
+    val_interaction = pd.DataFrame(val_df['efficiency'].values, index=val_df['siRNA'] + "_" + val_df['mRNA'])
+
+    fit_graph = graph if args.transductive else training_graph(graph, train_interaction.index)
+    validation_graph = graph if args.transductive else isolated_queries(graph, val_interaction.index)
+    generator = HinSAGENodeGenerator(fit_graph, params["batch_size"], params["hop_samples"], head_node_type="interaction")
+    validation_generator = HinSAGENodeGenerator(validation_graph, params["batch_size"], params["hop_samples"], head_node_type="interaction")
     hinsage = HinSAGE(layer_sizes=params["hinsage_layer_sizes"], generator=generator, bias=True, dropout=params["dropout"])
     x_inp, x_out = hinsage.in_out_tensors()
 
     prediction = tf.keras.layers.Dense(units=1)(x_out)
     model = tf.keras.Model(inputs=x_inp, outputs=prediction)
-    def r2_metric(y_true, y_pred):
-        ss_res = tf.reduce_sum(tf.square(y_true - y_pred))
-        ss_tot = tf.reduce_sum(tf.square(y_true - tf.reduce_mean(y_true)))
-        return tf.where(tf.equal(ss_tot, 0.0), 0.0, 1.0 - ss_res / ss_tot)
 
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=params["lr"]),
         loss=params["loss"],
-        metrics=[r2_metric],
+        metrics=[GlobalR2()],
     )
 
-    train_interaction = pd.DataFrame(train_df['efficiency'].values, index=train_df['siRNA'] + "_" + train_df['mRNA'])
-    val_interaction = pd.DataFrame(val_df['efficiency'].values, index=val_df['siRNA'] + "_" + val_df['mRNA'])
 
     train_gen = generator.flow(train_interaction.index, train_interaction, shuffle=True)
-    val_gen = generator.flow(val_interaction.index, val_interaction)
+    val_gen = validation_generator.flow(val_interaction.index, val_interaction)
 
     callbacks = []
     if args.early_stopping and args.early_stopping > 0:
@@ -106,7 +114,7 @@ def main():
         if mode == "auto":
             mode = "min" if "loss" in args.early_stop_metric else "max"
         callbacks.append(
-            tf.keras.callbacks.EarlyStopping(
+            RestoreBestAtEnd(
                 monitor=args.early_stop_metric,
                 patience=args.early_stopping,
                 mode=mode,
@@ -121,6 +129,9 @@ def main():
     model.save(model_path)
 
     meta = {
+        "graph_protocol": "transductive" if args.transductive else "inductive",
+        "seed": args.seed,
+        "validation_r2": "global, accumulated over all batches",
         "train_csv": os.path.abspath(args.train_csv),
         "val_csv": os.path.abspath(args.val_csv),
         "test_csv": None,

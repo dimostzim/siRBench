@@ -1,0 +1,61 @@
+{
+  "seed": 0,
+  "predictor_count": 3,
+  "weights": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+  ],
+  "cnn": {
+    "learning_rate": 0.001,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay": 0.01,
+    "batch_size": 64,
+    "drop_last": false,
+    "gradient_clip": 1.0,
+    "max_epochs": 100,
+    "patience": 20,
+    "scheduler_T_max": 100,
+    "scheduler_eta_min": 1e-05
+  },
+  "tree": {
+    "iterations": 2500,
+    "learning_rate": 0.03,
+    "depth": 3,
+    "l2_leaf_reg": 20,
+    "loss_function": "RMSE",
+    "eval_metric": "R2",
+    "task_type": "CPU",
+    "boosting_type": "Plain",
+    "grow_policy": "SymmetricTree",
+    "bootstrap_type": "Bayesian",
+    "bagging_temperature": 1,
+    "random_strength": 1,
+    "rsm": 1,
+    "border_count": 64,
+    "boost_from_average": true,
+    "od_type": "Iter",
+    "od_wait": 150,
+    "use_best_model": true,
+    "thread_count": 16,
+    "allow_writing_files": false,
+    "verbose": false
+  },
+  "sequence_dropout": 0.4,
+  "thermo_hidden": 16,
+  "thermo_dropout": 0.5,
+  "policy": "iteration 17 of 20 (first 3 exploration); five-fold training-only affine calibration then three final fits; no extra candidates; original search budget 20 iterations",
+  "dependencies": {
+    "torch": "2.9.0",
+    "numpy": "2.5.2",
+    "pandas": "2.3.1",
+    "scikit-learn": "1.7.1",
+    "catboost": "1.2.10",
+    "ViennaRNA": "2.7.2"
+  },
+  "label_mean": 0.5518523676880223
+}

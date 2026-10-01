@@ -24,6 +24,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN python3 -m pip install --no-cache-dir --upgrade pip
 
+# Package versions observed in the revision training image.
+COPY requirements.frozen.txt /opt/sirbench-requirements.frozen.txt
+ENV PIP_CONSTRAINT=/opt/sirbench-requirements.frozen.txt
+
 RUN python3 -m pip install --no-cache-dir \
     torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 

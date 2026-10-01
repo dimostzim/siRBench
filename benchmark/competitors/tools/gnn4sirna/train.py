@@ -12,6 +12,13 @@ from stellargraph.mapper import HinSAGENodeGenerator
 from stellargraph.layer import HinSAGE
 
 
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.insert(0, os.path.join(ROOT_DIR, "scripts"))
+from graph_protocol import training_graph, isolated_queries
+from keras_metrics import GlobalR2
+from keras_callbacks import RestoreBestAtEnd
+
+
 def load_processed(processed_dir):
     sirna_kmers = pd.read_csv(os.path.join(processed_dir, "sirna_kmers.txt"), header=None).set_index(0)
     mrna_path = os.path.join(processed_dir, "target_kmers.txt")
@@ -51,6 +58,7 @@ def main():
     p.add_argument("--original-params", action="store_true", help="Use upstream default hyperparameters.")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--deterministic", action="store_true")
+    p.add_argument("--transductive", action="store_true", help="Reproduce the legacy joint-graph protocol.")
     args = p.parse_args()
 
     if args.original_params:
@@ -91,23 +99,22 @@ def main():
     val_interaction = pd.DataFrame(val_df["efficiency"].values,
                                    index=val_df["siRNA"] + "_" + val_df["mRNA"])
 
-    generator = HinSAGENodeGenerator(graph, args.batch_size, [8, 4], head_node_type="interaction")
+    fit_graph = graph if args.transductive else training_graph(graph, train_interaction.index)
+    validation_graph = graph if args.transductive else isolated_queries(graph, val_interaction.index)
+    generator = HinSAGENodeGenerator(fit_graph, args.batch_size, [8, 4], head_node_type="interaction")
+    validation_generator = HinSAGENodeGenerator(validation_graph, args.batch_size, [8, 4], head_node_type="interaction")
     train_gen = generator.flow(train_interaction.index, train_interaction, shuffle=True)
-    val_gen = generator.flow(val_interaction.index, val_interaction)
+    val_gen = validation_generator.flow(val_interaction.index, val_interaction)
 
     hinsage = HinSAGE(layer_sizes=[32, 16], generator=generator, bias=True, dropout=0.15)
     x_inp, x_out = hinsage.in_out_tensors()
     prediction = tf.keras.layers.Dense(units=1)(x_out)
     model = tf.keras.Model(inputs=x_inp, outputs=prediction)
-    def r2_metric(y_true, y_pred):
-        ss_res = tf.reduce_sum(tf.square(y_true - y_pred))
-        ss_tot = tf.reduce_sum(tf.square(y_true - tf.reduce_mean(y_true)))
-        return tf.where(tf.equal(ss_tot, 0.0), 0.0, 1.0 - ss_res / ss_tot)
 
     model.compile(
         optimizer=tf.keras.optimizers.Adamax(learning_rate=args.lr),
         loss=args.loss,
-        metrics=[r2_metric],
+        metrics=[GlobalR2()],
     )
 
     callbacks = []
@@ -116,7 +123,7 @@ def main():
         if mode == "auto":
             mode = "min" if "loss" in args.early_stop_metric else "max"
         callbacks.append(
-            tf.keras.callbacks.EarlyStopping(
+            RestoreBestAtEnd(
                 monitor=args.early_stop_metric,
                 patience=args.early_stopping,
                 mode=mode,
@@ -124,13 +131,21 @@ def main():
             )
         )
 
-    model.fit(train_gen, epochs=args.epochs, validation_data=val_gen, verbose=2, shuffle=False, callbacks=callbacks)
+    history = model.fit(train_gen, epochs=args.epochs, validation_data=val_gen, verbose=2, shuffle=False, callbacks=callbacks)
 
     os.makedirs(args.model_dir, exist_ok=True)
+    pd.DataFrame(history.history).to_csv(os.path.join(args.model_dir, "history.csv"), index_label="epoch_zero_based")
     model_path = os.path.join(args.model_dir, "model.keras")
     model.save(model_path)
 
     meta = {
+        "graph_protocol": "transductive" if args.transductive else "inductive",
+        "seed": args.seed,
+        "configuration": vars(args),
+        "optimizer": "Adamax (published Table 1; repository executable uses Adam)",
+        "epochs_completed": len(history.epoch),
+        "best_validation_epoch_zero_based": int(np.argmax(history.history["val_r2_metric"])),
+        "validation_r2": "global, accumulated over all batches",
         "train_csv": os.path.abspath(args.train_csv),
         "val_csv": os.path.abspath(args.val_csv) if args.val_csv else None,
         "test_csv": None,

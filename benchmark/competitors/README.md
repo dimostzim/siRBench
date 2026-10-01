@@ -1,3 +1,5 @@
+> For the revised paper, start with [the current reproduction guide](../../REPRODUCING.md#six-published-predictors). Use corrected version 2 partitions and `--run-dir` for a fresh run. The commands below retain the legacy wrapper interface.
+
 # siRBench competitors
 
 Unified wrappers to prepare/train/test competitor models. Commands run inside Docker by default.

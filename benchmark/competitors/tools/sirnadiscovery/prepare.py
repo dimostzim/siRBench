@@ -32,7 +32,7 @@ def main():
     dataset_name = args.dataset_name or os.path.splitext(os.path.basename(args.input_csv))[0]
 
     if args.id_col not in df.columns:
-        df[args.id_col] = [f"row_{i}" for i in range(len(df))]
+        df[args.id_col] = df["record_id"] if "record_id" in df.columns else [f"row_{i}" for i in range(len(df))]
 
     df[args.sirna_col] = df[args.sirna_col].astype(str).str.upper().str.replace('T', 'U')
     df[args.mrna_col] = df[args.mrna_col].astype(str).str.upper().str.replace('T', 'U')

@@ -17,6 +17,12 @@ if [[ "$*" == *"--docker"* ]]; then
         exit 1
     fi
 
+    VIENNA_ARCHIVE="${CKPT_DIR}/ViennaRNA-2.6.4.tar.gz"
+    if [ ! -f "${VIENNA_ARCHIVE}" ]; then
+        wget -O "${VIENNA_ARCHIVE}" https://github.com/ViennaRNA/ViennaRNA/releases/download/v2.6.4/ViennaRNA-2.6.4.tar.gz
+    fi
+    echo "3a997a6aa6a3ce1af4898aa559acb053e820aa74bac06ef7726b9aa97a053788  ${VIENNA_ARCHIVE}" | sha256sum --check
+
     BUILD_ARGS=""
     [ -n "$http_proxy" ] && BUILD_ARGS="$BUILD_ARGS --build-arg http_proxy=$http_proxy"
     [ -n "$https_proxy" ] && BUILD_ARGS="$BUILD_ARGS --build-arg https_proxy=$https_proxy"
@@ -24,52 +30,19 @@ if [[ "$*" == *"--docker"* ]]; then
     [ -n "$HTTPS_PROXY" ] && BUILD_ARGS="$BUILD_ARGS --build-arg HTTPS_PROXY=$HTTPS_PROXY"
 
     ROSETTA_DIR="${ROSETTA_DIR:-$(pwd)/rosetta}"
-    ROSETTA_DB_FILE="${ROSETTA_DIR}/database/chemical/residue_type_sets/fa_standard/residue_types.txt"
-    if [ ! -f "${ROSETTA_DB_FILE}" ]; then
-        if [ -x "./fetch_rosetta.sh" ]; then
-            if [ -d "${ROSETTA_DIR}" ]; then
-                echo "Rosetta database missing; re-downloading the default Rosetta bundle (with database)."
-            else
-                echo "Rosetta not found; downloading the default Rosetta bundle (with database)."
-            fi
-            ROSETTA_OUT_DIR="${ROSETTA_DIR}" ./fetch_rosetta.sh
-        else
-            echo "fetch_rosetta.sh is not executable."
-            exit 1
-        fi
-    fi
-    RNA_DENOVO="${ROSETTA_DIR}/main/source/bin/rna_denovo.static.linuxgccrelease"
-    if [ ! -e "${RNA_DENOVO}" ]; then
-        if [ -x "./fetch_rosetta.sh" ]; then
-            echo "Rosetta rna_denovo missing; re-downloading the default Rosetta bundle."
-            ROSETTA_OUT_DIR="${ROSETTA_DIR}" ./fetch_rosetta.sh
-        else
-            echo "fetch_rosetta.sh is not executable."
-            exit 1
-        fi
-    fi
-    EXTRACT_PDBS="$(find "${ROSETTA_DIR}/main/source/bin" -maxdepth 1 -name 'extract_pdbs*linux*release' -print -quit)"
-    if [ -z "${EXTRACT_PDBS}" ]; then
-        if [ -x "./fetch_rosetta.sh" ]; then
-            echo "Rosetta extract_pdbs missing; re-downloading the default Rosetta bundle."
-            ROSETTA_OUT_DIR="${ROSETTA_DIR}" ./fetch_rosetta.sh
-        else
-            echo "fetch_rosetta.sh is not executable."
-            exit 1
-        fi
-    fi
-    BIN_DIR="${ROSETTA_DIR}/main/source/bin"
-    EXTRACT_STATIC="${BIN_DIR}/extract_pdbs.static.linuxgccrelease"
-    EXTRACT_BIN="${BIN_DIR}/extract_pdbs.linuxgccrelease"
-    if [ -f "${EXTRACT_STATIC}" ] && [ ! -e "${EXTRACT_BIN}" ]; then
-        (cd "${BIN_DIR}" && ln -s extract_pdbs.static.linuxgccrelease extract_pdbs.linuxgccrelease)
-    fi
+    ROSETTA_OUT_DIR="${ROSETTA_DIR}" ./fetch_rosetta.sh
 
     docker build --platform linux/amd64 $BUILD_ARGS -t "$image_tag" .
 fi
 
 if [ ! -d "ensirna_src" ]; then
-    git clone https://github.com/tanwenchong/ENsiRNA.git ensirna_src
+    git clone --no-checkout https://github.com/tanwenchong/ENsiRNA.git ensirna_src
+    git -C ensirna_src checkout --detach 028824341635903f3c661f5d1cc737de106493d5
+fi
+
+if [ "$(git -C ensirna_src rev-parse HEAD)" != "028824341635903f3c661f5d1cc737de106493d5" ]; then
+    echo "ENsiRNA source must be pinned to 028824341635903f3c661f5d1cc737de106493d5." >&2
+    exit 1
 fi
 
 PATCH_FILE="$(pwd)/patches/get_pdb.py"
@@ -107,3 +80,9 @@ TARGET_FILE="$(pwd)/ensirna_src/ENsiRNA/utils/random_seed.py"
 if [ -f "${PATCH_FILE}" ]; then
     cp "${PATCH_FILE}" "${TARGET_FILE}"
 fi
+
+PATCH_FILE="$(pwd)/patches/RNAmaskModel_trainer.py"
+TARGET_FILE="$(pwd)/ensirna_src/ENsiRNA/trainer/RNAmaskModel_trainer.py"
+cp "${PATCH_FILE}" "${TARGET_FILE}"
+
+cp patches/embedding_utils.py ensirna_src/ENsiRNA/data/embedding_utils.py

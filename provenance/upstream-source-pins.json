@@ -1,0 +1,11 @@
+{
+  "upstream-attsioff-commit.txt": "f1d8ed6fdd93cc2708d910a411c26d3f3fdf08db",
+  "upstream-ensirna-commit.txt": "028824341635903f3c661f5d1cc737de106493d5",
+  "upstream-gnn4sirna-commit.txt": "5247663c6eb3a4939f1eb7f385f9be91d6324d60",
+  "upstream-oligoformer-commit.txt": "e2f53ad63387bbe166bf123949151e2bc9bf6ec3",
+  "upstream-rnafm-attsioff-commit.txt": "348951516e0963d22bbb33b3c9fc18c89081d38e",
+  "upstream-rnafm-ensirna-commit.txt": "348951516e0963d22bbb33b3c9fc18c89081d38e",
+  "upstream-rnafm-oligoformer-commit.txt": "348951516e0963d22bbb33b3c9fc18c89081d38e",
+  "upstream-sirnabert-commit.txt": "00c849af12bbfad59efd106b6a28b0dfc766ac33",
+  "upstream-sirnadiscovery-commit.txt": "ef4741194e6b7773c07cd7ef934b1ee52d9e7d00"
+}

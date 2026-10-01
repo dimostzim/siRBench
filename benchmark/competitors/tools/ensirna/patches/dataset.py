@@ -18,6 +18,7 @@ from utils.rna_utils import SIRNA, VOCAB ,RNAFeature
 import RNA
 #python -m data.dataset --dataset /public2022/tanwenchong/rna/alldata/train.json --save_dir /public2022/tanwenchong/rna/alldata
 import fm
+from data.embedding_utils import pad_mrna_embedding
 device = 'cuda'
 model, alphabet = fm.pretrained.rna_fm_t12()
 batch_converter = alphabet.get_batch_converter()
@@ -295,9 +296,13 @@ class E2EDataset(torch.utils.data.Dataset):
                 cplx = SIRNA.from_pdb(
                     item['pdb_data_path'])
             except AssertionError as e:
-                print_log(e, level='ERROR')
-                print_log(f'parse {item["pdb"]} pdb failed, skip', level='ERROR')
-                continue
+                raise ValueError(f'Cannot parse PDB for input {item.get("id", item["pdb"])}') from e
+
+            for chain_name, sequence in (("A", item["sense seq"]), ("B", item["anti seq"])):
+                chain = cplx.get_chain(chain_name)
+                if chain is None or chain.get_seq().upper().replace("T", "U") != sequence.upper().replace("T", "U"):
+                    raise ValueError(f"PDB chain {chain_name} does not match sequence for {item['id']}")
+            cplx.benchmark_record_id = item["id"]
 
             # NOTE: sec_pos and chain from JSONL are ignored; we regenerate them
             # in __getitem__ to match the actual S structure
@@ -388,20 +393,15 @@ class E2EDataset(torch.utils.data.Dataset):
             with torch.no_grad():
                 results = model(batch_tokens.to(device=device), repr_layers=[12])
                 mrna_anti_embeddings = results["representations"][12][0][:-1].cpu()
-            if left_padlen > 0:
-                mrna_anti_embeddings = torch.cat([torch.zeros(left_padlen,mrna_anti_embeddings.shape[1]),mrna_anti_embeddings],dim=0)
-            if right_padlen > 0:
-                mid_embeddings = torch.cat([mrna_anti_embeddings[:1+len(real_mrna)+left_padlen],torch.zeros(right_padlen,mrna_anti_embeddings.shape[1])],dim=0)
-                mrna_anti_embeddings = torch.cat([mid_embeddings,mrna_anti_embeddings[1+len(real_mrna)+left_padlen:]],dim=0)
+            mrna_anti_embeddings = pad_mrna_embedding(
+                mrna_anti_embeddings, len(real_mrna), left_padlen, right_padlen)
             # mrna_seq
             batch_labels, batch_strs, batch_tokens = batch_converter(mrna_seq)
             with torch.no_grad():
                 results = model(batch_tokens.to(device=device), repr_layers=[12])
                 mrna_embeddings = results["representations"][12][0][:-1].cpu()
-            if left_padlen > 0:
-                mrna_embeddings = torch.cat([torch.zeros(left_padlen,mrna_embeddings.shape[1]),mrna_embeddings],dim=0)
-            if right_padlen > 0:
-                mrna_embeddings = torch.cat([mrna_embeddings,torch.zeros(right_padlen,mrna_embeddings.shape[1])],dim=0)
+            mrna_embeddings = pad_mrna_embedding(
+                mrna_embeddings, len(real_mrna), left_padlen, right_padlen)
             # sense_seq
             batch_labels, batch_strs, batch_tokens = batch_converter(sense_seq)
             with torch.no_grad():

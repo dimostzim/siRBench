@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import argparse
+import json
 import os
 import sys
 
@@ -14,10 +15,15 @@ sys.path.insert(0, SCRIPTS_DIR)
 from metrics import format_metrics, regression_metrics, save_metrics
 
 
-def load_modules(src_root):
+def load_modules(src_root, correct_position_encoding=False):
     sys.path.insert(0, src_root)
     import load_data as ld
-    from model import RNAFM_SIPRED_2
+    from model import RNAFM_SIPRED_2, PositionalEncoding
+
+    if correct_position_encoding:
+        def sequence_positions(self, x):
+            return x + self.pe[:, :x.size(0)].transpose(0, 1)
+        PositionalEncoding.forward = sequence_positions
 
     def pad_rnafm(arr, target_len):
         pad_dtype = arr.dtype
@@ -69,7 +75,7 @@ def _col_or_zeros(df, col):
     return np.zeros(len(df))
 
 
-def build_dataset(df, create_pssm):
+def build_dataset(df, create_pssm, pssm=None):
     data = {
         'seq': np.array(df['Antisense']),
         'mrna': np.array(df['mrna']),
@@ -79,7 +85,8 @@ def build_dataset(df, create_pssm):
         'inhibition': np.array(df['inhibition']),
         'RNAFM_ind': np.array(df['RNAFM_ind']),
     }
-    pssm = create_pssm(data['seq'])
+    if pssm is None:
+        pssm = create_pssm(data['seq'])
     return data, pssm
 
 
@@ -92,16 +99,25 @@ def main():
     p.add_argument("--metrics-json", default=None)
     p.add_argument("--batch-size", type=int, default=32)
     p.add_argument("--cuda", default="0")
+    p.add_argument("--legacy-pool-pssm", action="store_true", default=None, help="Fit PSSM separately on each evaluation pool, reproducing the upstream transductive feature.")
     p.add_argument("--src-root", default="attsioff_src")
     args = p.parse_args()
 
     data_dir = args.data_dir or os.path.dirname(os.path.abspath(args.test_csv))
     os.chdir(data_dir)
     src_root = os.path.abspath(os.path.join(os.path.dirname(__file__), args.src_root))
-    RNAFM_SIPRED_2, Generate_dataset, create_pssm = load_modules(src_root)
+    meta_path = os.path.join(os.path.dirname(args.model_path), "train_meta.json")
+    with open(meta_path) as handle:
+        train_meta = json.load(handle)
+    if args.legacy_pool_pssm is None:
+        args.legacy_pool_pssm = train_meta.get("pssm_protocol") == "evaluation-pool"
+    corrected_positions = train_meta.get("position_encoding", "upstream-batch") == "nucleotide"
+    RNAFM_SIPRED_2, Generate_dataset, create_pssm = load_modules(src_root, corrected_positions)
 
     df = pd.read_csv(args.test_csv)
-    data, pssm = build_dataset(df, create_pssm)
+    pssm = None if args.legacy_pool_pssm else np.load(
+        os.path.join(os.path.dirname(args.model_path), "training_pssm.npy"), allow_pickle=False)
+    data, pssm = build_dataset(df, create_pssm, pssm)
     testset = Generate_dataset(args, data, pssm)
     test_loader = DataLoader(testset, batch_size=args.batch_size, shuffle=False, drop_last=False)
 

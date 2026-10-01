@@ -1,0 +1,20 @@
+[project]
+name = "sirbench-reproduction"
+version = "2.0.0"
+description = "Corrected siRBench dataset, protocols and result verification"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "numpy==2.3.5",
+  "pandas==2.3.1",
+  "scipy==1.16.3",
+  "scikit-learn==1.7.1",
+  "matplotlib==3.10.6",
+  "biopython==1.85",
+  "pytest==8.4.2",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "benchmark/revision/tests"]

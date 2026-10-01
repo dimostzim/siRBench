@@ -13,6 +13,7 @@ ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SCRIPTS_DIR = os.path.join(ROOT_DIR, "scripts")
 sys.path.insert(0, SCRIPTS_DIR)
 from metrics import format_metrics, regression_metrics, save_metrics
+from graph_protocol import isolated_queries
 
 
 def load_processed(processed_dir):
@@ -45,6 +46,7 @@ def main():
     p.add_argument("--output-csv", default="predictions.csv")
     p.add_argument("--metrics-json", default=None)
     p.add_argument("--batch-size", type=int, default=64)
+    p.add_argument("--transductive", action="store_true", help="Reproduce legacy joint evaluation graphs.")
     args = p.parse_args()
 
     graph = load_processed(args.processed_dir)
@@ -52,6 +54,8 @@ def main():
     test_interaction = pd.DataFrame(test_df["efficiency"].values,
                                     index=test_df["siRNA"] + "_" + test_df["mRNA"])
 
+    if not args.transductive:
+        graph = isolated_queries(graph, test_interaction.index)
     generator = HinSAGENodeGenerator(graph, args.batch_size, [8, 4], head_node_type="interaction")
     test_gen = generator.flow(test_interaction.index, test_interaction)
 

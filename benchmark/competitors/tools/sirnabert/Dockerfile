@@ -19,6 +19,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN python3 -m pip install --no-cache-dir --upgrade pip
 
+# Package versions observed in the revision training image.
+COPY requirements.frozen.txt /opt/sirbench-requirements.frozen.txt
+ENV PIP_CONSTRAINT=/opt/sirbench-requirements.frozen.txt
+
 RUN python3 -m pip install --no-cache-dir \
     torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
@@ -32,13 +36,17 @@ from transformers import AutoModel, AutoTokenizer
 import os
 
 model_id = "zhihan1996/DNA_bert_6"
+revision = "c56e67ea5827e0ddc67ef059addcf71569b1216e"
 target = os.environ.get("BERT_DIR", "/opt/dnabert/6mer")
 os.makedirs(target, exist_ok=True)
 
-tokenizer = AutoTokenizer.from_pretrained(model_id)
+tokenizer = AutoTokenizer.from_pretrained(model_id, revision=revision)
 tokenizer.save_pretrained(target)
-model = AutoModel.from_pretrained(model_id)
+model = AutoModel.from_pretrained(model_id, revision=revision)
 model.save_pretrained(target)
+# Training runs as the invoking host user, not the image-build user.
+for name in os.listdir(target):
+    os.chmod(os.path.join(target, name), 0o644)
 PY
 
 WORKDIR /work/competitors/tools/sirnabert

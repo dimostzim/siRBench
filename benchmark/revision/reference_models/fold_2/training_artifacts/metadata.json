@@ -1,0 +1,112 @@
+{
+  "target": {
+    "mean": 0.549930486593843,
+    "population_std": 0.18340727232384393,
+    "scale": 0.18340727232384393
+  },
+  "seed": 0,
+  "config": {
+    "iteration": 15,
+    "total_iteration_budget": 20,
+    "exploration_iterations": 3,
+    "constituent_count": 1,
+    "architecture": {
+      "guide_channels": 32,
+      "kernel_width": 5,
+      "hidden_width": 32
+    },
+    "candidates": [
+      {
+        "dropout": 0.0,
+        "learning_rate": 0.00015,
+        "weight_decay": 0.1
+      },
+      {
+        "dropout": 0.0,
+        "learning_rate": 0.0003,
+        "weight_decay": 0.1
+      },
+      {
+        "dropout": 0.1,
+        "learning_rate": 0.00015,
+        "weight_decay": 0.1
+      },
+      {
+        "dropout": 0.1,
+        "learning_rate": 0.0003,
+        "weight_decay": 0.1
+      },
+      {
+        "dropout": 0.2,
+        "learning_rate": 0.00015,
+        "weight_decay": 0.1
+      },
+      {
+        "dropout": 0.2,
+        "learning_rate": 0.0003,
+        "weight_decay": 0.1
+      }
+    ],
+    "optimizer": {
+      "name": "AdamW",
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "eps": 1e-08,
+      "decay_weights_only": true,
+      "lr": "candidate.learning_rate",
+      "weight_decay": 0.1
+    },
+    "scheduler": {
+      "name": "CosineAnnealingLR",
+      "T_max": 100,
+      "eta_min": 1e-05,
+      "step": "after_epoch"
+    },
+    "loss": "MSE on training-standardized targets",
+    "target_scale": "training population SD; 1 for constant labels",
+    "batch_size": 64,
+    "dtype": "float32",
+    "gradient_clip_norm": 1.0,
+    "max_epochs": 100,
+    "patience": 20,
+    "improvement": "strict global original-scale validation R2",
+    "selection": "highest restored standalone R2; exact ties: larger dropout, smaller learning rate, earlier epoch",
+    "seed_env": "AGENTOMICS_TRAIN_SEED",
+    "default_seed": 0,
+    "reset_seed_per_candidate": true,
+    "threads": 16,
+    "interop_threads": 1,
+    "workers": 0,
+    "gpu_memory_bytes": 7516192768,
+    "outputs": "inverse transformed, unclipped; no calibration or averaging",
+    "search_policy": "six predeclared sequential candidates only; preserve supplied split; retain winning checkpoint only",
+    "control": {
+      "dropout": 0.2,
+      "learning_rate": 0.0003,
+      "weight_decay": 0.1,
+      "reference_R2": 0.35805116,
+      "tolerance": 1e-06,
+      "on_discrepancy": "audit implementation, initialization, scheduler and checkpoint logic; no seed tuning"
+    },
+    "deterministic": true,
+    "tf32": false,
+    "architecture_notes": "Shared flank Conv1d(5,16,5,padding=2)+GELU, independent flank mean/max pools; biased positional Linear(266,1); zero-initialized final nonlinear layer; preserve module creation order."
+  },
+  "selected": {
+    "dropout": 0.0,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.1,
+    "best_epoch": 22,
+    "stopping_epoch": 42,
+    "R2": 0.3824308801561441,
+    "Pearson": 0.6333055807836888
+  },
+  "versions": {
+    "numpy": "2.5.2",
+    "torch": "2.9.0+cu128",
+    "scikit-learn": "1.7.1"
+  },
+  "constituent_count": 1
+}

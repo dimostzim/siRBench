@@ -1,3 +1,5 @@
+> This is the historical metadata-aware predictor, not the revised fold-specific Agentomics models. See [the current model guide](../benchmark/revision/reference_models/README.md).
+
 # siRBench-model
 
 Baseline model for siRBench (XGBoost + LightGBM with calibration).

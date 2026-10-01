@@ -65,6 +65,7 @@ def eval_epoch(model, loader, criterion, device):
     total_loss = 0.0
     count = 0
     all_labels = []
+    all_efficacies = []
     all_probs = []
     all_preds = []
     with torch.no_grad():
@@ -80,6 +81,7 @@ def eval_epoch(model, loader, criterion, device):
             pred, _, _ = model(siRNA, mRNA, siRNA_FM, mRNA_FM, td)
             loss = criterion(pred[:, 1], label)
             all_labels.extend(y.detach().cpu().numpy().tolist())
+            all_efficacies.extend(label.detach().cpu().numpy().tolist())
             all_probs.extend(pred[:, 1].detach().cpu().numpy().tolist())
             all_preds.extend(pred[:, 1].detach().cpu().numpy().tolist())
             total_loss += loss.item() * label.shape[0]
@@ -93,7 +95,7 @@ def eval_epoch(model, loader, criterion, device):
     r2 = None
     try:
         if len(all_labels) > 1:
-            y_true = np.array(all_labels, dtype=float)
+            y_true = np.array(all_efficacies, dtype=float)
             y_pred = np.array(all_preds, dtype=float)
             ss_res = np.sum((y_true - y_pred) ** 2)
             ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
@@ -204,7 +206,10 @@ def main():
             best_epoch = epoch
             torch.save(model.state_dict(), best_path)
         print(f"epoch={epoch} train_loss={train_loss:.6f} val_loss={val_loss:.6f} val_auc={val_auc} val_r2={val_r2}")
-        if args.early_stopping and epoch - best_epoch > args.early_stopping:
+        stalled_epochs = epoch - best_epoch
+        patience_exhausted = (stalled_epochs > args.early_stopping if args.original_params
+                              else stalled_epochs >= args.early_stopping)
+        if args.early_stopping and patience_exhausted:
             break
 
     meta = {
@@ -219,6 +224,9 @@ def main():
         "lr": args.lr,
         "weight_decay": args.weight_decay,
         "early_stopping": args.early_stopping,
+        "early_stop_metric": args.early_stop_metric,
+        "best_epoch": best_epoch,
+        "best_validation_r2": best_r2,
         "seed": args.seed,
     }
     with open(os.path.join(args.model_dir, "train_meta.json"), "w") as f:

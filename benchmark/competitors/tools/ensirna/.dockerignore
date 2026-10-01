@@ -1,0 +1,5 @@
+*
+!Dockerfile
+!checkpoints/
+!checkpoints/RNA-FM_pretrained.pth
+!checkpoints/ViennaRNA-2.6.4.tar.gz

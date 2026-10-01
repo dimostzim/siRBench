@@ -1,0 +1,146 @@
+{
+  "iteration": 16,
+  "total_iterations": 20,
+  "exploration_iterations_included": 3,
+  "search_budget": "Exactly eight sequential component fits: frozen A and B plus six C configurations; exactly fifteen inference alternatives. No extra fits or seed search.",
+  "seed_environment": "AGENTOMICS_TRAIN_SEED",
+  "default_seed": 0,
+  "search_seed": 0,
+  "component_seed_rule": "Reset all RNGs to the same requested base seed before each stochastic fit",
+  "A": {
+    "architecture": "Centered polynomial kernel ridge regression",
+    "feature_dimension": 3506,
+    "w_pair": 0.25,
+    "w_flank": 0.25,
+    "beta": 1.0,
+    "eta": 0.3,
+    "alpha": 3.0,
+    "kernel": "Q + Q**2 + 0.3*Q**3 (elementwise)",
+    "normalization": "Training-only mu and global s2; Z=(X-mu)/sqrt(s2)",
+    "solver": "CPU float64 Cholesky; (H K H + 3 I) dual = y - training_mean(y)",
+    "intercept": "unpenalized training label mean",
+    "stopping": "one direct solve; verify residual; no epochs",
+    "inference_batch_size": 128
+  },
+  "B": {
+    "architecture": "SequenceRegressor from local network.py, unchanged initialization",
+    "channels": 32,
+    "dropout": 0.1,
+    "guide_kernels": [
+      3,
+      5
+    ],
+    "shared_flank_kernel": 3,
+    "activation": "GELU",
+    "readout_input": 2560,
+    "positional_skip_input": 266,
+    "skip_initialization": "zero weights and bias",
+    "output": "unbounded scalar standardized efficacy",
+    "target_scaling": "training-only mean and population SD",
+    "loss": "standardized-target MSE",
+    "optimizer": "AdamW",
+    "learning_rate": 0.001,
+    "weight_decay_weights": 0.01,
+    "weight_decay_biases": 0.0,
+    "batch_size": 64,
+    "gradient_clip_norm": 5.0,
+    "scheduler": "CosineAnnealingLR",
+    "T_max": 100,
+    "eta_min": 1e-05,
+    "max_epochs": 100,
+    "early_stopping_patience": 20,
+    "checkpoint": "strict best global original-scale validation R2, restored",
+    "num_workers": 0,
+    "deterministic": true,
+    "cudnn_benchmark": false
+  },
+  "alternatives": [
+    "A",
+    "B",
+    "(A+B)/2",
+    "C_d4_l10",
+    "C_d4_l30",
+    "C_d4_l100",
+    "C_d6_l10",
+    "C_d6_l30",
+    "C_d6_l100",
+    "(A+B+C_d4_l10)/3",
+    "(A+B+C_d4_l30)/3",
+    "(A+B+C_d4_l100)/3",
+    "(A+B+C_d6_l10)/3",
+    "(A+B+C_d6_l30)/3",
+    "(A+B+C_d6_l100)/3"
+  ],
+  "averaging_scale": "original efficacy; invert B standardization first; no clipping",
+  "selection": "Maximum global original-scale validation R2; exact ties: fewer constituents, then A alone, then shallower C depth and larger l2_leaf_reg. No validation fitting of averaging weights.",
+  "cnn_checkpoint_selection": "B standalone R2, never ensemble score",
+  "maximum_retained_predictors": 3,
+  "retain": "only selected components",
+  "cpu_threads": 16,
+  "gpu_device": 0,
+  "gpu_memory_bytes": 7516192768,
+  "gpu_policy": "Set torch.cuda.set_per_process_memory_fraction(min(1.0, (7*1024**3)/torch.cuda.get_device_properties(0).total_memory), device=0) before CUDA allocation. Log any OOM; reduce batch size rather than budget.",
+  "validation_use": "selection only, no fitted weights, calibration or preprocessing",
+  "status": "architecture fixed; full training and final selection pending",
+  "C": {
+    "architecture": "CatBoostRegressor",
+    "version": "1.2.8",
+    "feature_dimension": 1058,
+    "feature_scaling": "raw engineered fixed scales; no learned normalization",
+    "target_scaling": "none",
+    "fixed_parameters": {
+      "loss_function": "RMSE",
+      "eval_metric": "RMSE",
+      "learning_rate": 0.03,
+      "iterations": 3000,
+      "boosting_type": "Plain",
+      "grow_policy": "SymmetricTree",
+      "bootstrap_type": "Bernoulli",
+      "subsample": 0.8,
+      "random_strength": 0.5,
+      "border_count": 32,
+      "task_type": "CPU",
+      "thread_count": 16,
+      "allow_writing_files": false
+    },
+    "fit_parameters": {
+      "early_stopping_rounds": 200,
+      "use_best_model": true
+    },
+    "random_seed": "AGENTOMICS_TRAIN_SEED integer, default 0",
+    "configurations": [
+      {
+        "name": "C_d4_l10",
+        "depth": 4,
+        "l2_leaf_reg": 10
+      },
+      {
+        "name": "C_d4_l30",
+        "depth": 4,
+        "l2_leaf_reg": 30
+      },
+      {
+        "name": "C_d4_l100",
+        "depth": 4,
+        "l2_leaf_reg": 100
+      },
+      {
+        "name": "C_d6_l10",
+        "depth": 6,
+        "l2_leaf_reg": 10
+      },
+      {
+        "name": "C_d6_l30",
+        "depth": 6,
+        "l2_leaf_reg": 30
+      },
+      {
+        "name": "C_d6_l100",
+        "depth": 6,
+        "l2_leaf_reg": 100
+      }
+    ],
+    "stopping": "Maximum 3000 trees, patience 200 validation RMSE rounds; best tree count restored. On a fixed validation label vector, minimum global RMSE is equivalent to maximum global R2. No neural epoch limit on trees."
+  },
+  "actual_seed": 0
+}

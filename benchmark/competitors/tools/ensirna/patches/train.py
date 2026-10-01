@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 import os
+import json
 import re
 import argparse
 import torch
@@ -32,6 +33,7 @@ def parse():
     parser.add_argument('--batch_size', type=int, required=True, help='batch size')
     parser.add_argument('--patience', type=int, default=1000, help='patience before early stopping (set with a large number to turn off early stopping)')
     parser.add_argument('--save_topk', type=int, default=10, help='save topk checkpoint. -1 for saving all ckpt that has a better validation metric than its previous epoch')
+    parser.add_argument('--legacy_stopping', action='store_true', help='Published previous-epoch patience semantics for sensitivity analysis')
     parser.add_argument('--shuffle', action='store_true', help='shuffle data')
     parser.add_argument('--num_workers', type=int, default=4)
     parser.add_argument('--val_metric', type=str, default='loss', choices=['loss', 'pearson', 'r2'],
@@ -75,6 +77,7 @@ def main(args):
 
     ########## define your model/trainer/trainconfig #########
     config = TrainConfig(**vars(args))
+    config.add_parameter(seed=SEED, prefetch_factor=1 if args.num_workers else None)
     if args.val_metric in ('pearson', 'r2'):
         config.metric_min_better = False
     else:
@@ -116,6 +119,7 @@ def main(args):
 
     train_loader = DataLoader(train_set, batch_size=args.batch_size,
                               num_workers=args.num_workers,
+                              prefetch_factor=1 if args.num_workers else None,
                               shuffle=(args.shuffle and train_sampler is None),
                               sampler=train_sampler,
                               collate_fn=collate_fn,
@@ -123,12 +127,23 @@ def main(args):
                               generator=g)
     valid_loader = DataLoader(valid_set, batch_size=args.batch_size,
                               num_workers=args.num_workers,
+                              prefetch_factor=1 if args.num_workers else None,
                               collate_fn=collate_fn,
                               worker_init_fn=seed_worker,
                               generator=g)
     
     trainer = Trainer(model, train_loader, valid_loader, config)
     trainer.train(args.gpus, args.local_rank)
+    if args.local_rank in (-1, 0):
+        best_metric, best_checkpoint = trainer.topk_ckpt_map[0]
+        metadata = {"config": config.__dict__, "completed_epochs": trainer.epoch,
+                    "completed_steps": trainer.global_step,
+                    "best_validation_metric": float(best_metric),
+                    "selected_checkpoint": best_checkpoint}
+        output = os.path.join(config.save_dir, "training_metadata.json")
+        with open(output + ".tmp", "w") as handle:
+            json.dump(metadata, handle, indent=2)
+        os.replace(output + ".tmp", output)
 
 
 if __name__ == '__main__':

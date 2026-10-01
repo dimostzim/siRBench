@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import argparse
+import hashlib
 import os
 import shutil
 import subprocess
@@ -28,24 +29,24 @@ def run_rnafm(rnafm_root, fasta_path, out_dir):
     subprocess.check_call(cmd, cwd=workdir)
 
 
-def _has_embeddings(root):
-    if not os.path.isdir(root):
-        return False
-    rep_dir = os.path.join(root, "representations")
-    if os.path.isdir(rep_dir):
-        for name in os.listdir(rep_dir):
-            if name.endswith(".npy"):
-                return True
-    for name in os.listdir(root):
-        if name.endswith(".npy"):
-            return True
-    return False
+def embedding_path(root, identifier):
+    for directory in (root, os.path.join(root, "representations")):
+        path = os.path.join(directory, f"{identifier}.npy")
+        if os.path.isfile(path):
+            return path
+    return None
 
 
-def rnafm_ready(output_dir):
-    sirna_dir = os.path.join(output_dir, "data", "RNAFM_sirna")
-    mrna_dir = os.path.join(output_dir, "data", "RNAFM_mrna")
-    return _has_embeddings(sirna_dir) and _has_embeddings(mrna_dir)
+def extract_missing(rnafm_root, rows, out_dir, fasta_path, force=False):
+    missing = [(identifier, sequence) for identifier, sequence in rows
+               if force or embedding_path(out_dir, identifier) is None]
+    if missing:
+        write_fasta(fasta_path, missing)
+        run_rnafm(rnafm_root, fasta_path, out_dir)
+    absent = [identifier for identifier, _ in rows
+              if embedding_path(out_dir, identifier) is None]
+    if absent:
+        raise FileNotFoundError(f"RNA-FM did not produce {len(absent)} embeddings; first: {absent[0]}")
 
 
 def flatten_rnafm(root):
@@ -60,7 +61,7 @@ def flatten_rnafm(root):
         if os.path.exists(dst):
             continue
         try:
-            os.symlink(src, dst)
+            os.symlink(os.path.relpath(src, root), dst)
         except OSError:
             shutil.copy2(src, dst)
 
@@ -89,7 +90,7 @@ def main():
         base = os.path.basename(args.input_csv)
         dataset_name = os.path.splitext(base)[0]
     if args.id_col not in df.columns:
-        df[args.id_col] = [f"row_{i}" for i in range(len(df))]
+        df[args.id_col] = df["record_id"] if "record_id" in df.columns else [f"row_{i}" for i in range(len(df))]
 
     df[args.sirna_col] = df[args.sirna_col].astype(str).str.upper().str.replace('T', 'U')
     df[args.mrna_col] = df[args.mrna_col].astype(str).str.upper().str.replace('T', 'U')
@@ -102,7 +103,10 @@ def main():
     ensure_col(args.dsir_col, 0.0)
     ensure_col(args.iscore_col, 0.0)
 
-    df["RNAFM_ind"] = list(range(len(df)))
+    df["RNAFM_ind"] = [
+        "pair_" + hashlib.sha256(f"{guide}|{context}".encode()).hexdigest()
+        for guide, context in zip(df[args.sirna_col], df[args.mrna_col])
+    ]
 
     out_df = pd.DataFrame({
         "Antisense": df[args.sirna_col],
@@ -122,24 +126,15 @@ def main():
     out_csv = os.path.join(args.output_dir, f"{dataset_name}.csv")
     out_df.to_csv(out_csv, index=False)
 
-    if args.run_rnafm or not rnafm_ready(args.output_dir):
-        rnafm_root = os.path.abspath(args.rnafm_root)
-        if not os.path.isdir(rnafm_root):
-            raise FileNotFoundError(f"RNA-FM not found: {rnafm_root}")
-
-        rnafm_sirna = os.path.join(data_root, "RNAFM_sirna")
-        rnafm_mrna = os.path.join(data_root, "RNAFM_mrna")
-        os.makedirs(rnafm_sirna, exist_ok=True)
-        os.makedirs(rnafm_mrna, exist_ok=True)
-
-        sirna_fa = os.path.join(data_root, "sirna.fa")
-        mrna_fa = os.path.join(data_root, "mrna.fa")
-
-        write_fasta(sirna_fa, [(f"{i:04d}", s) for i, s in enumerate(out_df["Antisense"])])
-        write_fasta(mrna_fa, [(f"{i:04d}", s) for i, s in enumerate(out_df["mrna"])])
-
-        run_rnafm(rnafm_root, sirna_fa, rnafm_sirna)
-        run_rnafm(rnafm_root, mrna_fa, rnafm_mrna)
+    rnafm_root = os.path.abspath(args.rnafm_root)
+    if not os.path.isdir(rnafm_root):
+        raise FileNotFoundError(f"RNA-FM not found: {rnafm_root}")
+    for sequence_column, subdirectory in (("Antisense", "RNAFM_sirna"), ("mrna", "RNAFM_mrna")):
+        embedding_dir = os.path.join(data_root, subdirectory)
+        os.makedirs(embedding_dir, exist_ok=True)
+        rows = list(out_df[["RNAFM_ind", sequence_column]].drop_duplicates().itertuples(index=False, name=None))
+        fasta_path = os.path.join(data_root, f"{dataset_name}_{subdirectory}.fa")
+        extract_missing(rnafm_root, rows, embedding_dir, fasta_path, args.run_rnafm)
 
     rnafm_sirna = os.path.join(data_root, "RNAFM_sirna")
     rnafm_mrna = os.path.join(data_root, "RNAFM_mrna")

@@ -15,5 +15,11 @@ if [[ "$*" == *"--docker"* ]]; then
 fi
 
 if [ ! -d "sirnadiscovery_src" ]; then
-    git clone https://github.com/BertramLoong/siRNADiscovery.git sirnadiscovery_src
+    git clone --no-checkout https://github.com/BertramLoong/siRNADiscovery.git sirnadiscovery_src
+    git -C "sirnadiscovery_src" checkout --detach ef4741194e6b7773c07cd7ef934b1ee52d9e7d00
+fi
+
+if [ "$(git -C "sirnadiscovery_src" rev-parse HEAD)" != "ef4741194e6b7773c07cd7ef934b1ee52d9e7d00" ]; then
+    echo "Expected sirnadiscovery_src at ef4741194e6b7773c07cd7ef934b1ee52d9e7d00; use a separate checkout for another version." >&2
+    exit 1
 fi

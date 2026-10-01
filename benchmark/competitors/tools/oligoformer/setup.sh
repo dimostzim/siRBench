@@ -26,9 +26,21 @@ if [[ "$*" == *"--docker"* ]]; then
 fi
 
 if [ ! -d "oligoformer_src" ]; then
-    git clone https://github.com/lulab/OligoFormer.git oligoformer_src
+    git clone --no-checkout https://github.com/lulab/OligoFormer.git oligoformer_src
+    git -C "oligoformer_src" checkout --detach e2f53ad63387bbe166bf123949151e2bc9bf6ec3
 fi
 
 if [ ! -d "oligoformer_src/RNA-FM" ]; then
-    git clone https://github.com/ml4bio/RNA-FM.git oligoformer_src/RNA-FM
+    git clone --no-checkout https://github.com/ml4bio/RNA-FM.git oligoformer_src/RNA-FM
+    git -C "oligoformer_src/RNA-FM" checkout --detach 348951516e0963d22bbb33b3c9fc18c89081d38e
+fi
+
+if [ "$(git -C "oligoformer_src" rev-parse HEAD)" != "e2f53ad63387bbe166bf123949151e2bc9bf6ec3" ]; then
+    echo "Expected oligoformer_src at e2f53ad63387bbe166bf123949151e2bc9bf6ec3; use a separate checkout for another version." >&2
+    exit 1
+fi
+
+if [ "$(git -C "oligoformer_src/RNA-FM" rev-parse HEAD)" != "348951516e0963d22bbb33b3c9fc18c89081d38e" ]; then
+    echo "Expected oligoformer_src/RNA-FM at 348951516e0963d22bbb33b3c9fc18c89081d38e; use a separate checkout for another version." >&2
+    exit 1
 fi

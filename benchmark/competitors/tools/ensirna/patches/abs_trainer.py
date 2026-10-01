@@ -67,6 +67,7 @@ class Trainer:
         self.valid_global_step = 0
         self.epoch = 0
         self.last_valid_metric = None
+        self.best_valid_metric = None
         self.topk_ckpt_map = []  # smaller index means better ckpt
         self.patience = self.config.patience
 
@@ -160,6 +161,7 @@ class Trainer:
 
         if self._metric_better(valid_metric):
             self.patience = self.config.patience
+            self.best_valid_metric = valid_metric
             if self._is_main_proc():
                 save_path = os.path.join(self.model_dir, f'epoch{self.epoch}_step{self.global_step}.ckpt')
                 module_to_save = self.model.module if self.local_rank == 0 else self.model
@@ -176,7 +178,7 @@ class Trainer:
         return valid_metric
     
     def _metric_better(self, new):
-        old = self.last_valid_metric
+        old = self.last_valid_metric if getattr(self.config, "legacy_stopping", False) else self.best_valid_metric
         if old is None:
             return True
         if self.config.metric_min_better:

@@ -24,3 +24,22 @@ benchmark/competitors/original_results/
 benchmark/competitors/updated_validation_results/
 model/__pycache__
 model/tuning_runs_r2
+
+benchmark/competitors/runs/
+benchmark/revision/__pycache__/
+benchmark/revision/tests/__pycache__/
+.pytest_cache/
+data/scripts/__pycache__/
+benchmark/competitors/tools/sirnadiscovery/scripts/__pycache__/
+
+# Local reproduction outputs and environments
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+artifacts/
+outputs/
+benchmark/competitors/runs/
+*.safetensors
+data/sirnadiscovery/RNA_AGO2/

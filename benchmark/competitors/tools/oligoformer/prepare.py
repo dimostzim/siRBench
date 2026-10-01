@@ -43,18 +43,12 @@ def calculate_dgh(seq):
 
 
 def calculate_end_diff(sirna):
-    count = 0
-    _5 = sirna[:2]
-    _3 = sirna[-2:]
-    if _5 in ['AC','AG','UC','UG']:
-        count += 1
-    elif _5 in ['GA','GU','CA','CU']:
-        count -= 1
-    if _3 in ['AC','AG','UC','UG']:
-        count += 1
-    elif _3 in ['GA','GU','CA','CU']:
-        count -= 1
-    return float('{:.2f}'.format(DeltaG[_5] - DeltaG[_3] + count * 0.45))
+    terminal_pairs = (sirna[:2], sirna[-2:])
+    terminal_au_changes = sum(
+        int(pair[0] in "AU") - int(pair[1] in "AU") for pair in terminal_pairs
+    )
+    energy_difference = DeltaG[terminal_pairs[0]] - DeltaG[terminal_pairs[1]]
+    return round(energy_difference + 0.45 * terminal_au_changes, 2)
 
 
 def td_features(seq):
@@ -145,7 +139,7 @@ def main():
         dataset_name = os.path.splitext(base)[0]
 
     if args.id_col not in df.columns:
-        df[args.id_col] = [f"row_{i}" for i in range(len(df))]
+        df[args.id_col] = df["record_id"] if "record_id" in df.columns else [f"row_{i}" for i in range(len(df))]
 
     df[args.sirna_col] = df[args.sirna_col].astype(str).str.upper().str.replace('T', 'U')
     df[args.mrna_col] = df[args.mrna_col].astype(str).str.upper().str.replace('T', 'U')

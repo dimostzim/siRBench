@@ -110,7 +110,7 @@ def main():
     dataset_name = args.dataset_name or os.path.splitext(os.path.basename(args.input_csv))[0]
 
     if args.id_col not in df.columns:
-        df[args.id_col] = [f"row_{i}" for i in range(len(df))]
+        df[args.id_col] = df["record_id"] if "record_id" in df.columns else [f"row_{i}" for i in range(len(df))]
 
     df[args.sirna_col] = df[args.sirna_col].astype(str).str.upper().str.replace('U', 'T')
     df[args.mrna_col] = df[args.mrna_col].astype(str).str.upper().str.replace('U', 'T')
@@ -135,7 +135,9 @@ def main():
     os.makedirs(raw_dir, exist_ok=True)
     sirna_fa = os.path.join(raw_dir, "sirna.fas")
     mrna_fa = os.path.join(raw_dir, "mRNA.fas")
-    write_fasta(sirna_fa, zip(out_df["siRNA"], out_df["siRNA_seq"]))
+    # The published thermodynamic script compares RNA bases; its k-mer script
+    # performs its own U-to-T conversion.
+    write_fasta(sirna_fa, zip(out_df["siRNA"], out_df["siRNA_seq"].str.replace("T", "U")))
     write_fasta(mrna_fa, zip(out_df["mRNA"], out_df["mRNA_seq"]))
 
     eff_csv = os.path.join(raw_dir, "sirna_mrna_efficacy.csv")

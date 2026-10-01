@@ -42,7 +42,7 @@ def to_container_path(path, host_root, container_root="/work"):
 
 
 def run_docker(tool, script_rel, argv, host_root, status_msg=None):
-    image = f"{tool}:latest"
+    image = f"{tool}:{os.environ.get('SIRBENCH_IMAGE_TAG', 'latest')}"
     comp_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     tool_host_dir = os.path.join(comp_root, "tools", tool)
     workdir = to_container_path(tool_host_dir, host_root)
@@ -63,7 +63,11 @@ def run_docker(tool, script_rel, argv, host_root, status_msg=None):
         "-e", "PYTHONWARNINGS=ignore::UserWarning",
         "-e", "HOME=/tmp",
         "-e", "XDG_CACHE_HOME=/tmp",
+        "-e", "TF_FORCE_GPU_ALLOW_GROWTH=true",
     ]
+    for name, default in [("OMP_NUM_THREADS", "4"), ("MKL_NUM_THREADS", "4"),
+                          ("TF_NUM_INTRAOP_THREADS", "4"), ("TF_NUM_INTEROP_THREADS", "2")]:
+        cmd.extend(["-e", f"{name}={os.environ.get(name, default)}"])
     if uid is not None and gid is not None:
         cmd.extend(["-u", f"{uid}:{gid}"])
     if torch_home:

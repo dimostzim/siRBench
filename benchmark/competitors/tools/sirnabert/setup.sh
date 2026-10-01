@@ -15,5 +15,11 @@ if [[ "$*" == *"--docker"* ]]; then
 fi
 
 if [ ! -d "sirnabert_src" ]; then
-    git clone https://github.com/ChengkuiZhao/siRNABERT.git sirnabert_src
+    git clone --no-checkout https://github.com/ChengkuiZhao/siRNABERT.git sirnabert_src
+    git -C "sirnabert_src" checkout --detach 00c849af12bbfad59efd106b6a28b0dfc766ac33
+fi
+
+if [ "$(git -C "sirnabert_src" rev-parse HEAD)" != "00c849af12bbfad59efd106b6a28b0dfc766ac33" ]; then
+    echo "Expected sirnabert_src at 00c849af12bbfad59efd106b6a28b0dfc766ac33; use a separate checkout for another version." >&2
+    exit 1
 fi

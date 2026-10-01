@@ -1,0 +1,10 @@
+{
+  "doi": "10.1093/nar/gkm699",
+  "source": "Supplementary File009.xls Designer cells AA4:AT7; full-precision sense coefficients reverse-complemented to guide convention",
+  "source_sha256": "3fd11945c7a6037d1df2dd8032c9e933006a997711d2b5368dca0f86bc20ef9d",
+  "reference_table": "Supplementary Table1 nar_gkm699_2.pdf (rounded antisense coefficients)",
+  "training": "2431 Huesken siRNAs, overlapping this benchmark",
+  "matched_benchmark_guides": 2361,
+  "published_scores_verified": 2850,
+  "max_score_error": 5.684341886080802e-14
+}

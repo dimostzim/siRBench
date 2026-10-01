@@ -13,10 +13,15 @@ from torch.utils.data import DataLoader
 from scipy import stats
 
 
-def load_modules(src_root):
+def load_modules(src_root, correct_position_encoding=False):
     sys.path.insert(0, src_root)
     import load_data as ld
-    from model import RNAFM_SIPRED_2
+    from model import RNAFM_SIPRED_2, PositionalEncoding
+
+    if correct_position_encoding:
+        def sequence_positions(self, x):
+            return x + self.pe[:, :x.size(0)].transpose(0, 1)
+        PositionalEncoding.forward = sequence_positions
 
     def pad_rnafm(arr, target_len):
         pad_dtype = arr.dtype
@@ -85,7 +90,7 @@ def _col_or_zeros(df, col):
     return np.zeros(len(df))
 
 
-def build_dataset(df, create_pssm):
+def build_dataset(df, create_pssm, pssm=None):
     seq = np.array(df['Antisense'])
     data = {
         'seq': seq,
@@ -96,7 +101,8 @@ def build_dataset(df, create_pssm):
         'inhibition': np.array(df['inhibition']),
         'RNAFM_ind': np.array(df['RNAFM_ind']),
     }
-    pssm = create_pssm(data['seq'])
+    if pssm is None:
+        pssm = create_pssm(data['seq'])
     return data, pssm
 
 
@@ -115,6 +121,7 @@ def train_epoch(model, loader, optimizer, criterion, device):
         loss = criterion(label, pred)
         optimizer.zero_grad()
         loss.backward()
+        nn.utils.clip_grad_norm_(model.parameters(), max_norm=5, norm_type=2)
         optimizer.step()
         total_loss += loss.item() * label.shape[0]
         count += label.shape[0]
@@ -173,6 +180,8 @@ def main():
     p.add_argument("--early-stopping", type=int, default=20)
     p.add_argument("--early-stop-metric", default="spcc", choices=["spcc", "pcc", "mse", "r2"])
     p.add_argument("--original-params", action="store_true", help="Use upstream default hyperparameters.")
+    p.add_argument("--correct-position-encoding", action="store_true", help="Sensitivity only: encode nucleotide positions instead of upstream batch positions.")
+    p.add_argument("--legacy-pool-pssm", action="store_true", help="Fit PSSM separately on each evaluation pool, reproducing the upstream transductive feature.")
     p.add_argument("--src-root", default="attsioff_src")
     args = p.parse_args()
 
@@ -188,13 +197,13 @@ def main():
     data_dir = args.data_dir or os.path.dirname(os.path.abspath(args.train_csv))
     os.chdir(data_dir)
     src_root = os.path.abspath(os.path.join(os.path.dirname(__file__), args.src_root))
-    RNAFM_SIPRED_2, Generate_dataset, create_pssm = load_modules(src_root)
+    RNAFM_SIPRED_2, Generate_dataset, create_pssm = load_modules(src_root, args.correct_position_encoding)
 
     train_df = pd.read_csv(args.train_csv)
     val_df = pd.read_csv(args.val_csv)
 
     train_data, pssm_train = build_dataset(train_df, create_pssm)
-    val_data, pssm_val = build_dataset(val_df, create_pssm)
+    val_data, pssm_val = build_dataset(val_df, create_pssm, None if args.legacy_pool_pssm else pssm_train)
 
     trainset = Generate_dataset(args, train_data, pssm_train)
     valset = Generate_dataset(args, val_data, pssm_val)
@@ -206,15 +215,18 @@ def main():
     model = RNAFM_SIPRED_2(dp=0.1, device=device).to(torch.float32).to(device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=5e-4)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=20, T_mult=4)
     criterion = nn.MSELoss(reduction='mean')
 
     os.makedirs(args.model_dir, exist_ok=True)
+    np.save(os.path.join(args.model_dir, "training_pssm.npy"), pssm_train)
     best_metric = None
     best_epoch = -1
     best_path = os.path.join(args.model_dir, "model.pt")
 
     for epoch in range(args.epochs):
         train_loss = train_epoch(model, train_loader, optimizer, criterion, device)
+        scheduler.step()
         val_loss, val_pcc, val_spcc, val_r2 = eval_epoch(model, val_loader, criterion, device)
         # Model selection / early stopping: configurable metric.
         improved = False
@@ -235,7 +247,7 @@ def main():
             best_epoch = epoch
             torch.save(model.state_dict(), best_path)
         print(f"epoch={epoch} train_loss={train_loss:.6f} val_loss={val_loss:.6f} val_pcc={val_pcc} val_spcc={val_spcc} val_r2={val_r2}")
-        if args.early_stopping and epoch - best_epoch > args.early_stopping:
+        if args.early_stopping and epoch - best_epoch >= args.early_stopping:
             break
 
     meta = {
@@ -244,8 +256,17 @@ def main():
         "model_path": os.path.abspath(best_path),
         "batch_size": args.batch_size,
         "epochs": args.epochs,
+        "epochs_completed": epoch + 1,
         "lr": args.lr,
         "early_stopping": args.early_stopping,
+        "early_stop_metric": args.early_stop_metric,
+        "seed": args.seed,
+        "best_epoch": best_epoch,
+        "best_validation_metric": best_metric,
+        "pssm_protocol": "evaluation-pool" if args.legacy_pool_pssm else "training-only",
+        "scheduler": {"name": "CosineAnnealingWarmRestarts", "T_0": 20, "T_mult": 4},
+        "gradient_clip_norm": 5,
+        "position_encoding": "nucleotide" if args.correct_position_encoding else "upstream-batch",
     }
     with open(os.path.join(args.model_dir, "train_meta.json"), "w") as f:
         json.dump(meta, f, indent=2)

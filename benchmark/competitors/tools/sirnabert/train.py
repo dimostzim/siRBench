@@ -220,6 +220,12 @@ def main():
         "val_csv": os.path.abspath(args.val_csv) if args.val_csv else None,
         "bert_dir": args.bert_dir,
         "model_path": os.path.abspath(best_path),
+        "epochs": args.epochs,
+        "batch_size": args.batch_size,
+        "lr": args.lr,
+        "max_len": args.max_len,
+        "early_stopping": args.early_stopping,
+        "seed": args.seed,
         "early_stop_metric": args.early_stop_metric,
         "best_epoch": best_epoch,
     }

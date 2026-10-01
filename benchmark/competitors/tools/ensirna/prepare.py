@@ -16,7 +16,7 @@ def revcomp(seq):
 
 def clean_seq(seq):
     seq = str(seq).upper().replace('T', 'U')
-    return seq.replace('X', '').replace('N', '')
+    return seq.strip('XN')
 
 
 def resolve_position(mrna_seq, sense_seq, anti_seq, target_seq=None):
@@ -24,9 +24,7 @@ def resolve_position(mrna_seq, sense_seq, anti_seq, target_seq=None):
         return mrna_seq.index(target_seq)
     if sense_seq in mrna_seq:
         return mrna_seq.index(sense_seq)
-    if anti_seq in mrna_seq:
-        return mrna_seq.index(anti_seq)
-    return 0
+    raise ValueError("Target site is absent from the supplied mRNA sequence")
 
 
 def main():
@@ -35,6 +33,7 @@ def main():
     p.add_argument("--output-jsonl", required=True)
     p.add_argument("--pdb-dir", default=None)
     p.add_argument("--rosetta-dir", default=None)
+    p.add_argument("--pdb-workers", type=int, default=4)
     p.add_argument("--id-col", default="id")
     p.add_argument("--sirna-col", default="siRNA")
     p.add_argument("--mrna-col", default="extended_mRNA")
@@ -47,7 +46,9 @@ def main():
 
     df = pd.read_csv(args.input_csv)
     if args.id_col not in df.columns:
-        df[args.id_col] = [f"row_{i}" for i in range(len(df))]
+        df[args.id_col] = df["record_id"] if "record_id" in df.columns else [f"row_{i}" for i in range(len(df))]
+    if df[args.id_col].isna().any() or df[args.id_col].duplicated().any():
+        raise ValueError("ENsiRNA input IDs must be present and unique")
 
     safe_ids = df[args.id_col].astype(str).apply(lambda x: re.sub(r"[^A-Za-z0-9_.-]", "_", x))
     if safe_ids.duplicated().any():
@@ -56,7 +57,7 @@ def main():
 
     pdb_col = args.pdb_path_col
     have_pdb_col = pdb_col in df.columns
-    needs_pdb = (~have_pdb_col) or df[pdb_col].isna().any()
+    needs_pdb = (not have_pdb_col) or df[pdb_col].isna().any()
 
     pdb_dir = args.pdb_dir
     if pdb_dir is None:
@@ -103,6 +104,7 @@ def main():
             pdb_dir,
             "--rosetta-dir",
             rosetta_dir,
+            "--workers", str(args.pdb_workers),
         ]
         subprocess.check_call(cmd, cwd=src_root)
 
@@ -123,38 +125,50 @@ def main():
         else:
             df[args.chain_col] = df["pdb_id"].map(pdb_df["chain"])
 
-        df = df.dropna(subset=[pdb_col, args.start_col, args.chain_col])
+        if df[[pdb_col, args.start_col, args.chain_col]].isna().any().any():
+            raise ValueError("PDB preparation did not return metadata for every input row")
 
-    with open(args.output_jsonl, 'w') as f:
-        for _, row in df.iterrows():
-            sirna = str(row[args.sirna_col]).upper().replace('T', 'U')
-            anti_seq = sirna
-            sense_seq = revcomp(sirna)
+    items = []
+    for _, row in df.iterrows():
+        sirna = str(row[args.sirna_col]).upper().replace('T', 'U')
+        anti_seq = sirna
+        sense_seq = revcomp(sirna)
 
-            mrna_seq = clean_seq(row[args.mrna_col])
-            target_seq = clean_seq(row["mRNA"]) if "mRNA" in df.columns else None
+        mrna_seq = clean_seq(row[args.mrna_col])
+        target_seq = clean_seq(row["mRNA"]) if "mRNA" in df.columns else None
 
-            position = row[args.position_col] if args.position_col in df.columns else None
-            if position is None or pd.isna(position):
-                position = resolve_position(mrna_seq, sense_seq, anti_seq, target_seq)
+        position = row[args.position_col] if args.position_col in df.columns else None
+        if position is None or pd.isna(position):
+            position = resolve_position(mrna_seq, sense_seq, anti_seq, target_seq)
 
-            pdb_path = row[pdb_col] if pdb_col in df.columns else None
-            if pdb_path is None or pd.isna(pdb_path):
-                raise ValueError("pdb_data_path is required for ENsiRNA")
+        if int(position) < 0 or mrna_seq[int(position):int(position) + len(sense_seq)] != sense_seq:
+            raise ValueError(f"Target position does not match the sense strand for {row[args.id_col]}")
 
-            item = {
-                "id": row[args.id_col],
-                "pdb": os.path.basename(str(pdb_path)),
-                "pdb_data_path": str(pdb_path),
-                "chain": row[args.chain_col],
-                "start": row[args.start_col],
-                "position": int(position),
-                "mRNA_seq": mrna_seq,
-                "sense seq": sense_seq,
-                "anti seq": anti_seq,
-                "efficiency": float(row[args.efficiency_col]),
-            }
-            f.write(json.dumps(item) + "\n")
+        pdb_path = row[pdb_col] if pdb_col in df.columns else None
+        if pdb_path is None or pd.isna(pdb_path):
+            raise ValueError("pdb_data_path is required for ENsiRNA")
+
+        if not os.path.isfile(pdb_path):
+            raise FileNotFoundError(pdb_path)
+        item = {
+            "id": row[args.id_col],
+            "pdb": os.path.basename(str(pdb_path)),
+            "pdb_data_path": str(pdb_path),
+            "chain": row[args.chain_col],
+            "start": row[args.start_col],
+            "position": int(position),
+            "mRNA_seq": mrna_seq,
+            "sense seq": sense_seq,
+            "anti seq": anti_seq,
+            "efficiency": float(row[args.efficiency_col]),
+        }
+        items.append(item)
+
+    temporary_output = args.output_jsonl + ".tmp"
+    with open(temporary_output, "w") as handle:
+        for item in items:
+            handle.write(json.dumps(item) + "\n")
+    os.replace(temporary_output, args.output_jsonl)
 
     print(args.output_jsonl)
 

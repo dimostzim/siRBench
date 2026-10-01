@@ -1,0 +1,16 @@
+[project]
+name = "sirbench-reference-fold-0"
+version = "1.0.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "numpy==2.5.2",
+  "scipy==1.18.0",
+  "scikit-learn==1.7.1",
+  "joblib==1.6.0",
+  "pandas==2.3.1",
+  "torch==2.9.0",
+  "catboost==1.2.8"
+]
+
+[tool.uv]
+package = false

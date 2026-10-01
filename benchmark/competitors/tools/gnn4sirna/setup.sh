@@ -15,5 +15,11 @@ if [[ "$*" == *"--docker"* ]]; then
 fi
 
 if [ ! -d "gnn4sirna_src" ]; then
-    git clone https://github.com/BCB4PM/GNN4siRNA.git gnn4sirna_src
+    git clone --no-checkout https://github.com/BCB4PM/GNN4siRNA.git gnn4sirna_src
+    git -C "gnn4sirna_src" checkout --detach 5247663c6eb3a4939f1eb7f385f9be91d6324d60
+fi
+
+if [ "$(git -C "gnn4sirna_src" rev-parse HEAD)" != "5247663c6eb3a4939f1eb7f385f9be91d6324d60" ]; then
+    echo "Expected gnn4sirna_src at 5247663c6eb3a4939f1eb7f385f9be91d6324d60; use a separate checkout for another version." >&2
+    exit 1
 fi

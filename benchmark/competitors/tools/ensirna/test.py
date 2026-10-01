@@ -14,6 +14,27 @@ sys.path.insert(0, SCRIPTS_DIR)
 from metrics import format_metrics, regression_metrics, save_metrics
 
 
+def select_checkpoint(ckpt_paths):
+    if len(ckpt_paths) == 1:
+        return ckpt_paths[0]
+    checkpoint_dir = os.path.dirname(ckpt_paths[0])
+    if any(os.path.dirname(path) != checkpoint_dir for path in ckpt_paths):
+        raise ValueError("Select one training run or explicitly request --ensemble")
+    # The trainer writes topk_map in best-to-worst order for its configured metric.
+    topk_map = os.path.join(checkpoint_dir, "topk_map.txt")
+    basenames = {os.path.basename(path): path for path in ckpt_paths}
+    with open(topk_map) as handle:
+        for line in handle:
+            if not line.strip():
+                continue
+            score, path = line.strip().split(":", 1)
+            float(score)
+            chosen = basenames.get(os.path.basename(path.strip()))
+            if chosen:
+                return chosen
+    raise ValueError("No requested checkpoint occurs in topk_map.txt")
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--test-set", required=True)
@@ -55,35 +76,8 @@ def main():
             "Pass a concrete .ckpt path or a directory containing checkpoints."
         )
 
-    if not args.ensemble and len(ckpt_paths) > 1:
-        topk_map = os.path.join(os.path.dirname(ckpt_paths[0]), "topk_map.txt")
-        if os.path.exists(topk_map):
-            best_score = None
-            best_path = None
-            basenames = {os.path.basename(p): p for p in ckpt_paths}
-            with open(topk_map, "r") as fin:
-                for line in fin:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    try:
-                        score_str, path_str = line.split(":", 1)
-                        score = float(score_str.strip())
-                        path = path_str.strip()
-                    except ValueError:
-                        continue
-                    chosen = None
-                    if path in ckpt_paths:
-                        chosen = path
-                    else:
-                        chosen = basenames.get(os.path.basename(path))
-                    if chosen is None:
-                        continue
-                    if best_score is None or score < best_score:
-                        best_score = score
-                        best_path = chosen
-            if best_path:
-                ckpt_paths = [best_path]
+    if not args.ensemble:
+        ckpt_paths = [select_checkpoint(ckpt_paths)]
 
     cmd = [
         sys.executable, run_script,
@@ -102,7 +96,9 @@ def main():
     result_xlsx = os.path.join(args.save_dir, f"{args.run_id}_result.xlsx")
     pred_df = pd.read_excel(result_xlsx)
     pred_cols = [c for c in pred_df.columns if c.startswith('result_')]
-    preds = pred_df[pred_cols].mean(axis=1).tolist() if pred_cols else []
+    if not pred_cols:
+        raise ValueError("ENsiRNA prediction output has no result columns")
+    preds = pred_df[pred_cols].mean(axis=1).tolist()
 
     ids = []
     labels = []
@@ -112,6 +108,8 @@ def main():
             ids.append(item.get('id', f"row_{len(ids)}"))
             labels.append(float(item.get('efficiency', 0.0)))
 
+    if pred_df["ID"].astype(str).tolist() != [str(value) for value in ids]:
+        raise ValueError("Prediction IDs/order do not match the requested evaluation set")
     out_df = pd.DataFrame({
         "id": ids,
         "label": labels,

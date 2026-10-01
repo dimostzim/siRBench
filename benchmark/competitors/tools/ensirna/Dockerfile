@@ -20,18 +20,29 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     build-essential \
     python3-rdkit \
-    python3-rna \
-    vienna-rna \
+    pkg-config \
+    libgsl-dev \
     && rm -rf /var/lib/apt/lists/*
 
+ARG BUILD_JOBS=4
+COPY checkpoints/ViennaRNA-2.6.4.tar.gz /tmp/ViennaRNA-2.6.4.tar.gz
+RUN cd /tmp && tar -xzf ViennaRNA-2.6.4.tar.gz && cd ViennaRNA-2.6.4 \
+    && ./configure --without-perl --without-python --without-python3 --without-doc --without-tutorial --disable-unittests \
+    && make -j"${BUILD_JOBS}" && make install && ldconfig \
+    && rm -rf /tmp/ViennaRNA-2.6.4 /tmp/ViennaRNA-2.6.4.tar.gz
+
 RUN python3 -m pip install --no-cache-dir --upgrade pip
+
+# Package versions observed in the revision training image.
+COPY requirements.frozen.txt /opt/sirbench-requirements.frozen.txt
+ENV PIP_CONSTRAINT=/opt/sirbench-requirements.frozen.txt
 
 RUN python3 -m pip install --no-cache-dir \
     torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 RUN python3 -m pip install --no-cache-dir \
     numpy pandas scipy scikit-learn tqdm openpyxl biopython fair-esm \
-    tensorboard xgboost rna-fm ptflops yacs pyyaml pytorch-ignite requests
+    tensorboard xgboost rna-fm ptflops yacs pyyaml pytorch-ignite requests ViennaRNA==2.6.4
 
 ENV TORCH_HOME=/opt/torch
 

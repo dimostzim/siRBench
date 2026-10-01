@@ -1,0 +1,300 @@
+{
+  "date": "2026-10-01",
+  "archive_doi": "10.5281/zenodo.23001225",
+  "archive_sha256": "418f1105c304fad56b85ba9e2605f7caf95e08825c3b1c706af7766f074cc158",
+  "dataset": {
+    "status": "PASS",
+    "rows": 4098,
+    "corrected_rows": 702,
+    "features": "regenerate",
+    "verified_protocol_files": [
+      "grouped/fold_0/test.csv",
+      "grouped/fold_0/train.csv",
+      "grouped/fold_0/val.csv",
+      "grouped/fold_1/test.csv",
+      "grouped/fold_1/train.csv",
+      "grouped/fold_1/val.csv",
+      "grouped/fold_2/test.csv",
+      "grouped/fold_2/train.csv",
+      "grouped/fold_2/val.csv",
+      "grouped/fold_3/test.csv",
+      "grouped/fold_3/train.csv",
+      "grouped/fold_3/val.csv",
+      "grouped/fold_4/test.csv",
+      "grouped/fold_4/train.csv",
+      "grouped/fold_4/val.csv",
+      "groups.csv",
+      "hela_aligned.csv",
+      "hela_full.csv",
+      "membership.csv",
+      "partition_sizes.csv",
+      "random/fold_0/test.csv",
+      "random/fold_0/train.csv",
+      "random/fold_0/val.csv",
+      "random/fold_1/test.csv",
+      "random/fold_1/train.csv",
+      "random/fold_1/val.csv",
+      "random/fold_2/test.csv",
+      "random/fold_2/train.csv",
+      "random/fold_2/val.csv",
+      "random/fold_3/test.csv",
+      "random/fold_3/train.csv",
+      "random/fold_3/val.csv",
+      "random/fold_4/test.csv",
+      "random/fold_4/train.csv",
+      "random/fold_4/val.csv",
+      "similar_sequence_links.csv"
+    ],
+    "run_matrix": "identical after path normalization",
+    "starting_point": "released harmonized CSVs and archived correction/target audits"
+  },
+  "baselines": {
+    "status": "PASS",
+    "rows": 104272,
+    "max_absolute_prediction_difference": 2.220446049250313e-15,
+    "byte_identical": false,
+    "fits": 70
+  },
+  "cpu_tests": {
+    "platform": "Linux x86-64",
+    "passed": 141
+  },
+  "tabpfn_focused_tests": {
+    "passed": 57
+  },
+  "competitor_runtime_checks": {
+    "gnn4sirna": "PASS",
+    "sirnadiscovery": "PASS",
+    "oligoformer_and_bert": "PASS",
+    "attsioff": "PASS",
+    "ensirna": "PASS",
+    "six_image_ids_match_archived_training_lock": true,
+    "six_images_pip_check": "PASS"
+  },
+  "agentomics": {
+    "active_files_sha256_checked": 82,
+    "inference_runs": [
+      {
+        "fold": 0,
+        "split": "validation",
+        "rows": 476,
+        "maximum_absolute_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "fold": 0,
+        "split": "test",
+        "rows": 656,
+        "maximum_absolute_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "fold": 0,
+        "split": "test_hela_full",
+        "rows": 1047,
+        "maximum_absolute_difference": 5.551115123125783e-17,
+        "status": "PASS"
+      },
+      {
+        "fold": 1,
+        "split": "validation",
+        "rows": 433,
+        "maximum_absolute_difference": 1.3322676295501878e-15,
+        "status": "PASS"
+      },
+      {
+        "fold": 1,
+        "split": "test",
+        "rows": 669,
+        "maximum_absolute_difference": 1.5543122344752192e-15,
+        "status": "PASS"
+      },
+      {
+        "fold": 1,
+        "split": "test_hela_full",
+        "rows": 1047,
+        "maximum_absolute_difference": 1.7763568394002505e-15,
+        "status": "PASS"
+      },
+      {
+        "fold": 2,
+        "split": "validation",
+        "rows": 375,
+        "maximum_absolute_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "fold": 2,
+        "split": "test",
+        "rows": 662,
+        "maximum_absolute_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "fold": 2,
+        "split": "test_hela_full",
+        "rows": 1047,
+        "maximum_absolute_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "fold": 3,
+        "split": "validation",
+        "rows": 397,
+        "maximum_absolute_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "fold": 3,
+        "split": "test",
+        "rows": 500,
+        "maximum_absolute_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "fold": 3,
+        "split": "test_hela_full",
+        "rows": 1047,
+        "maximum_absolute_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "fold": 4,
+        "split": "validation",
+        "rows": 106,
+        "maximum_absolute_difference": 1.1102230246251565e-16,
+        "status": "PASS"
+      },
+      {
+        "fold": 4,
+        "split": "test",
+        "rows": 564,
+        "maximum_absolute_difference": 2.220446049250313e-16,
+        "status": "PASS"
+      },
+      {
+        "fold": 4,
+        "split": "test_hela_full",
+        "rows": 1047,
+        "maximum_absolute_difference": 2.220446049250313e-16,
+        "status": "PASS"
+      }
+    ],
+    "maximum_absolute_difference": 1.7763568394002505e-15,
+    "fitted_weights_changed": false
+  },
+  "tabpfn_reload": [
+    {
+      "tool": "tabpfn35_frozen",
+      "seed": 0,
+      "records": 476,
+      "same_host": true,
+      "source_gpu": "NVIDIA A10",
+      "reload_gpu": "NVIDIA A10",
+      "max_absolute_difference": 5.551115123125783e-17,
+      "allclose_rtol1e-5_atol1e-6": true,
+      "metric_delta_reload_minus_original": {
+        "pearson_r": 0.0,
+        "spearman_rho": 0.0,
+        "r2": 0.0,
+        "mse": 0.0,
+        "mae": -1.3877787807814457e-17,
+        "rmse": 0.0
+      }
+    },
+    {
+      "tool": "tabpfn35_finetuned",
+      "seed": 0,
+      "records": 476,
+      "same_host": true,
+      "source_gpu": "NVIDIA A10",
+      "reload_gpu": "NVIDIA A10",
+      "max_absolute_difference": 5.551115123125783e-17,
+      "allclose_rtol1e-5_atol1e-6": true,
+      "metric_delta_reload_minus_original": {
+        "pearson_r": 0.0,
+        "spearman_rho": 0.0,
+        "r2": 0.0,
+        "mse": 0.0,
+        "mae": 0.0,
+        "rmse": 0.0
+      }
+    },
+    {
+      "tool": "tabpfn35_frozen",
+      "seed": 1,
+      "records": 476,
+      "same_host": false,
+      "source_gpu": "NVIDIA RTX A4000",
+      "reload_gpu": "NVIDIA A10",
+      "max_absolute_difference": 0.0005831718444824219,
+      "allclose_rtol1e-5_atol1e-6": false,
+      "metric_delta_reload_minus_original": {
+        "pearson_r": 1.1056683692833857e-05,
+        "spearman_rho": -5.9371329859225774e-05,
+        "r2": 4.912750506658181e-05,
+        "mse": -1.8976217826052744e-06,
+        "mae": -1.4024622300434775e-06,
+        "rmse": -5.847466894720599e-06
+      }
+    },
+    {
+      "tool": "tabpfn35_finetuned",
+      "seed": 1,
+      "records": 476,
+      "same_host": false,
+      "source_gpu": "NVIDIA RTX A4000",
+      "reload_gpu": "NVIDIA A10",
+      "max_absolute_difference": 0.0007390379905700684,
+      "allclose_rtol1e-5_atol1e-6": false,
+      "metric_delta_reload_minus_original": {
+        "pearson_r": -0.00016225693019555898,
+        "spearman_rho": 5.3918293002497286e-05,
+        "r2": -0.0001844669326344084,
+        "mse": 7.12530524526328e-06,
+        "mae": 1.6388459866789606e-05,
+        "rmse": 2.2263912162423516e-05
+      }
+    }
+  ],
+  "scope_limits": [
+    "No full neural benchmark retraining or Agentomics search rerun.",
+    "TabPFN same-device validation reloads agree to floating-point precision; cross-GPU reloads have the explicitly reported differences.",
+    "New Dockerfiles constrain packages to observed image versions; all six images were not rebuilt from empty caches.",
+    "macOS strict analysis replay detected a Pearson correlation rounding difference of approximately 1e-15; exact archived-table verification targets Linux x86-64.",
+    "Original raw-publication curation cannot be fully replayed; the dataset rebuild starts with released harmonized records and frozen correction/target audits."
+  ],
+  "analysis_replay": {
+    "status": "PASS",
+    "verified_numerical_tables": [
+      "evaluation/primary-analysis-with-tabpfn-v1/fold_rankings.csv",
+      "evaluation/primary-analysis-with-tabpfn-v1/macro_metrics.csv",
+      "evaluation/primary-analysis-with-tabpfn-v1/metric_summary.csv",
+      "evaluation/primary-analysis-with-tabpfn-v1/primary_group_bootstrap.csv",
+      "evaluation/primary-analysis-with-tabpfn-v1/primary_paired_differences.csv",
+      "evaluation/primary-analysis-with-tabpfn-v1/replicate_dispersion.csv",
+      "evaluation/primary-analysis-with-tabpfn-v1/replicate_metrics.csv",
+      "evaluation/sensitivity-analysis-v3/comparison_status.csv",
+      "evaluation/sensitivity-analysis-v3/paired_summary.csv",
+      "evaluation/sensitivity-analysis-v3/per_seed_metrics.csv",
+      "evaluation/primary-analysis-with-reference-models-v1/primary_group_bootstrap.csv",
+      "evaluation/primary-analysis-with-reference-models-v1/reference_group_bootstrap.csv",
+      "evaluation/primary-analysis-with-reference-models-v1/reference_metric_summary.csv",
+      "evaluation/primary-analysis-with-reference-models-v1/reference_paired_differences.csv",
+      "evaluation/primary-analysis-with-reference-models-v1/reference_predictions_with_metadata.csv",
+      "evaluation/primary-analysis-with-reference-models-v1/reference_replicate_metrics.csv",
+      "evaluation/primary-analysis-with-reference-models-v1/reference_subgroup_metrics.csv"
+    ],
+    "serialization_checks": [
+      {
+        "table": "evaluation/primary-analysis-with-reference-models-v1/reference_replicate_metrics.csv",
+        "max_absolute_float_difference": 1.1102230246251565e-16,
+        "tolerance": 1e-14,
+        "identity_columns_and_missingness_exact": true
+      }
+    ],
+    "bootstrap_draws": 2000,
+    "scope": "Analysis replay from archived predictions, including TabPFN and five reference models; no training or inference rerun.",
+    "path_relocation": "Only copied index paths and sensitivity descriptors were changed; sealed prediction/metadata bytes preserved."
+  }
+}

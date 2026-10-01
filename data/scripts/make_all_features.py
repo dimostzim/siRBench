@@ -195,11 +195,12 @@ def try_rnaup_energies(sirna_seq: str, target_seq: str) -> Tuple[float, float, f
         raise ValueError("Could not parse RNAup output")
     nums = re.findall(r"[+-]?(?:\d+\.\d+|\d+|\.\d+)", summary)
     vals = [float(x) for x in nums]
-    if len(vals) >= 4:
-        total, open1, open2, interaction = vals[0], vals[1], vals[2], vals[3]
+    # ViennaRNA prints total = interaction + opening_long [+ opening_short].
+    if len(vals) == 4:
+        total, interaction, open1, open2 = vals
         opening = open1 + open2
     elif len(vals) == 3:
-        total, opening, interaction = vals
+        total, interaction, opening = vals
     else:
         raise ValueError("Unexpected RNAup energy format")
     return (float(opening), float(interaction), float(total))

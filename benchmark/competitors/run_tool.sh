@@ -73,6 +73,7 @@ LEFTOUT_CSV=""
 SEED="42"
 DETERMINISTIC=0
 USE_ORIGINAL=0
+RUN_DIR=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -144,6 +145,15 @@ while [[ $# -gt 0 ]]; do
             SEED="$1"
             shift
             ;;
+        --run-dir)
+            shift
+            if [ $# -eq 0 ] || [[ "$1" == --* ]]; then
+                echo "Missing value for --run-dir"
+                exit 1
+            fi
+            RUN_DIR="$1"
+            shift
+            ;;
         --deterministic)
             DETERMINISTIC=1
             shift
@@ -155,6 +165,7 @@ while [[ $# -gt 0 ]]; do
         --help|-h)
             echo "Usage: $0 [--tool <name>...] --train <path> --val <path> --test <path> [--leftout <path>]"
             echo "If no flags provided, runs all tools. --leftout runs an extra unseen test set."
+            echo "--run-dir <path under repository> isolates inputs, caches, models and results with a checked manifest."
             exit 0 ;;
         *)
             echo "Unknown argument: $1"
@@ -206,6 +217,35 @@ ORIGINAL_ARGS=()
 if [ "${USE_ORIGINAL}" = "1" ]; then
     ORIGINAL_ARGS+=(--original-params)
     RESULTS_ROOT="${SCRIPT_DIR}/original_results"
+fi
+
+# Revision runs must not reuse another seed, split, or parameter mode's caches.
+if [ -n "${RUN_DIR}" ]; then
+    RUN_DIR="$(python3 -c 'import pathlib,sys; print(pathlib.Path(sys.argv[1]).resolve())' "$(make_abs "${RUN_DIR}")")"
+    if [[ "${RUN_DIR}" != "${REPO_ROOT}/"* ]]; then
+        echo "--run-dir must be inside the repository mounted into Docker."
+        exit 1
+    fi
+    mkdir -p "${RUN_DIR}"
+    exec 9>"${RUN_DIR}/.run.lock"
+    flock -n 9 || { echo "Another process is using this run directory."; exit 1; }
+    RUN_TOOLS=()
+    for name in oligoformer sirnadiscovery sirnabert attsioff gnn4sirna ensirna; do
+        flag="RUN_${name^^}"
+        if [ "${!flag}" = "1" ]; then RUN_TOOLS+=(--tool "${name}"); fi
+    done
+    EXTRA_INPUT=()
+    if [ -n "${LEFTOUT_CSV}" ]; then EXTRA_INPUT=(--leftout "${LEFTOUT_CSV}"); fi
+    python3 scripts/prepare_run.py --repo-root "${REPO_ROOT}" --run-dir "${RUN_DIR}" \
+        "${RUN_TOOLS[@]}" --seed "${SEED}" --original "${USE_ORIGINAL}" --deterministic "${DETERMINISTIC}" \
+        --train "${TRAIN_CSV}" --val "${VAL_CSV}" --test "${TEST_CSV}" "${EXTRA_INPUT[@]}"
+    TRAIN_CSV="${RUN_DIR}/inputs/train.csv"
+    VAL_CSV="${RUN_DIR}/inputs/val.csv"
+    TEST_CSV="${RUN_DIR}/inputs/test.csv"
+    if [ -n "${LEFTOUT_CSV}" ]; then LEFTOUT_CSV="${RUN_DIR}/inputs/leftout.csv"; fi
+    DATA_ROOT="${RUN_DIR}/data"
+    MODEL_ROOT="${RUN_DIR}/models"
+    RESULTS_ROOT="${RUN_DIR}/results"
 fi
 
 # ============ OLIGOFORMER ============

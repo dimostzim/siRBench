@@ -1,0 +1,25 @@
+{
+  "main_training_images": {
+    "attsioff": [
+      "sha256:35eea203333ba9537651cd40fbf3cde79bf280de55a19bc5883d2247078b5df7"
+    ],
+    "ensirna": [
+      "sha256:4a8a68ddd03f99ca414607e8acf693ebf669f16baca78dce1b0f05ca21b3fdb8"
+    ],
+    "gnn4sirna": [
+      "sha256:4cfc0250dc2f78f69906bcccde750ddcf613559b7b6a82c53a6b0846618567fa"
+    ],
+    "oligoformer": [
+      "sha256:54c0e836510d00637d0b2d86c39843528f5944b8bdb1b1e3ad9fde615b37f3fa"
+    ],
+    "sirnabert": [
+      "sha256:e2f307b1a92964d2b076745081af00b96a9a675b50ecef907ed9d321d49fe9b8"
+    ],
+    "sirnadiscovery": [
+      "sha256:c052a30589af6e48a9d467daf100454be26eada655221274838a49765d44cbea"
+    ]
+  },
+  "RNA_FM_sha256": "5b5d7d87b37c291ef42c140ef9edf7aea29f255fa2a4fd435f776c52e93d5e99",
+  "source_pins_file": "upstream-source-pins.json",
+  "note": "Local immutable image IDs identify actual training runtimes; image layers and pretrained assets excluded. Rebuilding Dockerfiles against mutable base/package registries may not reproduce identical image IDs."
+}

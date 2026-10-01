@@ -1,0 +1,22 @@
+{
+  "case": "attsioff_original_schedule",
+  "tool": "attsioff",
+  "seed": 1,
+  "inputs": {
+    "train": "evaluation/protocol-v1/grouped/fold_0/train.csv",
+    "val": "evaluation/protocol-v1/grouped/fold_0/val.csv",
+    "test": "evaluation/protocol-v1/grouped/fold_0/test.csv",
+    "leftout": "evaluation/protocol-v1/hela_full.csv"
+  },
+  "assets_relative": "benchmark/competitors/runs/_assets/attsioff",
+  "train_flags": [
+    "--original-params"
+  ],
+  "run_relative": "benchmark/competitors/runs/sensitivity_v1/attsioff/attsioff_original_schedule_fold0_seed1",
+  "training_entrypoint": "benchmark/revision/launch_attsioff_original_schedule.py",
+  "variant_source_files": [
+    "benchmark/revision/attsioff_original_schedule.py",
+    "benchmark/revision/launch_attsioff_original_schedule.py"
+  ],
+  "description": "Released stopping schedule on fixed primary 19/57 inputs: 1000-epoch cap, patience20, validation Spearman rounded to3 decimals, ties replace checkpoint/reset patience. Training-only PSSM and faithful batch-position architecture retained."
+}

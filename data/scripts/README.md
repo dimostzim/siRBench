@@ -1,3 +1,5 @@
+> These scripts/splits describe the historical release. Reproduce the corrected version 2 dataset using [the current guide](../../REPRODUCING.md#dataset-and-partitions).
+
 # Data Scripts
 
 Quick reference for helper scripts in `data/scripts/`.

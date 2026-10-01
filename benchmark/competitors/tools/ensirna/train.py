@@ -13,9 +13,9 @@ def main():
     p.add_argument("--batch-size", type=int, default=16)
     p.add_argument("--gpus", nargs='+', default=["0"])
     p.add_argument("--model-type", default="RNAmaskModel")
-    p.add_argument("--lr", type=float, default=None)
-    p.add_argument("--final-lr", type=float, default=None)
-    p.add_argument("--max-epoch", type=int, default=None)
+    p.add_argument("--lr", type=float, default=1e-4)
+    p.add_argument("--final-lr", type=float, default=1e-5)
+    p.add_argument("--max-epoch", type=int, default=100)
     p.add_argument("--patience", type=int, default=None)
     p.add_argument("--save-topk", type=int, default=None)
     p.add_argument("--seed", type=int, default=None)
@@ -29,18 +29,24 @@ def main():
     os.makedirs(args.model_dir, exist_ok=True)
 
     if args.original_params:
-        args.lr = 1e-3
-        args.final_lr = 1e-4
-        args.max_epoch = 10
+        args.lr = 1e-4
+        args.final_lr = 1e-5
+        args.max_epoch = 100
         args.patience = 1000
         args.save_topk = 10
+        if "--legacy_stopping" not in unknown:
+            unknown += ["--legacy_stopping"]
         if args.seed is None:
             args.seed = 12
 
-    if "--embed_dim" not in unknown:
-        unknown += ["--embed_dim", "128"]
+    for name, value in (("--embed_dim", "128"), ("--hidden_size", "256"),
+                        ("--n_layers", "2"), ("--k_neighbors", "9")):
+        if name not in unknown:
+            unknown += [name, value]
+    if "--shuffle" not in unknown:
+        unknown += ["--shuffle"]
     if "--num_workers" not in unknown:
-        unknown += ["--num_workers", "0"]
+        unknown += ["--num_workers", "4"]
     if args.seed is not None:
         os.environ["ENSIRNA_SEED"] = str(args.seed)
     if args.lr is not None and "--lr" not in unknown:

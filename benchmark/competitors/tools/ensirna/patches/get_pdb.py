@@ -11,6 +11,7 @@ import RNA
 import re
 import subprocess
 import multiprocessing
+import tempfile
 
 
 #example （5'->3' and 3'->5'）
@@ -54,14 +55,14 @@ def resolve_rosetta_dir(rosetta_dir=None):
 #MOD_VOCAB.mod2index acsiRNA_mod atom_mod
 
 class Data_Prepare:
-    def __init__(self, excel_dir, pdb_dir, rosetta_dir=None):
+    def __init__(self, excel_dir, pdb_dir, rosetta_dir=None, workers=4):
         self.excel_dir=excel_dir
         self.pdb_dir=pdb_dir
 
         self.json_dir=excel_dir[:-4]+'.json'
         self.secondary_structure = True
         self.chunk_size=None
-        self.num_cores = multiprocessing.cpu_count()
+        self.num_cores = workers
         self.json = True
 
         if self.secondary_structure == False:
@@ -71,13 +72,13 @@ class Data_Prepare:
         if not self.ff or not os.path.exists(self.ff):
             raise FileNotFoundError(f"Rosetta rna_denovo not found under: {self.rosetta_dir}")
         if not self.ex or not os.path.exists(self.ex):
-            self.ex = None
+            raise FileNotFoundError("Rosetta extract_lowscore_decoys.py is required")
 
         self.database = os.path.join(self.rosetta_dir, "database")
         if not os.path.isdir(self.database):
             self.database = os.environ.get("ROSETTA_DATABASE")
         if not self.database or not os.path.isdir(self.database):
-            self.database = None
+            raise FileNotFoundError("Rosetta database is required")
 
 
     def get_path(self,siRNA):
@@ -107,28 +108,12 @@ class Data_Prepare:
     def get_anti_start(self,data):
         seq1=data['sense seq']
         seq2=data['anti seq']
-        target_len = 57
+        target_len = 61
         padlen = max(0, int((target_len - len(seq1)) / 2))
 
-        def fallback_positions():
-            sec_pos = [1000]
-            chain = [0]
-            for i in range(-padlen, len(seq1) + padlen):  # mRNA
-                sec_pos.append(i)
-                chain.append(1)
-            sec_pos.append(2000)
-            chain.append(2)
-            for i in range(len(seq1)):  # sense
-                sec_pos.append(i)
-                chain.append(3)
-            for i in range(len(seq2) - 1, -1, -1):  # anti
-                sec_pos.append(i)
-                chain.append(3)
-            return sec_pos, chain
-
         try:
-            com=f" echo -e \"{seq1}\n{seq2}\n\" | RNAplex "
-            raw_se=subprocess.run(com,shell=True,capture_output=True, text=True).stdout 
+            raw_se = subprocess.run(["RNAplex"], input=f"{seq1}\n{seq2}\n",
+                                    capture_output=True, text=True, check=True).stdout
             secondary_seq1 = re.split(r'\s+', raw_se)[0].split('&')[0]
             secondary_seq2 = re.split(r'\s+', raw_se)[0].split('&')[1]
             seq2_ = re.split(r'\s+', raw_se)[3].split(',')
@@ -186,10 +171,10 @@ class Data_Prepare:
                 sec_pos.append(i)
                 chain.append(3)
             if len(sec_pos) != target_len+len(seq2)+len(seq1)+1+1:
-                return fallback_positions()
+                raise ValueError("RNAplex position metadata has the wrong length")
             return sec_pos,chain
-        except Exception:
-            return fallback_positions()
+        except (IndexError, ValueError) as error:
+            raise ValueError(f"Invalid RNAplex output for {data['siRNA']}") from error
 
     def process(self):
         df=pd.read_csv(self.excel_dir) 
@@ -202,7 +187,7 @@ class Data_Prepare:
         total_rows = len(df)
         self.chunk_size = max(1, total_rows // self.num_cores)
         chunks = self.chunk_dataframe(df, self.chunk_size)
-        with multiprocessing.Pool(processes=len(chunks)) as pool:
+        with multiprocessing.Pool(processes=min(self.num_cores, len(chunks))) as pool:
             drops=pool.map(self.get_data, chunks)
 
         #print(drops)
@@ -214,7 +199,8 @@ class Data_Prepare:
 
             dfj['pdb_data_path']=dfj['siRNA'].apply(self.get_path)
             dfj['efficiency']=dfj['efficiency'].apply(lambda x: x if x > 0 else 0)
-            dfj=dfj.dropna()
+            if dfj.isna().any().any():
+                raise ValueError('Incomplete PDB metadata; refusing to drop benchmark rows')
             dfj.to_json(self.json_dir, orient='records', lines=True)
 
     def get_data(self,df):
@@ -223,8 +209,6 @@ class Data_Prepare:
  
         for index, row in df.iterrows():
             if os.path.exists(f"{self.pdb_dir}/{row['siRNA']}.pdb")==True:
-                continue
-            if os.path.exists(f"{self.pdb_dir}/{row['siRNA']}")==True:
                 continue
             if self.secondary_structure ==True:
                 if self.get_secondary_structure(row)==False:
@@ -259,32 +243,33 @@ class Data_Prepare:
         seq1=data['sense seq']
         seq2=data['anti seq']
         seq=seq1+' '+seq2
-        pair_len = min(len(seq1), len(seq2))
-        left = '(' * pair_len + '.' * (len(seq1) - pair_len)
-        right = ')' * pair_len + '.' * (len(seq2) - pair_len)
-        secondary_seq = left + ' ' + right
+        output = subprocess.run(["RNAplex"], input=f"{seq1}\n{seq2}\n",
+                                capture_output=True, text=True, check=True).stdout
+        fields = output.split()
+        paired = fields[0].split('&')
+        structures = []
+        for sequence, structure, field in zip((seq1, seq2), paired, (fields[1], fields[3])):
+            start, end = map(int, field.split(','))
+            full = '.' * (start - 1) + structure + '.' * (len(sequence) - end)
+            if len(full) != len(sequence):
+                raise ValueError("RNAplex returned inconsistent secondary-structure coordinates")
+            structures.append(full)
+        secondary_seq = ' '.join(structures)
 
-        workdir = f"{self.pdb_dir}/{data['siRNA']}"
-        os.mkdir(workdir)
-
-        cmd = [self.ff, '-sequence', seq, '-secstruct', secondary_seq, '-minimize_rna', '-out:file:silent', 'default.out']
-        if self.database:
-            cmd.extend(['-database', self.database])
-        subprocess.run(cmd, cwd=workdir)
-        if self.ex:
-            subprocess.run([sys.executable, self.ex, 'default.out', '-rosetta_folder', self.rosetta_dir, '1'], cwd=workdir)
-            subprocess.run(['cp','default.out.1.pdb',f"{self.pdb_dir}/{data['siRNA']}.pdb"], cwd=workdir)
-        else:
-            # Fallback for minimal Rosetta installs without extract_lowscore_decoys.py
-            subprocess.run(['cp','default.out',f"{self.pdb_dir}/{data['siRNA']}.pdb"], cwd=workdir)
-      
-        subprocess.run(['rm','-r',workdir])
-        
-
-        if os.path.exists(f"{self.pdb_dir}/{data['siRNA']}.pdb"):
-            return True
-        else:
-            return False
+        # A failed generation never becomes a reusable .pdb cache entry.
+        with tempfile.TemporaryDirectory(prefix=f"{data['siRNA']}_", dir=self.pdb_dir) as workdir:
+            cmd = [self.ff, '-sequence', seq, '-secstruct', secondary_seq,
+                   '-minimize_rna', '-out:file:silent', 'default.out',
+                   '-database', self.database, '-constant_seed', '-jran', '0']
+            subprocess.run(cmd, cwd=workdir, check=True)
+            subprocess.run([sys.executable, self.ex, 'default.out', '-rosetta_folder',
+                            self.rosetta_dir, '1'], cwd=workdir, check=True)
+            pdb_path = os.path.join(workdir, 'default.out.1.pdb')
+            with open(pdb_path) as handle:
+                if not any(line.startswith('ATOM') for line in handle):
+                    raise ValueError(f"Rosetta did not produce a PDB for {data['siRNA']}")
+            os.replace(pdb_path, f"{self.pdb_dir}/{data['siRNA']}.pdb")
+        return True
 
    
 
@@ -293,11 +278,12 @@ def parse():
     parser.add_argument('-f','--filenames', nargs='+', help='train/valsiRNA/test set')
     parser.add_argument('-p','--pdb_dir', type=str, default=None, help='Path to save processed data')
     parser.add_argument('--rosetta-dir', type=str, default=None, help='Rosetta base directory')
+    parser.add_argument('--workers', type=int, default=4)
     return parser.parse_args()
 
 if __name__ == '__main__':
     args = parse()
     for filename in args.filenames:
-        Data_Prepare(filename, args.pdb_dir, rosetta_dir=args.rosetta_dir).process()
+        Data_Prepare(filename, args.pdb_dir, rosetta_dir=args.rosetta_dir, workers=args.workers).process()
   
 

@@ -1,0 +1,7 @@
+{
+  "purpose": "Packaging-only independent expression of the terminal-energy calculation; predictions and experimental outputs unchanged.",
+  "verified_terminal_combinations": 256,
+  "exact_function_output_match": true,
+  "original_source_sha256": "e8220cdb15429471158f8838bc544ed557f649dcdc65efaac59ab75d17e6a5f2",
+  "packaged_source_sha256": "6a6489dd4e9ad3666db5d17ad2feeb30d65d6e6f0b1a87fb8e9c129ea79a09e3"
+}

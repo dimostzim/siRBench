@@ -1,0 +1,4884 @@
+{
+  "version": 2,
+  "dtype": "float32",
+  "n_features": 964,
+  "guide_alphabet": "ACGT",
+  "context_alphabet": "ACGTX",
+  "position_indexing": "zero-based",
+  "feature_names": [
+    "guide_00_A",
+    "guide_00_C",
+    "guide_00_G",
+    "guide_00_T",
+    "guide_01_A",
+    "guide_01_C",
+    "guide_01_G",
+    "guide_01_T",
+    "guide_02_A",
+    "guide_02_C",
+    "guide_02_G",
+    "guide_02_T",
+    "guide_03_A",
+    "guide_03_C",
+    "guide_03_G",
+    "guide_03_T",
+    "guide_04_A",
+    "guide_04_C",
+    "guide_04_G",
+    "guide_04_T",
+    "guide_05_A",
+    "guide_05_C",
+    "guide_05_G",
+    "guide_05_T",
+    "guide_06_A",
+    "guide_06_C",
+    "guide_06_G",
+    "guide_06_T",
+    "guide_07_A",
+    "guide_07_C",
+    "guide_07_G",
+    "guide_07_T",
+    "guide_08_A",
+    "guide_08_C",
+    "guide_08_G",
+    "guide_08_T",
+    "guide_09_A",
+    "guide_09_C",
+    "guide_09_G",
+    "guide_09_T",
+    "guide_10_A",
+    "guide_10_C",
+    "guide_10_G",
+    "guide_10_T",
+    "guide_11_A",
+    "guide_11_C",
+    "guide_11_G",
+    "guide_11_T",
+    "guide_12_A",
+    "guide_12_C",
+    "guide_12_G",
+    "guide_12_T",
+    "guide_13_A",
+    "guide_13_C",
+    "guide_13_G",
+    "guide_13_T",
+    "guide_14_A",
+    "guide_14_C",
+    "guide_14_G",
+    "guide_14_T",
+    "guide_15_A",
+    "guide_15_C",
+    "guide_15_G",
+    "guide_15_T",
+    "guide_16_A",
+    "guide_16_C",
+    "guide_16_G",
+    "guide_16_T",
+    "guide_17_A",
+    "guide_17_C",
+    "guide_17_G",
+    "guide_17_T",
+    "guide_18_A",
+    "guide_18_C",
+    "guide_18_G",
+    "guide_18_T",
+    "context_00_A",
+    "context_00_C",
+    "context_00_G",
+    "context_00_T",
+    "context_00_X",
+    "context_01_A",
+    "context_01_C",
+    "context_01_G",
+    "context_01_T",
+    "context_01_X",
+    "context_02_A",
+    "context_02_C",
+    "context_02_G",
+    "context_02_T",
+    "context_02_X",
+    "context_03_A",
+    "context_03_C",
+    "context_03_G",
+    "context_03_T",
+    "context_03_X",
+    "context_04_A",
+    "context_04_C",
+    "context_04_G",
+    "context_04_T",
+    "context_04_X",
+    "context_05_A",
+    "context_05_C",
+    "context_05_G",
+    "context_05_T",
+    "context_05_X",
+    "context_06_A",
+    "context_06_C",
+    "context_06_G",
+    "context_06_T",
+    "context_06_X",
+    "context_07_A",
+    "context_07_C",
+    "context_07_G",
+    "context_07_T",
+    "context_07_X",
+    "context_08_A",
+    "context_08_C",
+    "context_08_G",
+    "context_08_T",
+    "context_08_X",
+    "context_09_A",
+    "context_09_C",
+    "context_09_G",
+    "context_09_T",
+    "context_09_X",
+    "context_10_A",
+    "context_10_C",
+    "context_10_G",
+    "context_10_T",
+    "context_10_X",
+    "context_11_A",
+    "context_11_C",
+    "context_11_G",
+    "context_11_T",
+    "context_11_X",
+    "context_12_A",
+    "context_12_C",
+    "context_12_G",
+    "context_12_T",
+    "context_12_X",
+    "context_13_A",
+    "context_13_C",
+    "context_13_G",
+    "context_13_T",
+    "context_13_X",
+    "context_14_A",
+    "context_14_C",
+    "context_14_G",
+    "context_14_T",
+    "context_14_X",
+    "context_15_A",
+    "context_15_C",
+    "context_15_G",
+    "context_15_T",
+    "context_15_X",
+    "context_16_A",
+    "context_16_C",
+    "context_16_G",
+    "context_16_T",
+    "context_16_X",
+    "context_17_A",
+    "context_17_C",
+    "context_17_G",
+    "context_17_T",
+    "context_17_X",
+    "context_18_A",
+    "context_18_C",
+    "context_18_G",
+    "context_18_T",
+    "context_18_X",
+    "context_19_A",
+    "context_19_C",
+    "context_19_G",
+    "context_19_T",
+    "context_19_X",
+    "context_20_A",
+    "context_20_C",
+    "context_20_G",
+    "context_20_T",
+    "context_20_X",
+    "context_21_A",
+    "context_21_C",
+    "context_21_G",
+    "context_21_T",
+    "context_21_X",
+    "context_22_A",
+    "context_22_C",
+    "context_22_G",
+    "context_22_T",
+    "context_22_X",
+    "context_23_A",
+    "context_23_C",
+    "context_23_G",
+    "context_23_T",
+    "context_23_X",
+    "context_24_A",
+    "context_24_C",
+    "context_24_G",
+    "context_24_T",
+    "context_24_X",
+    "context_25_A",
+    "context_25_C",
+    "context_25_G",
+    "context_25_T",
+    "context_25_X",
+    "context_26_A",
+    "context_26_C",
+    "context_26_G",
+    "context_26_T",
+    "context_26_X",
+    "context_27_A",
+    "context_27_C",
+    "context_27_G",
+    "context_27_T",
+    "context_27_X",
+    "context_28_A",
+    "context_28_C",
+    "context_28_G",
+    "context_28_T",
+    "context_28_X",
+    "context_29_A",
+    "context_29_C",
+    "context_29_G",
+    "context_29_T",
+    "context_29_X",
+    "context_30_A",
+    "context_30_C",
+    "context_30_G",
+    "context_30_T",
+    "context_30_X",
+    "context_31_A",
+    "context_31_C",
+    "context_31_G",
+    "context_31_T",
+    "context_31_X",
+    "context_32_A",
+    "context_32_C",
+    "context_32_G",
+    "context_32_T",
+    "context_32_X",
+    "context_33_A",
+    "context_33_C",
+    "context_33_G",
+    "context_33_T",
+    "context_33_X",
+    "context_34_A",
+    "context_34_C",
+    "context_34_G",
+    "context_34_T",
+    "context_34_X",
+    "context_35_A",
+    "context_35_C",
+    "context_35_G",
+    "context_35_T",
+    "context_35_X",
+    "context_36_A",
+    "context_36_C",
+    "context_36_G",
+    "context_36_T",
+    "context_36_X",
+    "context_37_A",
+    "context_37_C",
+    "context_37_G",
+    "context_37_T",
+    "context_37_X",
+    "context_38_A",
+    "context_38_C",
+    "context_38_G",
+    "context_38_T",
+    "context_38_X",
+    "context_39_A",
+    "context_39_C",
+    "context_39_G",
+    "context_39_T",
+    "context_39_X",
+    "context_40_A",
+    "context_40_C",
+    "context_40_G",
+    "context_40_T",
+    "context_40_X",
+    "context_41_A",
+    "context_41_C",
+    "context_41_G",
+    "context_41_T",
+    "context_41_X",
+    "context_42_A",
+    "context_42_C",
+    "context_42_G",
+    "context_42_T",
+    "context_42_X",
+    "context_43_A",
+    "context_43_C",
+    "context_43_G",
+    "context_43_T",
+    "context_43_X",
+    "context_44_A",
+    "context_44_C",
+    "context_44_G",
+    "context_44_T",
+    "context_44_X",
+    "context_45_A",
+    "context_45_C",
+    "context_45_G",
+    "context_45_T",
+    "context_45_X",
+    "context_46_A",
+    "context_46_C",
+    "context_46_G",
+    "context_46_T",
+    "context_46_X",
+    "context_47_A",
+    "context_47_C",
+    "context_47_G",
+    "context_47_T",
+    "context_47_X",
+    "context_48_A",
+    "context_48_C",
+    "context_48_G",
+    "context_48_T",
+    "context_48_X",
+    "context_49_A",
+    "context_49_C",
+    "context_49_G",
+    "context_49_T",
+    "context_49_X",
+    "context_50_A",
+    "context_50_C",
+    "context_50_G",
+    "context_50_T",
+    "context_50_X",
+    "context_51_A",
+    "context_51_C",
+    "context_51_G",
+    "context_51_T",
+    "context_51_X",
+    "context_52_A",
+    "context_52_C",
+    "context_52_G",
+    "context_52_T",
+    "context_52_X",
+    "context_53_A",
+    "context_53_C",
+    "context_53_G",
+    "context_53_T",
+    "context_53_X",
+    "context_54_A",
+    "context_54_C",
+    "context_54_G",
+    "context_54_T",
+    "context_54_X",
+    "context_55_A",
+    "context_55_C",
+    "context_55_G",
+    "context_55_T",
+    "context_55_X",
+    "context_56_A",
+    "context_56_C",
+    "context_56_G",
+    "context_56_T",
+    "context_56_X",
+    "guide_dimer_00_AA",
+    "guide_dimer_00_AC",
+    "guide_dimer_00_AG",
+    "guide_dimer_00_AT",
+    "guide_dimer_00_CA",
+    "guide_dimer_00_CC",
+    "guide_dimer_00_CG",
+    "guide_dimer_00_CT",
+    "guide_dimer_00_GA",
+    "guide_dimer_00_GC",
+    "guide_dimer_00_GG",
+    "guide_dimer_00_GT",
+    "guide_dimer_00_TA",
+    "guide_dimer_00_TC",
+    "guide_dimer_00_TG",
+    "guide_dimer_00_TT",
+    "guide_dimer_01_AA",
+    "guide_dimer_01_AC",
+    "guide_dimer_01_AG",
+    "guide_dimer_01_AT",
+    "guide_dimer_01_CA",
+    "guide_dimer_01_CC",
+    "guide_dimer_01_CG",
+    "guide_dimer_01_CT",
+    "guide_dimer_01_GA",
+    "guide_dimer_01_GC",
+    "guide_dimer_01_GG",
+    "guide_dimer_01_GT",
+    "guide_dimer_01_TA",
+    "guide_dimer_01_TC",
+    "guide_dimer_01_TG",
+    "guide_dimer_01_TT",
+    "guide_dimer_02_AA",
+    "guide_dimer_02_AC",
+    "guide_dimer_02_AG",
+    "guide_dimer_02_AT",
+    "guide_dimer_02_CA",
+    "guide_dimer_02_CC",
+    "guide_dimer_02_CG",
+    "guide_dimer_02_CT",
+    "guide_dimer_02_GA",
+    "guide_dimer_02_GC",
+    "guide_dimer_02_GG",
+    "guide_dimer_02_GT",
+    "guide_dimer_02_TA",
+    "guide_dimer_02_TC",
+    "guide_dimer_02_TG",
+    "guide_dimer_02_TT",
+    "guide_dimer_03_AA",
+    "guide_dimer_03_AC",
+    "guide_dimer_03_AG",
+    "guide_dimer_03_AT",
+    "guide_dimer_03_CA",
+    "guide_dimer_03_CC",
+    "guide_dimer_03_CG",
+    "guide_dimer_03_CT",
+    "guide_dimer_03_GA",
+    "guide_dimer_03_GC",
+    "guide_dimer_03_GG",
+    "guide_dimer_03_GT",
+    "guide_dimer_03_TA",
+    "guide_dimer_03_TC",
+    "guide_dimer_03_TG",
+    "guide_dimer_03_TT",
+    "guide_dimer_04_AA",
+    "guide_dimer_04_AC",
+    "guide_dimer_04_AG",
+    "guide_dimer_04_AT",
+    "guide_dimer_04_CA",
+    "guide_dimer_04_CC",
+    "guide_dimer_04_CG",
+    "guide_dimer_04_CT",
+    "guide_dimer_04_GA",
+    "guide_dimer_04_GC",
+    "guide_dimer_04_GG",
+    "guide_dimer_04_GT",
+    "guide_dimer_04_TA",
+    "guide_dimer_04_TC",
+    "guide_dimer_04_TG",
+    "guide_dimer_04_TT",
+    "guide_dimer_05_AA",
+    "guide_dimer_05_AC",
+    "guide_dimer_05_AG",
+    "guide_dimer_05_AT",
+    "guide_dimer_05_CA",
+    "guide_dimer_05_CC",
+    "guide_dimer_05_CG",
+    "guide_dimer_05_CT",
+    "guide_dimer_05_GA",
+    "guide_dimer_05_GC",
+    "guide_dimer_05_GG",
+    "guide_dimer_05_GT",
+    "guide_dimer_05_TA",
+    "guide_dimer_05_TC",
+    "guide_dimer_05_TG",
+    "guide_dimer_05_TT",
+    "guide_dimer_06_AA",
+    "guide_dimer_06_AC",
+    "guide_dimer_06_AG",
+    "guide_dimer_06_AT",
+    "guide_dimer_06_CA",
+    "guide_dimer_06_CC",
+    "guide_dimer_06_CG",
+    "guide_dimer_06_CT",
+    "guide_dimer_06_GA",
+    "guide_dimer_06_GC",
+    "guide_dimer_06_GG",
+    "guide_dimer_06_GT",
+    "guide_dimer_06_TA",
+    "guide_dimer_06_TC",
+    "guide_dimer_06_TG",
+    "guide_dimer_06_TT",
+    "guide_dimer_07_AA",
+    "guide_dimer_07_AC",
+    "guide_dimer_07_AG",
+    "guide_dimer_07_AT",
+    "guide_dimer_07_CA",
+    "guide_dimer_07_CC",
+    "guide_dimer_07_CG",
+    "guide_dimer_07_CT",
+    "guide_dimer_07_GA",
+    "guide_dimer_07_GC",
+    "guide_dimer_07_GG",
+    "guide_dimer_07_GT",
+    "guide_dimer_07_TA",
+    "guide_dimer_07_TC",
+    "guide_dimer_07_TG",
+    "guide_dimer_07_TT",
+    "guide_dimer_08_AA",
+    "guide_dimer_08_AC",
+    "guide_dimer_08_AG",
+    "guide_dimer_08_AT",
+    "guide_dimer_08_CA",
+    "guide_dimer_08_CC",
+    "guide_dimer_08_CG",
+    "guide_dimer_08_CT",
+    "guide_dimer_08_GA",
+    "guide_dimer_08_GC",
+    "guide_dimer_08_GG",
+    "guide_dimer_08_GT",
+    "guide_dimer_08_TA",
+    "guide_dimer_08_TC",
+    "guide_dimer_08_TG",
+    "guide_dimer_08_TT",
+    "guide_dimer_09_AA",
+    "guide_dimer_09_AC",
+    "guide_dimer_09_AG",
+    "guide_dimer_09_AT",
+    "guide_dimer_09_CA",
+    "guide_dimer_09_CC",
+    "guide_dimer_09_CG",
+    "guide_dimer_09_CT",
+    "guide_dimer_09_GA",
+    "guide_dimer_09_GC",
+    "guide_dimer_09_GG",
+    "guide_dimer_09_GT",
+    "guide_dimer_09_TA",
+    "guide_dimer_09_TC",
+    "guide_dimer_09_TG",
+    "guide_dimer_09_TT",
+    "guide_dimer_10_AA",
+    "guide_dimer_10_AC",
+    "guide_dimer_10_AG",
+    "guide_dimer_10_AT",
+    "guide_dimer_10_CA",
+    "guide_dimer_10_CC",
+    "guide_dimer_10_CG",
+    "guide_dimer_10_CT",
+    "guide_dimer_10_GA",
+    "guide_dimer_10_GC",
+    "guide_dimer_10_GG",
+    "guide_dimer_10_GT",
+    "guide_dimer_10_TA",
+    "guide_dimer_10_TC",
+    "guide_dimer_10_TG",
+    "guide_dimer_10_TT",
+    "guide_dimer_11_AA",
+    "guide_dimer_11_AC",
+    "guide_dimer_11_AG",
+    "guide_dimer_11_AT",
+    "guide_dimer_11_CA",
+    "guide_dimer_11_CC",
+    "guide_dimer_11_CG",
+    "guide_dimer_11_CT",
+    "guide_dimer_11_GA",
+    "guide_dimer_11_GC",
+    "guide_dimer_11_GG",
+    "guide_dimer_11_GT",
+    "guide_dimer_11_TA",
+    "guide_dimer_11_TC",
+    "guide_dimer_11_TG",
+    "guide_dimer_11_TT",
+    "guide_dimer_12_AA",
+    "guide_dimer_12_AC",
+    "guide_dimer_12_AG",
+    "guide_dimer_12_AT",
+    "guide_dimer_12_CA",
+    "guide_dimer_12_CC",
+    "guide_dimer_12_CG",
+    "guide_dimer_12_CT",
+    "guide_dimer_12_GA",
+    "guide_dimer_12_GC",
+    "guide_dimer_12_GG",
+    "guide_dimer_12_GT",
+    "guide_dimer_12_TA",
+    "guide_dimer_12_TC",
+    "guide_dimer_12_TG",
+    "guide_dimer_12_TT",
+    "guide_dimer_13_AA",
+    "guide_dimer_13_AC",
+    "guide_dimer_13_AG",
+    "guide_dimer_13_AT",
+    "guide_dimer_13_CA",
+    "guide_dimer_13_CC",
+    "guide_dimer_13_CG",
+    "guide_dimer_13_CT",
+    "guide_dimer_13_GA",
+    "guide_dimer_13_GC",
+    "guide_dimer_13_GG",
+    "guide_dimer_13_GT",
+    "guide_dimer_13_TA",
+    "guide_dimer_13_TC",
+    "guide_dimer_13_TG",
+    "guide_dimer_13_TT",
+    "guide_dimer_14_AA",
+    "guide_dimer_14_AC",
+    "guide_dimer_14_AG",
+    "guide_dimer_14_AT",
+    "guide_dimer_14_CA",
+    "guide_dimer_14_CC",
+    "guide_dimer_14_CG",
+    "guide_dimer_14_CT",
+    "guide_dimer_14_GA",
+    "guide_dimer_14_GC",
+    "guide_dimer_14_GG",
+    "guide_dimer_14_GT",
+    "guide_dimer_14_TA",
+    "guide_dimer_14_TC",
+    "guide_dimer_14_TG",
+    "guide_dimer_14_TT",
+    "guide_dimer_15_AA",
+    "guide_dimer_15_AC",
+    "guide_dimer_15_AG",
+    "guide_dimer_15_AT",
+    "guide_dimer_15_CA",
+    "guide_dimer_15_CC",
+    "guide_dimer_15_CG",
+    "guide_dimer_15_CT",
+    "guide_dimer_15_GA",
+    "guide_dimer_15_GC",
+    "guide_dimer_15_GG",
+    "guide_dimer_15_GT",
+    "guide_dimer_15_TA",
+    "guide_dimer_15_TC",
+    "guide_dimer_15_TG",
+    "guide_dimer_15_TT",
+    "guide_dimer_16_AA",
+    "guide_dimer_16_AC",
+    "guide_dimer_16_AG",
+    "guide_dimer_16_AT",
+    "guide_dimer_16_CA",
+    "guide_dimer_16_CC",
+    "guide_dimer_16_CG",
+    "guide_dimer_16_CT",
+    "guide_dimer_16_GA",
+    "guide_dimer_16_GC",
+    "guide_dimer_16_GG",
+    "guide_dimer_16_GT",
+    "guide_dimer_16_TA",
+    "guide_dimer_16_TC",
+    "guide_dimer_16_TG",
+    "guide_dimer_16_TT",
+    "guide_dimer_17_AA",
+    "guide_dimer_17_AC",
+    "guide_dimer_17_AG",
+    "guide_dimer_17_AT",
+    "guide_dimer_17_CA",
+    "guide_dimer_17_CC",
+    "guide_dimer_17_CG",
+    "guide_dimer_17_CT",
+    "guide_dimer_17_GA",
+    "guide_dimer_17_GC",
+    "guide_dimer_17_GG",
+    "guide_dimer_17_GT",
+    "guide_dimer_17_TA",
+    "guide_dimer_17_TC",
+    "guide_dimer_17_TG",
+    "guide_dimer_17_TT",
+    "guide_k1_freq_A",
+    "guide_k1_freq_C",
+    "guide_k1_freq_G",
+    "guide_k1_freq_T",
+    "guide_k2_freq_AA",
+    "guide_k2_freq_AC",
+    "guide_k2_freq_AG",
+    "guide_k2_freq_AT",
+    "guide_k2_freq_CA",
+    "guide_k2_freq_CC",
+    "guide_k2_freq_CG",
+    "guide_k2_freq_CT",
+    "guide_k2_freq_GA",
+    "guide_k2_freq_GC",
+    "guide_k2_freq_GG",
+    "guide_k2_freq_GT",
+    "guide_k2_freq_TA",
+    "guide_k2_freq_TC",
+    "guide_k2_freq_TG",
+    "guide_k2_freq_TT",
+    "guide_k3_freq_AAA",
+    "guide_k3_freq_AAC",
+    "guide_k3_freq_AAG",
+    "guide_k3_freq_AAT",
+    "guide_k3_freq_ACA",
+    "guide_k3_freq_ACC",
+    "guide_k3_freq_ACG",
+    "guide_k3_freq_ACT",
+    "guide_k3_freq_AGA",
+    "guide_k3_freq_AGC",
+    "guide_k3_freq_AGG",
+    "guide_k3_freq_AGT",
+    "guide_k3_freq_ATA",
+    "guide_k3_freq_ATC",
+    "guide_k3_freq_ATG",
+    "guide_k3_freq_ATT",
+    "guide_k3_freq_CAA",
+    "guide_k3_freq_CAC",
+    "guide_k3_freq_CAG",
+    "guide_k3_freq_CAT",
+    "guide_k3_freq_CCA",
+    "guide_k3_freq_CCC",
+    "guide_k3_freq_CCG",
+    "guide_k3_freq_CCT",
+    "guide_k3_freq_CGA",
+    "guide_k3_freq_CGC",
+    "guide_k3_freq_CGG",
+    "guide_k3_freq_CGT",
+    "guide_k3_freq_CTA",
+    "guide_k3_freq_CTC",
+    "guide_k3_freq_CTG",
+    "guide_k3_freq_CTT",
+    "guide_k3_freq_GAA",
+    "guide_k3_freq_GAC",
+    "guide_k3_freq_GAG",
+    "guide_k3_freq_GAT",
+    "guide_k3_freq_GCA",
+    "guide_k3_freq_GCC",
+    "guide_k3_freq_GCG",
+    "guide_k3_freq_GCT",
+    "guide_k3_freq_GGA",
+    "guide_k3_freq_GGC",
+    "guide_k3_freq_GGG",
+    "guide_k3_freq_GGT",
+    "guide_k3_freq_GTA",
+    "guide_k3_freq_GTC",
+    "guide_k3_freq_GTG",
+    "guide_k3_freq_GTT",
+    "guide_k3_freq_TAA",
+    "guide_k3_freq_TAC",
+    "guide_k3_freq_TAG",
+    "guide_k3_freq_TAT",
+    "guide_k3_freq_TCA",
+    "guide_k3_freq_TCC",
+    "guide_k3_freq_TCG",
+    "guide_k3_freq_TCT",
+    "guide_k3_freq_TGA",
+    "guide_k3_freq_TGC",
+    "guide_k3_freq_TGG",
+    "guide_k3_freq_TGT",
+    "guide_k3_freq_TTA",
+    "guide_k3_freq_TTC",
+    "guide_k3_freq_TTG",
+    "guide_k3_freq_TTT",
+    "left_k1_freq_A",
+    "left_k1_freq_C",
+    "left_k1_freq_G",
+    "left_k1_freq_T",
+    "left_k2_freq_AA",
+    "left_k2_freq_AC",
+    "left_k2_freq_AG",
+    "left_k2_freq_AT",
+    "left_k2_freq_CA",
+    "left_k2_freq_CC",
+    "left_k2_freq_CG",
+    "left_k2_freq_CT",
+    "left_k2_freq_GA",
+    "left_k2_freq_GC",
+    "left_k2_freq_GG",
+    "left_k2_freq_GT",
+    "left_k2_freq_TA",
+    "left_k2_freq_TC",
+    "left_k2_freq_TG",
+    "left_k2_freq_TT",
+    "left_k3_freq_AAA",
+    "left_k3_freq_AAC",
+    "left_k3_freq_AAG",
+    "left_k3_freq_AAT",
+    "left_k3_freq_ACA",
+    "left_k3_freq_ACC",
+    "left_k3_freq_ACG",
+    "left_k3_freq_ACT",
+    "left_k3_freq_AGA",
+    "left_k3_freq_AGC",
+    "left_k3_freq_AGG",
+    "left_k3_freq_AGT",
+    "left_k3_freq_ATA",
+    "left_k3_freq_ATC",
+    "left_k3_freq_ATG",
+    "left_k3_freq_ATT",
+    "left_k3_freq_CAA",
+    "left_k3_freq_CAC",
+    "left_k3_freq_CAG",
+    "left_k3_freq_CAT",
+    "left_k3_freq_CCA",
+    "left_k3_freq_CCC",
+    "left_k3_freq_CCG",
+    "left_k3_freq_CCT",
+    "left_k3_freq_CGA",
+    "left_k3_freq_CGC",
+    "left_k3_freq_CGG",
+    "left_k3_freq_CGT",
+    "left_k3_freq_CTA",
+    "left_k3_freq_CTC",
+    "left_k3_freq_CTG",
+    "left_k3_freq_CTT",
+    "left_k3_freq_GAA",
+    "left_k3_freq_GAC",
+    "left_k3_freq_GAG",
+    "left_k3_freq_GAT",
+    "left_k3_freq_GCA",
+    "left_k3_freq_GCC",
+    "left_k3_freq_GCG",
+    "left_k3_freq_GCT",
+    "left_k3_freq_GGA",
+    "left_k3_freq_GGC",
+    "left_k3_freq_GGG",
+    "left_k3_freq_GGT",
+    "left_k3_freq_GTA",
+    "left_k3_freq_GTC",
+    "left_k3_freq_GTG",
+    "left_k3_freq_GTT",
+    "left_k3_freq_TAA",
+    "left_k3_freq_TAC",
+    "left_k3_freq_TAG",
+    "left_k3_freq_TAT",
+    "left_k3_freq_TCA",
+    "left_k3_freq_TCC",
+    "left_k3_freq_TCG",
+    "left_k3_freq_TCT",
+    "left_k3_freq_TGA",
+    "left_k3_freq_TGC",
+    "left_k3_freq_TGG",
+    "left_k3_freq_TGT",
+    "left_k3_freq_TTA",
+    "left_k3_freq_TTC",
+    "left_k3_freq_TTG",
+    "left_k3_freq_TTT",
+    "right_k1_freq_A",
+    "right_k1_freq_C",
+    "right_k1_freq_G",
+    "right_k1_freq_T",
+    "right_k2_freq_AA",
+    "right_k2_freq_AC",
+    "right_k2_freq_AG",
+    "right_k2_freq_AT",
+    "right_k2_freq_CA",
+    "right_k2_freq_CC",
+    "right_k2_freq_CG",
+    "right_k2_freq_CT",
+    "right_k2_freq_GA",
+    "right_k2_freq_GC",
+    "right_k2_freq_GG",
+    "right_k2_freq_GT",
+    "right_k2_freq_TA",
+    "right_k2_freq_TC",
+    "right_k2_freq_TG",
+    "right_k2_freq_TT",
+    "right_k3_freq_AAA",
+    "right_k3_freq_AAC",
+    "right_k3_freq_AAG",
+    "right_k3_freq_AAT",
+    "right_k3_freq_ACA",
+    "right_k3_freq_ACC",
+    "right_k3_freq_ACG",
+    "right_k3_freq_ACT",
+    "right_k3_freq_AGA",
+    "right_k3_freq_AGC",
+    "right_k3_freq_AGG",
+    "right_k3_freq_AGT",
+    "right_k3_freq_ATA",
+    "right_k3_freq_ATC",
+    "right_k3_freq_ATG",
+    "right_k3_freq_ATT",
+    "right_k3_freq_CAA",
+    "right_k3_freq_CAC",
+    "right_k3_freq_CAG",
+    "right_k3_freq_CAT",
+    "right_k3_freq_CCA",
+    "right_k3_freq_CCC",
+    "right_k3_freq_CCG",
+    "right_k3_freq_CCT",
+    "right_k3_freq_CGA",
+    "right_k3_freq_CGC",
+    "right_k3_freq_CGG",
+    "right_k3_freq_CGT",
+    "right_k3_freq_CTA",
+    "right_k3_freq_CTC",
+    "right_k3_freq_CTG",
+    "right_k3_freq_CTT",
+    "right_k3_freq_GAA",
+    "right_k3_freq_GAC",
+    "right_k3_freq_GAG",
+    "right_k3_freq_GAT",
+    "right_k3_freq_GCA",
+    "right_k3_freq_GCC",
+    "right_k3_freq_GCG",
+    "right_k3_freq_GCT",
+    "right_k3_freq_GGA",
+    "right_k3_freq_GGC",
+    "right_k3_freq_GGG",
+    "right_k3_freq_GGT",
+    "right_k3_freq_GTA",
+    "right_k3_freq_GTC",
+    "right_k3_freq_GTG",
+    "right_k3_freq_GTT",
+    "right_k3_freq_TAA",
+    "right_k3_freq_TAC",
+    "right_k3_freq_TAG",
+    "right_k3_freq_TAT",
+    "right_k3_freq_TCA",
+    "right_k3_freq_TCC",
+    "right_k3_freq_TCG",
+    "right_k3_freq_TCT",
+    "right_k3_freq_TGA",
+    "right_k3_freq_TGC",
+    "right_k3_freq_TGG",
+    "right_k3_freq_TGT",
+    "right_k3_freq_TTA",
+    "right_k3_freq_TTC",
+    "right_k3_freq_TTG",
+    "right_k3_freq_TTT",
+    "guide_k1_coverage",
+    "guide_k2_coverage",
+    "guide_k3_coverage",
+    "left_k1_coverage",
+    "left_k2_coverage",
+    "left_k3_coverage",
+    "right_k1_coverage",
+    "right_k2_coverage",
+    "right_k3_coverage",
+    "guide_gc_w3_p00",
+    "guide_gc_w3_p01",
+    "guide_gc_w3_p02",
+    "guide_gc_w3_p03",
+    "guide_gc_w3_p04",
+    "guide_gc_w3_p05",
+    "guide_gc_w3_p06",
+    "guide_gc_w3_p07",
+    "guide_gc_w3_p08",
+    "guide_gc_w3_p09",
+    "guide_gc_w3_p10",
+    "guide_gc_w3_p11",
+    "guide_gc_w3_p12",
+    "guide_gc_w3_p13",
+    "guide_gc_w3_p14",
+    "guide_gc_w3_p15",
+    "guide_gc_w3_p16",
+    "guide_gc_w5_p00",
+    "guide_gc_w5_p01",
+    "guide_gc_w5_p02",
+    "guide_gc_w5_p03",
+    "guide_gc_w5_p04",
+    "guide_gc_w5_p05",
+    "guide_gc_w5_p06",
+    "guide_gc_w5_p07",
+    "guide_gc_w5_p08",
+    "guide_gc_w5_p09",
+    "guide_gc_w5_p10",
+    "guide_gc_w5_p11",
+    "guide_gc_w5_p12",
+    "guide_gc_w5_p13",
+    "guide_gc_w5_p14",
+    "guide_gc_w7_p00",
+    "guide_gc_w7_p01",
+    "guide_gc_w7_p02",
+    "guide_gc_w7_p03",
+    "guide_gc_w7_p04",
+    "guide_gc_w7_p05",
+    "guide_gc_w7_p06",
+    "guide_gc_w7_p07",
+    "guide_gc_w7_p08",
+    "guide_gc_w7_p09",
+    "guide_gc_w7_p10",
+    "guide_gc_w7_p11",
+    "guide_gc_w7_p12",
+    "guide_gc",
+    "guide_gc_squared",
+    "guide_first5_gc",
+    "guide_last5_gc",
+    "guide_first5_minus_last5_gc",
+    "guide_max_run_A",
+    "guide_max_run_C",
+    "guide_max_run_G",
+    "guide_max_run_T"
+  ],
+  "label_transform": "identity",
+  "scaling": "none",
+  "columns": [
+    {
+      "index": 0,
+      "name": "guide_00_A"
+    },
+    {
+      "index": 1,
+      "name": "guide_00_C"
+    },
+    {
+      "index": 2,
+      "name": "guide_00_G"
+    },
+    {
+      "index": 3,
+      "name": "guide_00_T"
+    },
+    {
+      "index": 4,
+      "name": "guide_01_A"
+    },
+    {
+      "index": 5,
+      "name": "guide_01_C"
+    },
+    {
+      "index": 6,
+      "name": "guide_01_G"
+    },
+    {
+      "index": 7,
+      "name": "guide_01_T"
+    },
+    {
+      "index": 8,
+      "name": "guide_02_A"
+    },
+    {
+      "index": 9,
+      "name": "guide_02_C"
+    },
+    {
+      "index": 10,
+      "name": "guide_02_G"
+    },
+    {
+      "index": 11,
+      "name": "guide_02_T"
+    },
+    {
+      "index": 12,
+      "name": "guide_03_A"
+    },
+    {
+      "index": 13,
+      "name": "guide_03_C"
+    },
+    {
+      "index": 14,
+      "name": "guide_03_G"
+    },
+    {
+      "index": 15,
+      "name": "guide_03_T"
+    },
+    {
+      "index": 16,
+      "name": "guide_04_A"
+    },
+    {
+      "index": 17,
+      "name": "guide_04_C"
+    },
+    {
+      "index": 18,
+      "name": "guide_04_G"
+    },
+    {
+      "index": 19,
+      "name": "guide_04_T"
+    },
+    {
+      "index": 20,
+      "name": "guide_05_A"
+    },
+    {
+      "index": 21,
+      "name": "guide_05_C"
+    },
+    {
+      "index": 22,
+      "name": "guide_05_G"
+    },
+    {
+      "index": 23,
+      "name": "guide_05_T"
+    },
+    {
+      "index": 24,
+      "name": "guide_06_A"
+    },
+    {
+      "index": 25,
+      "name": "guide_06_C"
+    },
+    {
+      "index": 26,
+      "name": "guide_06_G"
+    },
+    {
+      "index": 27,
+      "name": "guide_06_T"
+    },
+    {
+      "index": 28,
+      "name": "guide_07_A"
+    },
+    {
+      "index": 29,
+      "name": "guide_07_C"
+    },
+    {
+      "index": 30,
+      "name": "guide_07_G"
+    },
+    {
+      "index": 31,
+      "name": "guide_07_T"
+    },
+    {
+      "index": 32,
+      "name": "guide_08_A"
+    },
+    {
+      "index": 33,
+      "name": "guide_08_C"
+    },
+    {
+      "index": 34,
+      "name": "guide_08_G"
+    },
+    {
+      "index": 35,
+      "name": "guide_08_T"
+    },
+    {
+      "index": 36,
+      "name": "guide_09_A"
+    },
+    {
+      "index": 37,
+      "name": "guide_09_C"
+    },
+    {
+      "index": 38,
+      "name": "guide_09_G"
+    },
+    {
+      "index": 39,
+      "name": "guide_09_T"
+    },
+    {
+      "index": 40,
+      "name": "guide_10_A"
+    },
+    {
+      "index": 41,
+      "name": "guide_10_C"
+    },
+    {
+      "index": 42,
+      "name": "guide_10_G"
+    },
+    {
+      "index": 43,
+      "name": "guide_10_T"
+    },
+    {
+      "index": 44,
+      "name": "guide_11_A"
+    },
+    {
+      "index": 45,
+      "name": "guide_11_C"
+    },
+    {
+      "index": 46,
+      "name": "guide_11_G"
+    },
+    {
+      "index": 47,
+      "name": "guide_11_T"
+    },
+    {
+      "index": 48,
+      "name": "guide_12_A"
+    },
+    {
+      "index": 49,
+      "name": "guide_12_C"
+    },
+    {
+      "index": 50,
+      "name": "guide_12_G"
+    },
+    {
+      "index": 51,
+      "name": "guide_12_T"
+    },
+    {
+      "index": 52,
+      "name": "guide_13_A"
+    },
+    {
+      "index": 53,
+      "name": "guide_13_C"
+    },
+    {
+      "index": 54,
+      "name": "guide_13_G"
+    },
+    {
+      "index": 55,
+      "name": "guide_13_T"
+    },
+    {
+      "index": 56,
+      "name": "guide_14_A"
+    },
+    {
+      "index": 57,
+      "name": "guide_14_C"
+    },
+    {
+      "index": 58,
+      "name": "guide_14_G"
+    },
+    {
+      "index": 59,
+      "name": "guide_14_T"
+    },
+    {
+      "index": 60,
+      "name": "guide_15_A"
+    },
+    {
+      "index": 61,
+      "name": "guide_15_C"
+    },
+    {
+      "index": 62,
+      "name": "guide_15_G"
+    },
+    {
+      "index": 63,
+      "name": "guide_15_T"
+    },
+    {
+      "index": 64,
+      "name": "guide_16_A"
+    },
+    {
+      "index": 65,
+      "name": "guide_16_C"
+    },
+    {
+      "index": 66,
+      "name": "guide_16_G"
+    },
+    {
+      "index": 67,
+      "name": "guide_16_T"
+    },
+    {
+      "index": 68,
+      "name": "guide_17_A"
+    },
+    {
+      "index": 69,
+      "name": "guide_17_C"
+    },
+    {
+      "index": 70,
+      "name": "guide_17_G"
+    },
+    {
+      "index": 71,
+      "name": "guide_17_T"
+    },
+    {
+      "index": 72,
+      "name": "guide_18_A"
+    },
+    {
+      "index": 73,
+      "name": "guide_18_C"
+    },
+    {
+      "index": 74,
+      "name": "guide_18_G"
+    },
+    {
+      "index": 75,
+      "name": "guide_18_T"
+    },
+    {
+      "index": 76,
+      "name": "context_00_A"
+    },
+    {
+      "index": 77,
+      "name": "context_00_C"
+    },
+    {
+      "index": 78,
+      "name": "context_00_G"
+    },
+    {
+      "index": 79,
+      "name": "context_00_T"
+    },
+    {
+      "index": 80,
+      "name": "context_00_X"
+    },
+    {
+      "index": 81,
+      "name": "context_01_A"
+    },
+    {
+      "index": 82,
+      "name": "context_01_C"
+    },
+    {
+      "index": 83,
+      "name": "context_01_G"
+    },
+    {
+      "index": 84,
+      "name": "context_01_T"
+    },
+    {
+      "index": 85,
+      "name": "context_01_X"
+    },
+    {
+      "index": 86,
+      "name": "context_02_A"
+    },
+    {
+      "index": 87,
+      "name": "context_02_C"
+    },
+    {
+      "index": 88,
+      "name": "context_02_G"
+    },
+    {
+      "index": 89,
+      "name": "context_02_T"
+    },
+    {
+      "index": 90,
+      "name": "context_02_X"
+    },
+    {
+      "index": 91,
+      "name": "context_03_A"
+    },
+    {
+      "index": 92,
+      "name": "context_03_C"
+    },
+    {
+      "index": 93,
+      "name": "context_03_G"
+    },
+    {
+      "index": 94,
+      "name": "context_03_T"
+    },
+    {
+      "index": 95,
+      "name": "context_03_X"
+    },
+    {
+      "index": 96,
+      "name": "context_04_A"
+    },
+    {
+      "index": 97,
+      "name": "context_04_C"
+    },
+    {
+      "index": 98,
+      "name": "context_04_G"
+    },
+    {
+      "index": 99,
+      "name": "context_04_T"
+    },
+    {
+      "index": 100,
+      "name": "context_04_X"
+    },
+    {
+      "index": 101,
+      "name": "context_05_A"
+    },
+    {
+      "index": 102,
+      "name": "context_05_C"
+    },
+    {
+      "index": 103,
+      "name": "context_05_G"
+    },
+    {
+      "index": 104,
+      "name": "context_05_T"
+    },
+    {
+      "index": 105,
+      "name": "context_05_X"
+    },
+    {
+      "index": 106,
+      "name": "context_06_A"
+    },
+    {
+      "index": 107,
+      "name": "context_06_C"
+    },
+    {
+      "index": 108,
+      "name": "context_06_G"
+    },
+    {
+      "index": 109,
+      "name": "context_06_T"
+    },
+    {
+      "index": 110,
+      "name": "context_06_X"
+    },
+    {
+      "index": 111,
+      "name": "context_07_A"
+    },
+    {
+      "index": 112,
+      "name": "context_07_C"
+    },
+    {
+      "index": 113,
+      "name": "context_07_G"
+    },
+    {
+      "index": 114,
+      "name": "context_07_T"
+    },
+    {
+      "index": 115,
+      "name": "context_07_X"
+    },
+    {
+      "index": 116,
+      "name": "context_08_A"
+    },
+    {
+      "index": 117,
+      "name": "context_08_C"
+    },
+    {
+      "index": 118,
+      "name": "context_08_G"
+    },
+    {
+      "index": 119,
+      "name": "context_08_T"
+    },
+    {
+      "index": 120,
+      "name": "context_08_X"
+    },
+    {
+      "index": 121,
+      "name": "context_09_A"
+    },
+    {
+      "index": 122,
+      "name": "context_09_C"
+    },
+    {
+      "index": 123,
+      "name": "context_09_G"
+    },
+    {
+      "index": 124,
+      "name": "context_09_T"
+    },
+    {
+      "index": 125,
+      "name": "context_09_X"
+    },
+    {
+      "index": 126,
+      "name": "context_10_A"
+    },
+    {
+      "index": 127,
+      "name": "context_10_C"
+    },
+    {
+      "index": 128,
+      "name": "context_10_G"
+    },
+    {
+      "index": 129,
+      "name": "context_10_T"
+    },
+    {
+      "index": 130,
+      "name": "context_10_X"
+    },
+    {
+      "index": 131,
+      "name": "context_11_A"
+    },
+    {
+      "index": 132,
+      "name": "context_11_C"
+    },
+    {
+      "index": 133,
+      "name": "context_11_G"
+    },
+    {
+      "index": 134,
+      "name": "context_11_T"
+    },
+    {
+      "index": 135,
+      "name": "context_11_X"
+    },
+    {
+      "index": 136,
+      "name": "context_12_A"
+    },
+    {
+      "index": 137,
+      "name": "context_12_C"
+    },
+    {
+      "index": 138,
+      "name": "context_12_G"
+    },
+    {
+      "index": 139,
+      "name": "context_12_T"
+    },
+    {
+      "index": 140,
+      "name": "context_12_X"
+    },
+    {
+      "index": 141,
+      "name": "context_13_A"
+    },
+    {
+      "index": 142,
+      "name": "context_13_C"
+    },
+    {
+      "index": 143,
+      "name": "context_13_G"
+    },
+    {
+      "index": 144,
+      "name": "context_13_T"
+    },
+    {
+      "index": 145,
+      "name": "context_13_X"
+    },
+    {
+      "index": 146,
+      "name": "context_14_A"
+    },
+    {
+      "index": 147,
+      "name": "context_14_C"
+    },
+    {
+      "index": 148,
+      "name": "context_14_G"
+    },
+    {
+      "index": 149,
+      "name": "context_14_T"
+    },
+    {
+      "index": 150,
+      "name": "context_14_X"
+    },
+    {
+      "index": 151,
+      "name": "context_15_A"
+    },
+    {
+      "index": 152,
+      "name": "context_15_C"
+    },
+    {
+      "index": 153,
+      "name": "context_15_G"
+    },
+    {
+      "index": 154,
+      "name": "context_15_T"
+    },
+    {
+      "index": 155,
+      "name": "context_15_X"
+    },
+    {
+      "index": 156,
+      "name": "context_16_A"
+    },
+    {
+      "index": 157,
+      "name": "context_16_C"
+    },
+    {
+      "index": 158,
+      "name": "context_16_G"
+    },
+    {
+      "index": 159,
+      "name": "context_16_T"
+    },
+    {
+      "index": 160,
+      "name": "context_16_X"
+    },
+    {
+      "index": 161,
+      "name": "context_17_A"
+    },
+    {
+      "index": 162,
+      "name": "context_17_C"
+    },
+    {
+      "index": 163,
+      "name": "context_17_G"
+    },
+    {
+      "index": 164,
+      "name": "context_17_T"
+    },
+    {
+      "index": 165,
+      "name": "context_17_X"
+    },
+    {
+      "index": 166,
+      "name": "context_18_A"
+    },
+    {
+      "index": 167,
+      "name": "context_18_C"
+    },
+    {
+      "index": 168,
+      "name": "context_18_G"
+    },
+    {
+      "index": 169,
+      "name": "context_18_T"
+    },
+    {
+      "index": 170,
+      "name": "context_18_X"
+    },
+    {
+      "index": 171,
+      "name": "context_19_A"
+    },
+    {
+      "index": 172,
+      "name": "context_19_C"
+    },
+    {
+      "index": 173,
+      "name": "context_19_G"
+    },
+    {
+      "index": 174,
+      "name": "context_19_T"
+    },
+    {
+      "index": 175,
+      "name": "context_19_X"
+    },
+    {
+      "index": 176,
+      "name": "context_20_A"
+    },
+    {
+      "index": 177,
+      "name": "context_20_C"
+    },
+    {
+      "index": 178,
+      "name": "context_20_G"
+    },
+    {
+      "index": 179,
+      "name": "context_20_T"
+    },
+    {
+      "index": 180,
+      "name": "context_20_X"
+    },
+    {
+      "index": 181,
+      "name": "context_21_A"
+    },
+    {
+      "index": 182,
+      "name": "context_21_C"
+    },
+    {
+      "index": 183,
+      "name": "context_21_G"
+    },
+    {
+      "index": 184,
+      "name": "context_21_T"
+    },
+    {
+      "index": 185,
+      "name": "context_21_X"
+    },
+    {
+      "index": 186,
+      "name": "context_22_A"
+    },
+    {
+      "index": 187,
+      "name": "context_22_C"
+    },
+    {
+      "index": 188,
+      "name": "context_22_G"
+    },
+    {
+      "index": 189,
+      "name": "context_22_T"
+    },
+    {
+      "index": 190,
+      "name": "context_22_X"
+    },
+    {
+      "index": 191,
+      "name": "context_23_A"
+    },
+    {
+      "index": 192,
+      "name": "context_23_C"
+    },
+    {
+      "index": 193,
+      "name": "context_23_G"
+    },
+    {
+      "index": 194,
+      "name": "context_23_T"
+    },
+    {
+      "index": 195,
+      "name": "context_23_X"
+    },
+    {
+      "index": 196,
+      "name": "context_24_A"
+    },
+    {
+      "index": 197,
+      "name": "context_24_C"
+    },
+    {
+      "index": 198,
+      "name": "context_24_G"
+    },
+    {
+      "index": 199,
+      "name": "context_24_T"
+    },
+    {
+      "index": 200,
+      "name": "context_24_X"
+    },
+    {
+      "index": 201,
+      "name": "context_25_A"
+    },
+    {
+      "index": 202,
+      "name": "context_25_C"
+    },
+    {
+      "index": 203,
+      "name": "context_25_G"
+    },
+    {
+      "index": 204,
+      "name": "context_25_T"
+    },
+    {
+      "index": 205,
+      "name": "context_25_X"
+    },
+    {
+      "index": 206,
+      "name": "context_26_A"
+    },
+    {
+      "index": 207,
+      "name": "context_26_C"
+    },
+    {
+      "index": 208,
+      "name": "context_26_G"
+    },
+    {
+      "index": 209,
+      "name": "context_26_T"
+    },
+    {
+      "index": 210,
+      "name": "context_26_X"
+    },
+    {
+      "index": 211,
+      "name": "context_27_A"
+    },
+    {
+      "index": 212,
+      "name": "context_27_C"
+    },
+    {
+      "index": 213,
+      "name": "context_27_G"
+    },
+    {
+      "index": 214,
+      "name": "context_27_T"
+    },
+    {
+      "index": 215,
+      "name": "context_27_X"
+    },
+    {
+      "index": 216,
+      "name": "context_28_A"
+    },
+    {
+      "index": 217,
+      "name": "context_28_C"
+    },
+    {
+      "index": 218,
+      "name": "context_28_G"
+    },
+    {
+      "index": 219,
+      "name": "context_28_T"
+    },
+    {
+      "index": 220,
+      "name": "context_28_X"
+    },
+    {
+      "index": 221,
+      "name": "context_29_A"
+    },
+    {
+      "index": 222,
+      "name": "context_29_C"
+    },
+    {
+      "index": 223,
+      "name": "context_29_G"
+    },
+    {
+      "index": 224,
+      "name": "context_29_T"
+    },
+    {
+      "index": 225,
+      "name": "context_29_X"
+    },
+    {
+      "index": 226,
+      "name": "context_30_A"
+    },
+    {
+      "index": 227,
+      "name": "context_30_C"
+    },
+    {
+      "index": 228,
+      "name": "context_30_G"
+    },
+    {
+      "index": 229,
+      "name": "context_30_T"
+    },
+    {
+      "index": 230,
+      "name": "context_30_X"
+    },
+    {
+      "index": 231,
+      "name": "context_31_A"
+    },
+    {
+      "index": 232,
+      "name": "context_31_C"
+    },
+    {
+      "index": 233,
+      "name": "context_31_G"
+    },
+    {
+      "index": 234,
+      "name": "context_31_T"
+    },
+    {
+      "index": 235,
+      "name": "context_31_X"
+    },
+    {
+      "index": 236,
+      "name": "context_32_A"
+    },
+    {
+      "index": 237,
+      "name": "context_32_C"
+    },
+    {
+      "index": 238,
+      "name": "context_32_G"
+    },
+    {
+      "index": 239,
+      "name": "context_32_T"
+    },
+    {
+      "index": 240,
+      "name": "context_32_X"
+    },
+    {
+      "index": 241,
+      "name": "context_33_A"
+    },
+    {
+      "index": 242,
+      "name": "context_33_C"
+    },
+    {
+      "index": 243,
+      "name": "context_33_G"
+    },
+    {
+      "index": 244,
+      "name": "context_33_T"
+    },
+    {
+      "index": 245,
+      "name": "context_33_X"
+    },
+    {
+      "index": 246,
+      "name": "context_34_A"
+    },
+    {
+      "index": 247,
+      "name": "context_34_C"
+    },
+    {
+      "index": 248,
+      "name": "context_34_G"
+    },
+    {
+      "index": 249,
+      "name": "context_34_T"
+    },
+    {
+      "index": 250,
+      "name": "context_34_X"
+    },
+    {
+      "index": 251,
+      "name": "context_35_A"
+    },
+    {
+      "index": 252,
+      "name": "context_35_C"
+    },
+    {
+      "index": 253,
+      "name": "context_35_G"
+    },
+    {
+      "index": 254,
+      "name": "context_35_T"
+    },
+    {
+      "index": 255,
+      "name": "context_35_X"
+    },
+    {
+      "index": 256,
+      "name": "context_36_A"
+    },
+    {
+      "index": 257,
+      "name": "context_36_C"
+    },
+    {
+      "index": 258,
+      "name": "context_36_G"
+    },
+    {
+      "index": 259,
+      "name": "context_36_T"
+    },
+    {
+      "index": 260,
+      "name": "context_36_X"
+    },
+    {
+      "index": 261,
+      "name": "context_37_A"
+    },
+    {
+      "index": 262,
+      "name": "context_37_C"
+    },
+    {
+      "index": 263,
+      "name": "context_37_G"
+    },
+    {
+      "index": 264,
+      "name": "context_37_T"
+    },
+    {
+      "index": 265,
+      "name": "context_37_X"
+    },
+    {
+      "index": 266,
+      "name": "context_38_A"
+    },
+    {
+      "index": 267,
+      "name": "context_38_C"
+    },
+    {
+      "index": 268,
+      "name": "context_38_G"
+    },
+    {
+      "index": 269,
+      "name": "context_38_T"
+    },
+    {
+      "index": 270,
+      "name": "context_38_X"
+    },
+    {
+      "index": 271,
+      "name": "context_39_A"
+    },
+    {
+      "index": 272,
+      "name": "context_39_C"
+    },
+    {
+      "index": 273,
+      "name": "context_39_G"
+    },
+    {
+      "index": 274,
+      "name": "context_39_T"
+    },
+    {
+      "index": 275,
+      "name": "context_39_X"
+    },
+    {
+      "index": 276,
+      "name": "context_40_A"
+    },
+    {
+      "index": 277,
+      "name": "context_40_C"
+    },
+    {
+      "index": 278,
+      "name": "context_40_G"
+    },
+    {
+      "index": 279,
+      "name": "context_40_T"
+    },
+    {
+      "index": 280,
+      "name": "context_40_X"
+    },
+    {
+      "index": 281,
+      "name": "context_41_A"
+    },
+    {
+      "index": 282,
+      "name": "context_41_C"
+    },
+    {
+      "index": 283,
+      "name": "context_41_G"
+    },
+    {
+      "index": 284,
+      "name": "context_41_T"
+    },
+    {
+      "index": 285,
+      "name": "context_41_X"
+    },
+    {
+      "index": 286,
+      "name": "context_42_A"
+    },
+    {
+      "index": 287,
+      "name": "context_42_C"
+    },
+    {
+      "index": 288,
+      "name": "context_42_G"
+    },
+    {
+      "index": 289,
+      "name": "context_42_T"
+    },
+    {
+      "index": 290,
+      "name": "context_42_X"
+    },
+    {
+      "index": 291,
+      "name": "context_43_A"
+    },
+    {
+      "index": 292,
+      "name": "context_43_C"
+    },
+    {
+      "index": 293,
+      "name": "context_43_G"
+    },
+    {
+      "index": 294,
+      "name": "context_43_T"
+    },
+    {
+      "index": 295,
+      "name": "context_43_X"
+    },
+    {
+      "index": 296,
+      "name": "context_44_A"
+    },
+    {
+      "index": 297,
+      "name": "context_44_C"
+    },
+    {
+      "index": 298,
+      "name": "context_44_G"
+    },
+    {
+      "index": 299,
+      "name": "context_44_T"
+    },
+    {
+      "index": 300,
+      "name": "context_44_X"
+    },
+    {
+      "index": 301,
+      "name": "context_45_A"
+    },
+    {
+      "index": 302,
+      "name": "context_45_C"
+    },
+    {
+      "index": 303,
+      "name": "context_45_G"
+    },
+    {
+      "index": 304,
+      "name": "context_45_T"
+    },
+    {
+      "index": 305,
+      "name": "context_45_X"
+    },
+    {
+      "index": 306,
+      "name": "context_46_A"
+    },
+    {
+      "index": 307,
+      "name": "context_46_C"
+    },
+    {
+      "index": 308,
+      "name": "context_46_G"
+    },
+    {
+      "index": 309,
+      "name": "context_46_T"
+    },
+    {
+      "index": 310,
+      "name": "context_46_X"
+    },
+    {
+      "index": 311,
+      "name": "context_47_A"
+    },
+    {
+      "index": 312,
+      "name": "context_47_C"
+    },
+    {
+      "index": 313,
+      "name": "context_47_G"
+    },
+    {
+      "index": 314,
+      "name": "context_47_T"
+    },
+    {
+      "index": 315,
+      "name": "context_47_X"
+    },
+    {
+      "index": 316,
+      "name": "context_48_A"
+    },
+    {
+      "index": 317,
+      "name": "context_48_C"
+    },
+    {
+      "index": 318,
+      "name": "context_48_G"
+    },
+    {
+      "index": 319,
+      "name": "context_48_T"
+    },
+    {
+      "index": 320,
+      "name": "context_48_X"
+    },
+    {
+      "index": 321,
+      "name": "context_49_A"
+    },
+    {
+      "index": 322,
+      "name": "context_49_C"
+    },
+    {
+      "index": 323,
+      "name": "context_49_G"
+    },
+    {
+      "index": 324,
+      "name": "context_49_T"
+    },
+    {
+      "index": 325,
+      "name": "context_49_X"
+    },
+    {
+      "index": 326,
+      "name": "context_50_A"
+    },
+    {
+      "index": 327,
+      "name": "context_50_C"
+    },
+    {
+      "index": 328,
+      "name": "context_50_G"
+    },
+    {
+      "index": 329,
+      "name": "context_50_T"
+    },
+    {
+      "index": 330,
+      "name": "context_50_X"
+    },
+    {
+      "index": 331,
+      "name": "context_51_A"
+    },
+    {
+      "index": 332,
+      "name": "context_51_C"
+    },
+    {
+      "index": 333,
+      "name": "context_51_G"
+    },
+    {
+      "index": 334,
+      "name": "context_51_T"
+    },
+    {
+      "index": 335,
+      "name": "context_51_X"
+    },
+    {
+      "index": 336,
+      "name": "context_52_A"
+    },
+    {
+      "index": 337,
+      "name": "context_52_C"
+    },
+    {
+      "index": 338,
+      "name": "context_52_G"
+    },
+    {
+      "index": 339,
+      "name": "context_52_T"
+    },
+    {
+      "index": 340,
+      "name": "context_52_X"
+    },
+    {
+      "index": 341,
+      "name": "context_53_A"
+    },
+    {
+      "index": 342,
+      "name": "context_53_C"
+    },
+    {
+      "index": 343,
+      "name": "context_53_G"
+    },
+    {
+      "index": 344,
+      "name": "context_53_T"
+    },
+    {
+      "index": 345,
+      "name": "context_53_X"
+    },
+    {
+      "index": 346,
+      "name": "context_54_A"
+    },
+    {
+      "index": 347,
+      "name": "context_54_C"
+    },
+    {
+      "index": 348,
+      "name": "context_54_G"
+    },
+    {
+      "index": 349,
+      "name": "context_54_T"
+    },
+    {
+      "index": 350,
+      "name": "context_54_X"
+    },
+    {
+      "index": 351,
+      "name": "context_55_A"
+    },
+    {
+      "index": 352,
+      "name": "context_55_C"
+    },
+    {
+      "index": 353,
+      "name": "context_55_G"
+    },
+    {
+      "index": 354,
+      "name": "context_55_T"
+    },
+    {
+      "index": 355,
+      "name": "context_55_X"
+    },
+    {
+      "index": 356,
+      "name": "context_56_A"
+    },
+    {
+      "index": 357,
+      "name": "context_56_C"
+    },
+    {
+      "index": 358,
+      "name": "context_56_G"
+    },
+    {
+      "index": 359,
+      "name": "context_56_T"
+    },
+    {
+      "index": 360,
+      "name": "context_56_X"
+    },
+    {
+      "index": 361,
+      "name": "guide_dimer_00_AA"
+    },
+    {
+      "index": 362,
+      "name": "guide_dimer_00_AC"
+    },
+    {
+      "index": 363,
+      "name": "guide_dimer_00_AG"
+    },
+    {
+      "index": 364,
+      "name": "guide_dimer_00_AT"
+    },
+    {
+      "index": 365,
+      "name": "guide_dimer_00_CA"
+    },
+    {
+      "index": 366,
+      "name": "guide_dimer_00_CC"
+    },
+    {
+      "index": 367,
+      "name": "guide_dimer_00_CG"
+    },
+    {
+      "index": 368,
+      "name": "guide_dimer_00_CT"
+    },
+    {
+      "index": 369,
+      "name": "guide_dimer_00_GA"
+    },
+    {
+      "index": 370,
+      "name": "guide_dimer_00_GC"
+    },
+    {
+      "index": 371,
+      "name": "guide_dimer_00_GG"
+    },
+    {
+      "index": 372,
+      "name": "guide_dimer_00_GT"
+    },
+    {
+      "index": 373,
+      "name": "guide_dimer_00_TA"
+    },
+    {
+      "index": 374,
+      "name": "guide_dimer_00_TC"
+    },
+    {
+      "index": 375,
+      "name": "guide_dimer_00_TG"
+    },
+    {
+      "index": 376,
+      "name": "guide_dimer_00_TT"
+    },
+    {
+      "index": 377,
+      "name": "guide_dimer_01_AA"
+    },
+    {
+      "index": 378,
+      "name": "guide_dimer_01_AC"
+    },
+    {
+      "index": 379,
+      "name": "guide_dimer_01_AG"
+    },
+    {
+      "index": 380,
+      "name": "guide_dimer_01_AT"
+    },
+    {
+      "index": 381,
+      "name": "guide_dimer_01_CA"
+    },
+    {
+      "index": 382,
+      "name": "guide_dimer_01_CC"
+    },
+    {
+      "index": 383,
+      "name": "guide_dimer_01_CG"
+    },
+    {
+      "index": 384,
+      "name": "guide_dimer_01_CT"
+    },
+    {
+      "index": 385,
+      "name": "guide_dimer_01_GA"
+    },
+    {
+      "index": 386,
+      "name": "guide_dimer_01_GC"
+    },
+    {
+      "index": 387,
+      "name": "guide_dimer_01_GG"
+    },
+    {
+      "index": 388,
+      "name": "guide_dimer_01_GT"
+    },
+    {
+      "index": 389,
+      "name": "guide_dimer_01_TA"
+    },
+    {
+      "index": 390,
+      "name": "guide_dimer_01_TC"
+    },
+    {
+      "index": 391,
+      "name": "guide_dimer_01_TG"
+    },
+    {
+      "index": 392,
+      "name": "guide_dimer_01_TT"
+    },
+    {
+      "index": 393,
+      "name": "guide_dimer_02_AA"
+    },
+    {
+      "index": 394,
+      "name": "guide_dimer_02_AC"
+    },
+    {
+      "index": 395,
+      "name": "guide_dimer_02_AG"
+    },
+    {
+      "index": 396,
+      "name": "guide_dimer_02_AT"
+    },
+    {
+      "index": 397,
+      "name": "guide_dimer_02_CA"
+    },
+    {
+      "index": 398,
+      "name": "guide_dimer_02_CC"
+    },
+    {
+      "index": 399,
+      "name": "guide_dimer_02_CG"
+    },
+    {
+      "index": 400,
+      "name": "guide_dimer_02_CT"
+    },
+    {
+      "index": 401,
+      "name": "guide_dimer_02_GA"
+    },
+    {
+      "index": 402,
+      "name": "guide_dimer_02_GC"
+    },
+    {
+      "index": 403,
+      "name": "guide_dimer_02_GG"
+    },
+    {
+      "index": 404,
+      "name": "guide_dimer_02_GT"
+    },
+    {
+      "index": 405,
+      "name": "guide_dimer_02_TA"
+    },
+    {
+      "index": 406,
+      "name": "guide_dimer_02_TC"
+    },
+    {
+      "index": 407,
+      "name": "guide_dimer_02_TG"
+    },
+    {
+      "index": 408,
+      "name": "guide_dimer_02_TT"
+    },
+    {
+      "index": 409,
+      "name": "guide_dimer_03_AA"
+    },
+    {
+      "index": 410,
+      "name": "guide_dimer_03_AC"
+    },
+    {
+      "index": 411,
+      "name": "guide_dimer_03_AG"
+    },
+    {
+      "index": 412,
+      "name": "guide_dimer_03_AT"
+    },
+    {
+      "index": 413,
+      "name": "guide_dimer_03_CA"
+    },
+    {
+      "index": 414,
+      "name": "guide_dimer_03_CC"
+    },
+    {
+      "index": 415,
+      "name": "guide_dimer_03_CG"
+    },
+    {
+      "index": 416,
+      "name": "guide_dimer_03_CT"
+    },
+    {
+      "index": 417,
+      "name": "guide_dimer_03_GA"
+    },
+    {
+      "index": 418,
+      "name": "guide_dimer_03_GC"
+    },
+    {
+      "index": 419,
+      "name": "guide_dimer_03_GG"
+    },
+    {
+      "index": 420,
+      "name": "guide_dimer_03_GT"
+    },
+    {
+      "index": 421,
+      "name": "guide_dimer_03_TA"
+    },
+    {
+      "index": 422,
+      "name": "guide_dimer_03_TC"
+    },
+    {
+      "index": 423,
+      "name": "guide_dimer_03_TG"
+    },
+    {
+      "index": 424,
+      "name": "guide_dimer_03_TT"
+    },
+    {
+      "index": 425,
+      "name": "guide_dimer_04_AA"
+    },
+    {
+      "index": 426,
+      "name": "guide_dimer_04_AC"
+    },
+    {
+      "index": 427,
+      "name": "guide_dimer_04_AG"
+    },
+    {
+      "index": 428,
+      "name": "guide_dimer_04_AT"
+    },
+    {
+      "index": 429,
+      "name": "guide_dimer_04_CA"
+    },
+    {
+      "index": 430,
+      "name": "guide_dimer_04_CC"
+    },
+    {
+      "index": 431,
+      "name": "guide_dimer_04_CG"
+    },
+    {
+      "index": 432,
+      "name": "guide_dimer_04_CT"
+    },
+    {
+      "index": 433,
+      "name": "guide_dimer_04_GA"
+    },
+    {
+      "index": 434,
+      "name": "guide_dimer_04_GC"
+    },
+    {
+      "index": 435,
+      "name": "guide_dimer_04_GG"
+    },
+    {
+      "index": 436,
+      "name": "guide_dimer_04_GT"
+    },
+    {
+      "index": 437,
+      "name": "guide_dimer_04_TA"
+    },
+    {
+      "index": 438,
+      "name": "guide_dimer_04_TC"
+    },
+    {
+      "index": 439,
+      "name": "guide_dimer_04_TG"
+    },
+    {
+      "index": 440,
+      "name": "guide_dimer_04_TT"
+    },
+    {
+      "index": 441,
+      "name": "guide_dimer_05_AA"
+    },
+    {
+      "index": 442,
+      "name": "guide_dimer_05_AC"
+    },
+    {
+      "index": 443,
+      "name": "guide_dimer_05_AG"
+    },
+    {
+      "index": 444,
+      "name": "guide_dimer_05_AT"
+    },
+    {
+      "index": 445,
+      "name": "guide_dimer_05_CA"
+    },
+    {
+      "index": 446,
+      "name": "guide_dimer_05_CC"
+    },
+    {
+      "index": 447,
+      "name": "guide_dimer_05_CG"
+    },
+    {
+      "index": 448,
+      "name": "guide_dimer_05_CT"
+    },
+    {
+      "index": 449,
+      "name": "guide_dimer_05_GA"
+    },
+    {
+      "index": 450,
+      "name": "guide_dimer_05_GC"
+    },
+    {
+      "index": 451,
+      "name": "guide_dimer_05_GG"
+    },
+    {
+      "index": 452,
+      "name": "guide_dimer_05_GT"
+    },
+    {
+      "index": 453,
+      "name": "guide_dimer_05_TA"
+    },
+    {
+      "index": 454,
+      "name": "guide_dimer_05_TC"
+    },
+    {
+      "index": 455,
+      "name": "guide_dimer_05_TG"
+    },
+    {
+      "index": 456,
+      "name": "guide_dimer_05_TT"
+    },
+    {
+      "index": 457,
+      "name": "guide_dimer_06_AA"
+    },
+    {
+      "index": 458,
+      "name": "guide_dimer_06_AC"
+    },
+    {
+      "index": 459,
+      "name": "guide_dimer_06_AG"
+    },
+    {
+      "index": 460,
+      "name": "guide_dimer_06_AT"
+    },
+    {
+      "index": 461,
+      "name": "guide_dimer_06_CA"
+    },
+    {
+      "index": 462,
+      "name": "guide_dimer_06_CC"
+    },
+    {
+      "index": 463,
+      "name": "guide_dimer_06_CG"
+    },
+    {
+      "index": 464,
+      "name": "guide_dimer_06_CT"
+    },
+    {
+      "index": 465,
+      "name": "guide_dimer_06_GA"
+    },
+    {
+      "index": 466,
+      "name": "guide_dimer_06_GC"
+    },
+    {
+      "index": 467,
+      "name": "guide_dimer_06_GG"
+    },
+    {
+      "index": 468,
+      "name": "guide_dimer_06_GT"
+    },
+    {
+      "index": 469,
+      "name": "guide_dimer_06_TA"
+    },
+    {
+      "index": 470,
+      "name": "guide_dimer_06_TC"
+    },
+    {
+      "index": 471,
+      "name": "guide_dimer_06_TG"
+    },
+    {
+      "index": 472,
+      "name": "guide_dimer_06_TT"
+    },
+    {
+      "index": 473,
+      "name": "guide_dimer_07_AA"
+    },
+    {
+      "index": 474,
+      "name": "guide_dimer_07_AC"
+    },
+    {
+      "index": 475,
+      "name": "guide_dimer_07_AG"
+    },
+    {
+      "index": 476,
+      "name": "guide_dimer_07_AT"
+    },
+    {
+      "index": 477,
+      "name": "guide_dimer_07_CA"
+    },
+    {
+      "index": 478,
+      "name": "guide_dimer_07_CC"
+    },
+    {
+      "index": 479,
+      "name": "guide_dimer_07_CG"
+    },
+    {
+      "index": 480,
+      "name": "guide_dimer_07_CT"
+    },
+    {
+      "index": 481,
+      "name": "guide_dimer_07_GA"
+    },
+    {
+      "index": 482,
+      "name": "guide_dimer_07_GC"
+    },
+    {
+      "index": 483,
+      "name": "guide_dimer_07_GG"
+    },
+    {
+      "index": 484,
+      "name": "guide_dimer_07_GT"
+    },
+    {
+      "index": 485,
+      "name": "guide_dimer_07_TA"
+    },
+    {
+      "index": 486,
+      "name": "guide_dimer_07_TC"
+    },
+    {
+      "index": 487,
+      "name": "guide_dimer_07_TG"
+    },
+    {
+      "index": 488,
+      "name": "guide_dimer_07_TT"
+    },
+    {
+      "index": 489,
+      "name": "guide_dimer_08_AA"
+    },
+    {
+      "index": 490,
+      "name": "guide_dimer_08_AC"
+    },
+    {
+      "index": 491,
+      "name": "guide_dimer_08_AG"
+    },
+    {
+      "index": 492,
+      "name": "guide_dimer_08_AT"
+    },
+    {
+      "index": 493,
+      "name": "guide_dimer_08_CA"
+    },
+    {
+      "index": 494,
+      "name": "guide_dimer_08_CC"
+    },
+    {
+      "index": 495,
+      "name": "guide_dimer_08_CG"
+    },
+    {
+      "index": 496,
+      "name": "guide_dimer_08_CT"
+    },
+    {
+      "index": 497,
+      "name": "guide_dimer_08_GA"
+    },
+    {
+      "index": 498,
+      "name": "guide_dimer_08_GC"
+    },
+    {
+      "index": 499,
+      "name": "guide_dimer_08_GG"
+    },
+    {
+      "index": 500,
+      "name": "guide_dimer_08_GT"
+    },
+    {
+      "index": 501,
+      "name": "guide_dimer_08_TA"
+    },
+    {
+      "index": 502,
+      "name": "guide_dimer_08_TC"
+    },
+    {
+      "index": 503,
+      "name": "guide_dimer_08_TG"
+    },
+    {
+      "index": 504,
+      "name": "guide_dimer_08_TT"
+    },
+    {
+      "index": 505,
+      "name": "guide_dimer_09_AA"
+    },
+    {
+      "index": 506,
+      "name": "guide_dimer_09_AC"
+    },
+    {
+      "index": 507,
+      "name": "guide_dimer_09_AG"
+    },
+    {
+      "index": 508,
+      "name": "guide_dimer_09_AT"
+    },
+    {
+      "index": 509,
+      "name": "guide_dimer_09_CA"
+    },
+    {
+      "index": 510,
+      "name": "guide_dimer_09_CC"
+    },
+    {
+      "index": 511,
+      "name": "guide_dimer_09_CG"
+    },
+    {
+      "index": 512,
+      "name": "guide_dimer_09_CT"
+    },
+    {
+      "index": 513,
+      "name": "guide_dimer_09_GA"
+    },
+    {
+      "index": 514,
+      "name": "guide_dimer_09_GC"
+    },
+    {
+      "index": 515,
+      "name": "guide_dimer_09_GG"
+    },
+    {
+      "index": 516,
+      "name": "guide_dimer_09_GT"
+    },
+    {
+      "index": 517,
+      "name": "guide_dimer_09_TA"
+    },
+    {
+      "index": 518,
+      "name": "guide_dimer_09_TC"
+    },
+    {
+      "index": 519,
+      "name": "guide_dimer_09_TG"
+    },
+    {
+      "index": 520,
+      "name": "guide_dimer_09_TT"
+    },
+    {
+      "index": 521,
+      "name": "guide_dimer_10_AA"
+    },
+    {
+      "index": 522,
+      "name": "guide_dimer_10_AC"
+    },
+    {
+      "index": 523,
+      "name": "guide_dimer_10_AG"
+    },
+    {
+      "index": 524,
+      "name": "guide_dimer_10_AT"
+    },
+    {
+      "index": 525,
+      "name": "guide_dimer_10_CA"
+    },
+    {
+      "index": 526,
+      "name": "guide_dimer_10_CC"
+    },
+    {
+      "index": 527,
+      "name": "guide_dimer_10_CG"
+    },
+    {
+      "index": 528,
+      "name": "guide_dimer_10_CT"
+    },
+    {
+      "index": 529,
+      "name": "guide_dimer_10_GA"
+    },
+    {
+      "index": 530,
+      "name": "guide_dimer_10_GC"
+    },
+    {
+      "index": 531,
+      "name": "guide_dimer_10_GG"
+    },
+    {
+      "index": 532,
+      "name": "guide_dimer_10_GT"
+    },
+    {
+      "index": 533,
+      "name": "guide_dimer_10_TA"
+    },
+    {
+      "index": 534,
+      "name": "guide_dimer_10_TC"
+    },
+    {
+      "index": 535,
+      "name": "guide_dimer_10_TG"
+    },
+    {
+      "index": 536,
+      "name": "guide_dimer_10_TT"
+    },
+    {
+      "index": 537,
+      "name": "guide_dimer_11_AA"
+    },
+    {
+      "index": 538,
+      "name": "guide_dimer_11_AC"
+    },
+    {
+      "index": 539,
+      "name": "guide_dimer_11_AG"
+    },
+    {
+      "index": 540,
+      "name": "guide_dimer_11_AT"
+    },
+    {
+      "index": 541,
+      "name": "guide_dimer_11_CA"
+    },
+    {
+      "index": 542,
+      "name": "guide_dimer_11_CC"
+    },
+    {
+      "index": 543,
+      "name": "guide_dimer_11_CG"
+    },
+    {
+      "index": 544,
+      "name": "guide_dimer_11_CT"
+    },
+    {
+      "index": 545,
+      "name": "guide_dimer_11_GA"
+    },
+    {
+      "index": 546,
+      "name": "guide_dimer_11_GC"
+    },
+    {
+      "index": 547,
+      "name": "guide_dimer_11_GG"
+    },
+    {
+      "index": 548,
+      "name": "guide_dimer_11_GT"
+    },
+    {
+      "index": 549,
+      "name": "guide_dimer_11_TA"
+    },
+    {
+      "index": 550,
+      "name": "guide_dimer_11_TC"
+    },
+    {
+      "index": 551,
+      "name": "guide_dimer_11_TG"
+    },
+    {
+      "index": 552,
+      "name": "guide_dimer_11_TT"
+    },
+    {
+      "index": 553,
+      "name": "guide_dimer_12_AA"
+    },
+    {
+      "index": 554,
+      "name": "guide_dimer_12_AC"
+    },
+    {
+      "index": 555,
+      "name": "guide_dimer_12_AG"
+    },
+    {
+      "index": 556,
+      "name": "guide_dimer_12_AT"
+    },
+    {
+      "index": 557,
+      "name": "guide_dimer_12_CA"
+    },
+    {
+      "index": 558,
+      "name": "guide_dimer_12_CC"
+    },
+    {
+      "index": 559,
+      "name": "guide_dimer_12_CG"
+    },
+    {
+      "index": 560,
+      "name": "guide_dimer_12_CT"
+    },
+    {
+      "index": 561,
+      "name": "guide_dimer_12_GA"
+    },
+    {
+      "index": 562,
+      "name": "guide_dimer_12_GC"
+    },
+    {
+      "index": 563,
+      "name": "guide_dimer_12_GG"
+    },
+    {
+      "index": 564,
+      "name": "guide_dimer_12_GT"
+    },
+    {
+      "index": 565,
+      "name": "guide_dimer_12_TA"
+    },
+    {
+      "index": 566,
+      "name": "guide_dimer_12_TC"
+    },
+    {
+      "index": 567,
+      "name": "guide_dimer_12_TG"
+    },
+    {
+      "index": 568,
+      "name": "guide_dimer_12_TT"
+    },
+    {
+      "index": 569,
+      "name": "guide_dimer_13_AA"
+    },
+    {
+      "index": 570,
+      "name": "guide_dimer_13_AC"
+    },
+    {
+      "index": 571,
+      "name": "guide_dimer_13_AG"
+    },
+    {
+      "index": 572,
+      "name": "guide_dimer_13_AT"
+    },
+    {
+      "index": 573,
+      "name": "guide_dimer_13_CA"
+    },
+    {
+      "index": 574,
+      "name": "guide_dimer_13_CC"
+    },
+    {
+      "index": 575,
+      "name": "guide_dimer_13_CG"
+    },
+    {
+      "index": 576,
+      "name": "guide_dimer_13_CT"
+    },
+    {
+      "index": 577,
+      "name": "guide_dimer_13_GA"
+    },
+    {
+      "index": 578,
+      "name": "guide_dimer_13_GC"
+    },
+    {
+      "index": 579,
+      "name": "guide_dimer_13_GG"
+    },
+    {
+      "index": 580,
+      "name": "guide_dimer_13_GT"
+    },
+    {
+      "index": 581,
+      "name": "guide_dimer_13_TA"
+    },
+    {
+      "index": 582,
+      "name": "guide_dimer_13_TC"
+    },
+    {
+      "index": 583,
+      "name": "guide_dimer_13_TG"
+    },
+    {
+      "index": 584,
+      "name": "guide_dimer_13_TT"
+    },
+    {
+      "index": 585,
+      "name": "guide_dimer_14_AA"
+    },
+    {
+      "index": 586,
+      "name": "guide_dimer_14_AC"
+    },
+    {
+      "index": 587,
+      "name": "guide_dimer_14_AG"
+    },
+    {
+      "index": 588,
+      "name": "guide_dimer_14_AT"
+    },
+    {
+      "index": 589,
+      "name": "guide_dimer_14_CA"
+    },
+    {
+      "index": 590,
+      "name": "guide_dimer_14_CC"
+    },
+    {
+      "index": 591,
+      "name": "guide_dimer_14_CG"
+    },
+    {
+      "index": 592,
+      "name": "guide_dimer_14_CT"
+    },
+    {
+      "index": 593,
+      "name": "guide_dimer_14_GA"
+    },
+    {
+      "index": 594,
+      "name": "guide_dimer_14_GC"
+    },
+    {
+      "index": 595,
+      "name": "guide_dimer_14_GG"
+    },
+    {
+      "index": 596,
+      "name": "guide_dimer_14_GT"
+    },
+    {
+      "index": 597,
+      "name": "guide_dimer_14_TA"
+    },
+    {
+      "index": 598,
+      "name": "guide_dimer_14_TC"
+    },
+    {
+      "index": 599,
+      "name": "guide_dimer_14_TG"
+    },
+    {
+      "index": 600,
+      "name": "guide_dimer_14_TT"
+    },
+    {
+      "index": 601,
+      "name": "guide_dimer_15_AA"
+    },
+    {
+      "index": 602,
+      "name": "guide_dimer_15_AC"
+    },
+    {
+      "index": 603,
+      "name": "guide_dimer_15_AG"
+    },
+    {
+      "index": 604,
+      "name": "guide_dimer_15_AT"
+    },
+    {
+      "index": 605,
+      "name": "guide_dimer_15_CA"
+    },
+    {
+      "index": 606,
+      "name": "guide_dimer_15_CC"
+    },
+    {
+      "index": 607,
+      "name": "guide_dimer_15_CG"
+    },
+    {
+      "index": 608,
+      "name": "guide_dimer_15_CT"
+    },
+    {
+      "index": 609,
+      "name": "guide_dimer_15_GA"
+    },
+    {
+      "index": 610,
+      "name": "guide_dimer_15_GC"
+    },
+    {
+      "index": 611,
+      "name": "guide_dimer_15_GG"
+    },
+    {
+      "index": 612,
+      "name": "guide_dimer_15_GT"
+    },
+    {
+      "index": 613,
+      "name": "guide_dimer_15_TA"
+    },
+    {
+      "index": 614,
+      "name": "guide_dimer_15_TC"
+    },
+    {
+      "index": 615,
+      "name": "guide_dimer_15_TG"
+    },
+    {
+      "index": 616,
+      "name": "guide_dimer_15_TT"
+    },
+    {
+      "index": 617,
+      "name": "guide_dimer_16_AA"
+    },
+    {
+      "index": 618,
+      "name": "guide_dimer_16_AC"
+    },
+    {
+      "index": 619,
+      "name": "guide_dimer_16_AG"
+    },
+    {
+      "index": 620,
+      "name": "guide_dimer_16_AT"
+    },
+    {
+      "index": 621,
+      "name": "guide_dimer_16_CA"
+    },
+    {
+      "index": 622,
+      "name": "guide_dimer_16_CC"
+    },
+    {
+      "index": 623,
+      "name": "guide_dimer_16_CG"
+    },
+    {
+      "index": 624,
+      "name": "guide_dimer_16_CT"
+    },
+    {
+      "index": 625,
+      "name": "guide_dimer_16_GA"
+    },
+    {
+      "index": 626,
+      "name": "guide_dimer_16_GC"
+    },
+    {
+      "index": 627,
+      "name": "guide_dimer_16_GG"
+    },
+    {
+      "index": 628,
+      "name": "guide_dimer_16_GT"
+    },
+    {
+      "index": 629,
+      "name": "guide_dimer_16_TA"
+    },
+    {
+      "index": 630,
+      "name": "guide_dimer_16_TC"
+    },
+    {
+      "index": 631,
+      "name": "guide_dimer_16_TG"
+    },
+    {
+      "index": 632,
+      "name": "guide_dimer_16_TT"
+    },
+    {
+      "index": 633,
+      "name": "guide_dimer_17_AA"
+    },
+    {
+      "index": 634,
+      "name": "guide_dimer_17_AC"
+    },
+    {
+      "index": 635,
+      "name": "guide_dimer_17_AG"
+    },
+    {
+      "index": 636,
+      "name": "guide_dimer_17_AT"
+    },
+    {
+      "index": 637,
+      "name": "guide_dimer_17_CA"
+    },
+    {
+      "index": 638,
+      "name": "guide_dimer_17_CC"
+    },
+    {
+      "index": 639,
+      "name": "guide_dimer_17_CG"
+    },
+    {
+      "index": 640,
+      "name": "guide_dimer_17_CT"
+    },
+    {
+      "index": 641,
+      "name": "guide_dimer_17_GA"
+    },
+    {
+      "index": 642,
+      "name": "guide_dimer_17_GC"
+    },
+    {
+      "index": 643,
+      "name": "guide_dimer_17_GG"
+    },
+    {
+      "index": 644,
+      "name": "guide_dimer_17_GT"
+    },
+    {
+      "index": 645,
+      "name": "guide_dimer_17_TA"
+    },
+    {
+      "index": 646,
+      "name": "guide_dimer_17_TC"
+    },
+    {
+      "index": 647,
+      "name": "guide_dimer_17_TG"
+    },
+    {
+      "index": 648,
+      "name": "guide_dimer_17_TT"
+    },
+    {
+      "index": 649,
+      "name": "guide_k1_freq_A"
+    },
+    {
+      "index": 650,
+      "name": "guide_k1_freq_C"
+    },
+    {
+      "index": 651,
+      "name": "guide_k1_freq_G"
+    },
+    {
+      "index": 652,
+      "name": "guide_k1_freq_T"
+    },
+    {
+      "index": 653,
+      "name": "guide_k2_freq_AA"
+    },
+    {
+      "index": 654,
+      "name": "guide_k2_freq_AC"
+    },
+    {
+      "index": 655,
+      "name": "guide_k2_freq_AG"
+    },
+    {
+      "index": 656,
+      "name": "guide_k2_freq_AT"
+    },
+    {
+      "index": 657,
+      "name": "guide_k2_freq_CA"
+    },
+    {
+      "index": 658,
+      "name": "guide_k2_freq_CC"
+    },
+    {
+      "index": 659,
+      "name": "guide_k2_freq_CG"
+    },
+    {
+      "index": 660,
+      "name": "guide_k2_freq_CT"
+    },
+    {
+      "index": 661,
+      "name": "guide_k2_freq_GA"
+    },
+    {
+      "index": 662,
+      "name": "guide_k2_freq_GC"
+    },
+    {
+      "index": 663,
+      "name": "guide_k2_freq_GG"
+    },
+    {
+      "index": 664,
+      "name": "guide_k2_freq_GT"
+    },
+    {
+      "index": 665,
+      "name": "guide_k2_freq_TA"
+    },
+    {
+      "index": 666,
+      "name": "guide_k2_freq_TC"
+    },
+    {
+      "index": 667,
+      "name": "guide_k2_freq_TG"
+    },
+    {
+      "index": 668,
+      "name": "guide_k2_freq_TT"
+    },
+    {
+      "index": 669,
+      "name": "guide_k3_freq_AAA"
+    },
+    {
+      "index": 670,
+      "name": "guide_k3_freq_AAC"
+    },
+    {
+      "index": 671,
+      "name": "guide_k3_freq_AAG"
+    },
+    {
+      "index": 672,
+      "name": "guide_k3_freq_AAT"
+    },
+    {
+      "index": 673,
+      "name": "guide_k3_freq_ACA"
+    },
+    {
+      "index": 674,
+      "name": "guide_k3_freq_ACC"
+    },
+    {
+      "index": 675,
+      "name": "guide_k3_freq_ACG"
+    },
+    {
+      "index": 676,
+      "name": "guide_k3_freq_ACT"
+    },
+    {
+      "index": 677,
+      "name": "guide_k3_freq_AGA"
+    },
+    {
+      "index": 678,
+      "name": "guide_k3_freq_AGC"
+    },
+    {
+      "index": 679,
+      "name": "guide_k3_freq_AGG"
+    },
+    {
+      "index": 680,
+      "name": "guide_k3_freq_AGT"
+    },
+    {
+      "index": 681,
+      "name": "guide_k3_freq_ATA"
+    },
+    {
+      "index": 682,
+      "name": "guide_k3_freq_ATC"
+    },
+    {
+      "index": 683,
+      "name": "guide_k3_freq_ATG"
+    },
+    {
+      "index": 684,
+      "name": "guide_k3_freq_ATT"
+    },
+    {
+      "index": 685,
+      "name": "guide_k3_freq_CAA"
+    },
+    {
+      "index": 686,
+      "name": "guide_k3_freq_CAC"
+    },
+    {
+      "index": 687,
+      "name": "guide_k3_freq_CAG"
+    },
+    {
+      "index": 688,
+      "name": "guide_k3_freq_CAT"
+    },
+    {
+      "index": 689,
+      "name": "guide_k3_freq_CCA"
+    },
+    {
+      "index": 690,
+      "name": "guide_k3_freq_CCC"
+    },
+    {
+      "index": 691,
+      "name": "guide_k3_freq_CCG"
+    },
+    {
+      "index": 692,
+      "name": "guide_k3_freq_CCT"
+    },
+    {
+      "index": 693,
+      "name": "guide_k3_freq_CGA"
+    },
+    {
+      "index": 694,
+      "name": "guide_k3_freq_CGC"
+    },
+    {
+      "index": 695,
+      "name": "guide_k3_freq_CGG"
+    },
+    {
+      "index": 696,
+      "name": "guide_k3_freq_CGT"
+    },
+    {
+      "index": 697,
+      "name": "guide_k3_freq_CTA"
+    },
+    {
+      "index": 698,
+      "name": "guide_k3_freq_CTC"
+    },
+    {
+      "index": 699,
+      "name": "guide_k3_freq_CTG"
+    },
+    {
+      "index": 700,
+      "name": "guide_k3_freq_CTT"
+    },
+    {
+      "index": 701,
+      "name": "guide_k3_freq_GAA"
+    },
+    {
+      "index": 702,
+      "name": "guide_k3_freq_GAC"
+    },
+    {
+      "index": 703,
+      "name": "guide_k3_freq_GAG"
+    },
+    {
+      "index": 704,
+      "name": "guide_k3_freq_GAT"
+    },
+    {
+      "index": 705,
+      "name": "guide_k3_freq_GCA"
+    },
+    {
+      "index": 706,
+      "name": "guide_k3_freq_GCC"
+    },
+    {
+      "index": 707,
+      "name": "guide_k3_freq_GCG"
+    },
+    {
+      "index": 708,
+      "name": "guide_k3_freq_GCT"
+    },
+    {
+      "index": 709,
+      "name": "guide_k3_freq_GGA"
+    },
+    {
+      "index": 710,
+      "name": "guide_k3_freq_GGC"
+    },
+    {
+      "index": 711,
+      "name": "guide_k3_freq_GGG"
+    },
+    {
+      "index": 712,
+      "name": "guide_k3_freq_GGT"
+    },
+    {
+      "index": 713,
+      "name": "guide_k3_freq_GTA"
+    },
+    {
+      "index": 714,
+      "name": "guide_k3_freq_GTC"
+    },
+    {
+      "index": 715,
+      "name": "guide_k3_freq_GTG"
+    },
+    {
+      "index": 716,
+      "name": "guide_k3_freq_GTT"
+    },
+    {
+      "index": 717,
+      "name": "guide_k3_freq_TAA"
+    },
+    {
+      "index": 718,
+      "name": "guide_k3_freq_TAC"
+    },
+    {
+      "index": 719,
+      "name": "guide_k3_freq_TAG"
+    },
+    {
+      "index": 720,
+      "name": "guide_k3_freq_TAT"
+    },
+    {
+      "index": 721,
+      "name": "guide_k3_freq_TCA"
+    },
+    {
+      "index": 722,
+      "name": "guide_k3_freq_TCC"
+    },
+    {
+      "index": 723,
+      "name": "guide_k3_freq_TCG"
+    },
+    {
+      "index": 724,
+      "name": "guide_k3_freq_TCT"
+    },
+    {
+      "index": 725,
+      "name": "guide_k3_freq_TGA"
+    },
+    {
+      "index": 726,
+      "name": "guide_k3_freq_TGC"
+    },
+    {
+      "index": 727,
+      "name": "guide_k3_freq_TGG"
+    },
+    {
+      "index": 728,
+      "name": "guide_k3_freq_TGT"
+    },
+    {
+      "index": 729,
+      "name": "guide_k3_freq_TTA"
+    },
+    {
+      "index": 730,
+      "name": "guide_k3_freq_TTC"
+    },
+    {
+      "index": 731,
+      "name": "guide_k3_freq_TTG"
+    },
+    {
+      "index": 732,
+      "name": "guide_k3_freq_TTT"
+    },
+    {
+      "index": 733,
+      "name": "left_k1_freq_A"
+    },
+    {
+      "index": 734,
+      "name": "left_k1_freq_C"
+    },
+    {
+      "index": 735,
+      "name": "left_k1_freq_G"
+    },
+    {
+      "index": 736,
+      "name": "left_k1_freq_T"
+    },
+    {
+      "index": 737,
+      "name": "left_k2_freq_AA"
+    },
+    {
+      "index": 738,
+      "name": "left_k2_freq_AC"
+    },
+    {
+      "index": 739,
+      "name": "left_k2_freq_AG"
+    },
+    {
+      "index": 740,
+      "name": "left_k2_freq_AT"
+    },
+    {
+      "index": 741,
+      "name": "left_k2_freq_CA"
+    },
+    {
+      "index": 742,
+      "name": "left_k2_freq_CC"
+    },
+    {
+      "index": 743,
+      "name": "left_k2_freq_CG"
+    },
+    {
+      "index": 744,
+      "name": "left_k2_freq_CT"
+    },
+    {
+      "index": 745,
+      "name": "left_k2_freq_GA"
+    },
+    {
+      "index": 746,
+      "name": "left_k2_freq_GC"
+    },
+    {
+      "index": 747,
+      "name": "left_k2_freq_GG"
+    },
+    {
+      "index": 748,
+      "name": "left_k2_freq_GT"
+    },
+    {
+      "index": 749,
+      "name": "left_k2_freq_TA"
+    },
+    {
+      "index": 750,
+      "name": "left_k2_freq_TC"
+    },
+    {
+      "index": 751,
+      "name": "left_k2_freq_TG"
+    },
+    {
+      "index": 752,
+      "name": "left_k2_freq_TT"
+    },
+    {
+      "index": 753,
+      "name": "left_k3_freq_AAA"
+    },
+    {
+      "index": 754,
+      "name": "left_k3_freq_AAC"
+    },
+    {
+      "index": 755,
+      "name": "left_k3_freq_AAG"
+    },
+    {
+      "index": 756,
+      "name": "left_k3_freq_AAT"
+    },
+    {
+      "index": 757,
+      "name": "left_k3_freq_ACA"
+    },
+    {
+      "index": 758,
+      "name": "left_k3_freq_ACC"
+    },
+    {
+      "index": 759,
+      "name": "left_k3_freq_ACG"
+    },
+    {
+      "index": 760,
+      "name": "left_k3_freq_ACT"
+    },
+    {
+      "index": 761,
+      "name": "left_k3_freq_AGA"
+    },
+    {
+      "index": 762,
+      "name": "left_k3_freq_AGC"
+    },
+    {
+      "index": 763,
+      "name": "left_k3_freq_AGG"
+    },
+    {
+      "index": 764,
+      "name": "left_k3_freq_AGT"
+    },
+    {
+      "index": 765,
+      "name": "left_k3_freq_ATA"
+    },
+    {
+      "index": 766,
+      "name": "left_k3_freq_ATC"
+    },
+    {
+      "index": 767,
+      "name": "left_k3_freq_ATG"
+    },
+    {
+      "index": 768,
+      "name": "left_k3_freq_ATT"
+    },
+    {
+      "index": 769,
+      "name": "left_k3_freq_CAA"
+    },
+    {
+      "index": 770,
+      "name": "left_k3_freq_CAC"
+    },
+    {
+      "index": 771,
+      "name": "left_k3_freq_CAG"
+    },
+    {
+      "index": 772,
+      "name": "left_k3_freq_CAT"
+    },
+    {
+      "index": 773,
+      "name": "left_k3_freq_CCA"
+    },
+    {
+      "index": 774,
+      "name": "left_k3_freq_CCC"
+    },
+    {
+      "index": 775,
+      "name": "left_k3_freq_CCG"
+    },
+    {
+      "index": 776,
+      "name": "left_k3_freq_CCT"
+    },
+    {
+      "index": 777,
+      "name": "left_k3_freq_CGA"
+    },
+    {
+      "index": 778,
+      "name": "left_k3_freq_CGC"
+    },
+    {
+      "index": 779,
+      "name": "left_k3_freq_CGG"
+    },
+    {
+      "index": 780,
+      "name": "left_k3_freq_CGT"
+    },
+    {
+      "index": 781,
+      "name": "left_k3_freq_CTA"
+    },
+    {
+      "index": 782,
+      "name": "left_k3_freq_CTC"
+    },
+    {
+      "index": 783,
+      "name": "left_k3_freq_CTG"
+    },
+    {
+      "index": 784,
+      "name": "left_k3_freq_CTT"
+    },
+    {
+      "index": 785,
+      "name": "left_k3_freq_GAA"
+    },
+    {
+      "index": 786,
+      "name": "left_k3_freq_GAC"
+    },
+    {
+      "index": 787,
+      "name": "left_k3_freq_GAG"
+    },
+    {
+      "index": 788,
+      "name": "left_k3_freq_GAT"
+    },
+    {
+      "index": 789,
+      "name": "left_k3_freq_GCA"
+    },
+    {
+      "index": 790,
+      "name": "left_k3_freq_GCC"
+    },
+    {
+      "index": 791,
+      "name": "left_k3_freq_GCG"
+    },
+    {
+      "index": 792,
+      "name": "left_k3_freq_GCT"
+    },
+    {
+      "index": 793,
+      "name": "left_k3_freq_GGA"
+    },
+    {
+      "index": 794,
+      "name": "left_k3_freq_GGC"
+    },
+    {
+      "index": 795,
+      "name": "left_k3_freq_GGG"
+    },
+    {
+      "index": 796,
+      "name": "left_k3_freq_GGT"
+    },
+    {
+      "index": 797,
+      "name": "left_k3_freq_GTA"
+    },
+    {
+      "index": 798,
+      "name": "left_k3_freq_GTC"
+    },
+    {
+      "index": 799,
+      "name": "left_k3_freq_GTG"
+    },
+    {
+      "index": 800,
+      "name": "left_k3_freq_GTT"
+    },
+    {
+      "index": 801,
+      "name": "left_k3_freq_TAA"
+    },
+    {
+      "index": 802,
+      "name": "left_k3_freq_TAC"
+    },
+    {
+      "index": 803,
+      "name": "left_k3_freq_TAG"
+    },
+    {
+      "index": 804,
+      "name": "left_k3_freq_TAT"
+    },
+    {
+      "index": 805,
+      "name": "left_k3_freq_TCA"
+    },
+    {
+      "index": 806,
+      "name": "left_k3_freq_TCC"
+    },
+    {
+      "index": 807,
+      "name": "left_k3_freq_TCG"
+    },
+    {
+      "index": 808,
+      "name": "left_k3_freq_TCT"
+    },
+    {
+      "index": 809,
+      "name": "left_k3_freq_TGA"
+    },
+    {
+      "index": 810,
+      "name": "left_k3_freq_TGC"
+    },
+    {
+      "index": 811,
+      "name": "left_k3_freq_TGG"
+    },
+    {
+      "index": 812,
+      "name": "left_k3_freq_TGT"
+    },
+    {
+      "index": 813,
+      "name": "left_k3_freq_TTA"
+    },
+    {
+      "index": 814,
+      "name": "left_k3_freq_TTC"
+    },
+    {
+      "index": 815,
+      "name": "left_k3_freq_TTG"
+    },
+    {
+      "index": 816,
+      "name": "left_k3_freq_TTT"
+    },
+    {
+      "index": 817,
+      "name": "right_k1_freq_A"
+    },
+    {
+      "index": 818,
+      "name": "right_k1_freq_C"
+    },
+    {
+      "index": 819,
+      "name": "right_k1_freq_G"
+    },
+    {
+      "index": 820,
+      "name": "right_k1_freq_T"
+    },
+    {
+      "index": 821,
+      "name": "right_k2_freq_AA"
+    },
+    {
+      "index": 822,
+      "name": "right_k2_freq_AC"
+    },
+    {
+      "index": 823,
+      "name": "right_k2_freq_AG"
+    },
+    {
+      "index": 824,
+      "name": "right_k2_freq_AT"
+    },
+    {
+      "index": 825,
+      "name": "right_k2_freq_CA"
+    },
+    {
+      "index": 826,
+      "name": "right_k2_freq_CC"
+    },
+    {
+      "index": 827,
+      "name": "right_k2_freq_CG"
+    },
+    {
+      "index": 828,
+      "name": "right_k2_freq_CT"
+    },
+    {
+      "index": 829,
+      "name": "right_k2_freq_GA"
+    },
+    {
+      "index": 830,
+      "name": "right_k2_freq_GC"
+    },
+    {
+      "index": 831,
+      "name": "right_k2_freq_GG"
+    },
+    {
+      "index": 832,
+      "name": "right_k2_freq_GT"
+    },
+    {
+      "index": 833,
+      "name": "right_k2_freq_TA"
+    },
+    {
+      "index": 834,
+      "name": "right_k2_freq_TC"
+    },
+    {
+      "index": 835,
+      "name": "right_k2_freq_TG"
+    },
+    {
+      "index": 836,
+      "name": "right_k2_freq_TT"
+    },
+    {
+      "index": 837,
+      "name": "right_k3_freq_AAA"
+    },
+    {
+      "index": 838,
+      "name": "right_k3_freq_AAC"
+    },
+    {
+      "index": 839,
+      "name": "right_k3_freq_AAG"
+    },
+    {
+      "index": 840,
+      "name": "right_k3_freq_AAT"
+    },
+    {
+      "index": 841,
+      "name": "right_k3_freq_ACA"
+    },
+    {
+      "index": 842,
+      "name": "right_k3_freq_ACC"
+    },
+    {
+      "index": 843,
+      "name": "right_k3_freq_ACG"
+    },
+    {
+      "index": 844,
+      "name": "right_k3_freq_ACT"
+    },
+    {
+      "index": 845,
+      "name": "right_k3_freq_AGA"
+    },
+    {
+      "index": 846,
+      "name": "right_k3_freq_AGC"
+    },
+    {
+      "index": 847,
+      "name": "right_k3_freq_AGG"
+    },
+    {
+      "index": 848,
+      "name": "right_k3_freq_AGT"
+    },
+    {
+      "index": 849,
+      "name": "right_k3_freq_ATA"
+    },
+    {
+      "index": 850,
+      "name": "right_k3_freq_ATC"
+    },
+    {
+      "index": 851,
+      "name": "right_k3_freq_ATG"
+    },
+    {
+      "index": 852,
+      "name": "right_k3_freq_ATT"
+    },
+    {
+      "index": 853,
+      "name": "right_k3_freq_CAA"
+    },
+    {
+      "index": 854,
+      "name": "right_k3_freq_CAC"
+    },
+    {
+      "index": 855,
+      "name": "right_k3_freq_CAG"
+    },
+    {
+      "index": 856,
+      "name": "right_k3_freq_CAT"
+    },
+    {
+      "index": 857,
+      "name": "right_k3_freq_CCA"
+    },
+    {
+      "index": 858,
+      "name": "right_k3_freq_CCC"
+    },
+    {
+      "index": 859,
+      "name": "right_k3_freq_CCG"
+    },
+    {
+      "index": 860,
+      "name": "right_k3_freq_CCT"
+    },
+    {
+      "index": 861,
+      "name": "right_k3_freq_CGA"
+    },
+    {
+      "index": 862,
+      "name": "right_k3_freq_CGC"
+    },
+    {
+      "index": 863,
+      "name": "right_k3_freq_CGG"
+    },
+    {
+      "index": 864,
+      "name": "right_k3_freq_CGT"
+    },
+    {
+      "index": 865,
+      "name": "right_k3_freq_CTA"
+    },
+    {
+      "index": 866,
+      "name": "right_k3_freq_CTC"
+    },
+    {
+      "index": 867,
+      "name": "right_k3_freq_CTG"
+    },
+    {
+      "index": 868,
+      "name": "right_k3_freq_CTT"
+    },
+    {
+      "index": 869,
+      "name": "right_k3_freq_GAA"
+    },
+    {
+      "index": 870,
+      "name": "right_k3_freq_GAC"
+    },
+    {
+      "index": 871,
+      "name": "right_k3_freq_GAG"
+    },
+    {
+      "index": 872,
+      "name": "right_k3_freq_GAT"
+    },
+    {
+      "index": 873,
+      "name": "right_k3_freq_GCA"
+    },
+    {
+      "index": 874,
+      "name": "right_k3_freq_GCC"
+    },
+    {
+      "index": 875,
+      "name": "right_k3_freq_GCG"
+    },
+    {
+      "index": 876,
+      "name": "right_k3_freq_GCT"
+    },
+    {
+      "index": 877,
+      "name": "right_k3_freq_GGA"
+    },
+    {
+      "index": 878,
+      "name": "right_k3_freq_GGC"
+    },
+    {
+      "index": 879,
+      "name": "right_k3_freq_GGG"
+    },
+    {
+      "index": 880,
+      "name": "right_k3_freq_GGT"
+    },
+    {
+      "index": 881,
+      "name": "right_k3_freq_GTA"
+    },
+    {
+      "index": 882,
+      "name": "right_k3_freq_GTC"
+    },
+    {
+      "index": 883,
+      "name": "right_k3_freq_GTG"
+    },
+    {
+      "index": 884,
+      "name": "right_k3_freq_GTT"
+    },
+    {
+      "index": 885,
+      "name": "right_k3_freq_TAA"
+    },
+    {
+      "index": 886,
+      "name": "right_k3_freq_TAC"
+    },
+    {
+      "index": 887,
+      "name": "right_k3_freq_TAG"
+    },
+    {
+      "index": 888,
+      "name": "right_k3_freq_TAT"
+    },
+    {
+      "index": 889,
+      "name": "right_k3_freq_TCA"
+    },
+    {
+      "index": 890,
+      "name": "right_k3_freq_TCC"
+    },
+    {
+      "index": 891,
+      "name": "right_k3_freq_TCG"
+    },
+    {
+      "index": 892,
+      "name": "right_k3_freq_TCT"
+    },
+    {
+      "index": 893,
+      "name": "right_k3_freq_TGA"
+    },
+    {
+      "index": 894,
+      "name": "right_k3_freq_TGC"
+    },
+    {
+      "index": 895,
+      "name": "right_k3_freq_TGG"
+    },
+    {
+      "index": 896,
+      "name": "right_k3_freq_TGT"
+    },
+    {
+      "index": 897,
+      "name": "right_k3_freq_TTA"
+    },
+    {
+      "index": 898,
+      "name": "right_k3_freq_TTC"
+    },
+    {
+      "index": 899,
+      "name": "right_k3_freq_TTG"
+    },
+    {
+      "index": 900,
+      "name": "right_k3_freq_TTT"
+    },
+    {
+      "index": 901,
+      "name": "guide_k1_coverage"
+    },
+    {
+      "index": 902,
+      "name": "guide_k2_coverage"
+    },
+    {
+      "index": 903,
+      "name": "guide_k3_coverage"
+    },
+    {
+      "index": 904,
+      "name": "left_k1_coverage"
+    },
+    {
+      "index": 905,
+      "name": "left_k2_coverage"
+    },
+    {
+      "index": 906,
+      "name": "left_k3_coverage"
+    },
+    {
+      "index": 907,
+      "name": "right_k1_coverage"
+    },
+    {
+      "index": 908,
+      "name": "right_k2_coverage"
+    },
+    {
+      "index": 909,
+      "name": "right_k3_coverage"
+    },
+    {
+      "index": 910,
+      "name": "guide_gc_w3_p00"
+    },
+    {
+      "index": 911,
+      "name": "guide_gc_w3_p01"
+    },
+    {
+      "index": 912,
+      "name": "guide_gc_w3_p02"
+    },
+    {
+      "index": 913,
+      "name": "guide_gc_w3_p03"
+    },
+    {
+      "index": 914,
+      "name": "guide_gc_w3_p04"
+    },
+    {
+      "index": 915,
+      "name": "guide_gc_w3_p05"
+    },
+    {
+      "index": 916,
+      "name": "guide_gc_w3_p06"
+    },
+    {
+      "index": 917,
+      "name": "guide_gc_w3_p07"
+    },
+    {
+      "index": 918,
+      "name": "guide_gc_w3_p08"
+    },
+    {
+      "index": 919,
+      "name": "guide_gc_w3_p09"
+    },
+    {
+      "index": 920,
+      "name": "guide_gc_w3_p10"
+    },
+    {
+      "index": 921,
+      "name": "guide_gc_w3_p11"
+    },
+    {
+      "index": 922,
+      "name": "guide_gc_w3_p12"
+    },
+    {
+      "index": 923,
+      "name": "guide_gc_w3_p13"
+    },
+    {
+      "index": 924,
+      "name": "guide_gc_w3_p14"
+    },
+    {
+      "index": 925,
+      "name": "guide_gc_w3_p15"
+    },
+    {
+      "index": 926,
+      "name": "guide_gc_w3_p16"
+    },
+    {
+      "index": 927,
+      "name": "guide_gc_w5_p00"
+    },
+    {
+      "index": 928,
+      "name": "guide_gc_w5_p01"
+    },
+    {
+      "index": 929,
+      "name": "guide_gc_w5_p02"
+    },
+    {
+      "index": 930,
+      "name": "guide_gc_w5_p03"
+    },
+    {
+      "index": 931,
+      "name": "guide_gc_w5_p04"
+    },
+    {
+      "index": 932,
+      "name": "guide_gc_w5_p05"
+    },
+    {
+      "index": 933,
+      "name": "guide_gc_w5_p06"
+    },
+    {
+      "index": 934,
+      "name": "guide_gc_w5_p07"
+    },
+    {
+      "index": 935,
+      "name": "guide_gc_w5_p08"
+    },
+    {
+      "index": 936,
+      "name": "guide_gc_w5_p09"
+    },
+    {
+      "index": 937,
+      "name": "guide_gc_w5_p10"
+    },
+    {
+      "index": 938,
+      "name": "guide_gc_w5_p11"
+    },
+    {
+      "index": 939,
+      "name": "guide_gc_w5_p12"
+    },
+    {
+      "index": 940,
+      "name": "guide_gc_w5_p13"
+    },
+    {
+      "index": 941,
+      "name": "guide_gc_w5_p14"
+    },
+    {
+      "index": 942,
+      "name": "guide_gc_w7_p00"
+    },
+    {
+      "index": 943,
+      "name": "guide_gc_w7_p01"
+    },
+    {
+      "index": 944,
+      "name": "guide_gc_w7_p02"
+    },
+    {
+      "index": 945,
+      "name": "guide_gc_w7_p03"
+    },
+    {
+      "index": 946,
+      "name": "guide_gc_w7_p04"
+    },
+    {
+      "index": 947,
+      "name": "guide_gc_w7_p05"
+    },
+    {
+      "index": 948,
+      "name": "guide_gc_w7_p06"
+    },
+    {
+      "index": 949,
+      "name": "guide_gc_w7_p07"
+    },
+    {
+      "index": 950,
+      "name": "guide_gc_w7_p08"
+    },
+    {
+      "index": 951,
+      "name": "guide_gc_w7_p09"
+    },
+    {
+      "index": 952,
+      "name": "guide_gc_w7_p10"
+    },
+    {
+      "index": 953,
+      "name": "guide_gc_w7_p11"
+    },
+    {
+      "index": 954,
+      "name": "guide_gc_w7_p12"
+    },
+    {
+      "index": 955,
+      "name": "guide_gc"
+    },
+    {
+      "index": 956,
+      "name": "guide_gc_squared"
+    },
+    {
+      "index": 957,
+      "name": "guide_first5_gc"
+    },
+    {
+      "index": 958,
+      "name": "guide_last5_gc"
+    },
+    {
+      "index": 959,
+      "name": "guide_first5_minus_last5_gc"
+    },
+    {
+      "index": 960,
+      "name": "guide_max_run_A"
+    },
+    {
+      "index": 961,
+      "name": "guide_max_run_C"
+    },
+    {
+      "index": 962,
+      "name": "guide_max_run_G"
+    },
+    {
+      "index": 963,
+      "name": "guide_max_run_T"
+    }
+  ],
+  "regions": {
+    "guide": "siRNA U->T, unchanged orientation",
+    "left": "context[0:19]",
+    "right": "context[38:57]"
+  },
+  "blocks": [
+    {
+      "start": 0,
+      "stop": 361,
+      "rule": "Original guide 19x4 and context 57x5 positional one-hot; X explicit"
+    },
+    {
+      "start": 361,
+      "stop": 649,
+      "rule": "Guide adjacent dimer positional one-hot; position-major, lexicographic ACGT dimers"
+    },
+    {
+      "start": 649,
+      "stop": 901,
+      "rule": "Overlapping k-mer counts / number of valid windows, or zero if none; region-major, k=1,2,3, lexicographic ACGT words. X-containing windows excluded, never bridged"
+    },
+    {
+      "start": 901,
+      "stop": 910,
+      "rule": "Valid window count / (19-k+1); region-major then k=1,2,3"
+    },
+    {
+      "start": 910,
+      "stop": 955,
+      "rule": "GC count / window length; lengths 3,5,7 then ascending start position"
+    },
+    {
+      "start": 955,
+      "stop": 960,
+      "rule": "Guide GC/19, its square, first-five GC/5, last-five GC/5, first-five fraction minus last-five fraction"
+    },
+    {
+      "start": 960,
+      "stop": 964,
+      "rule": "Maximum contiguous run length for A,C,G,T separately; absent base zero"
+    }
+  ],
+  "learned_preprocessing": false,
+  "exclusions": [
+    "IDs",
+    "row order",
+    "labels",
+    "annotations",
+    "external resources"
+  ]
+}
