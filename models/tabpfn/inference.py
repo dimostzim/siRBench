@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 import random
 import sys
+import tempfile
+import zipfile
 
 import numpy as np
 import pandas as pd
@@ -17,6 +19,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, required=True)
     parser.add_argument('--model-dir', type=Path, required=True)
+    parser.add_argument('--weights', type=Path, help='Foundation or fine-tuned checkpoint at its current location')
     inputs = parser.add_mutually_exclusive_group(required=True)
     inputs.add_argument('--input', type=Path, help='CSV with record_id, guide and the 100 precomputed manifest features')
     inputs.add_argument('--partition',
@@ -34,6 +37,14 @@ def main():
     model_path = args.model_dir/'model.tabpfn_fit'
     if sha256(model_path) != metadata['fitted_model_sha256']:
         raise ValueError('Fitted-model checksum mismatch')
+    if metadata['tool'] == 'tabpfn35_finetuned':
+        weights = args.weights or args.model_dir/'selected_weights.pth'
+        expected_weights = metadata['weights_sha256']
+    else:
+        weights = args.weights or args.root/'evaluation/tabpfn-v1/models/v3.5/tabpfn-v3.5-20260909.safetensors'
+        expected_weights = metadata['foundation_sha256']
+    if sha256(weights) != expected_weights:
+        raise ValueError('Weight checkpoint checksum mismatch')
     columns = json.loads(checked_bytes(args.root/'datasets/corrected-v1/records_features.manifest.json',
                                       FEATURE_MANIFEST_SHA))['features']
     if args.partition:
@@ -52,14 +63,26 @@ def main():
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.set_num_threads(4)
-    model = load_fitted_tabpfn_model(model_path, device='cuda')
+    # The saved fit stores an absolute checkpoint path from the training machine.
+    with tempfile.TemporaryDirectory(prefix='sirbench-tabpfn-') as temporary:
+        relocated = Path(temporary)/'model.tabpfn_fit'
+        with zipfile.ZipFile(model_path) as source, zipfile.ZipFile(relocated, 'w') as target:
+            for item in source.infolist():
+                payload = source.read(item.filename)
+                if item.filename == 'init_params.json':
+                    params = json.loads(payload)
+                    params['model_path'] = str(weights.resolve())
+                    payload = json.dumps(params).encode()
+                target.writestr(item, payload)
+        model = load_fitted_tabpfn_model(relocated, device='cuda')
     prediction = np.asarray(model.predict(features), float)
     if prediction.shape != (len(frame),) or not np.isfinite(prediction).all():
         raise ValueError('Invalid prediction shape or values')
     args.output.mkdir(parents=True)
     pd.DataFrame({'record_id': frame.record_id, 'pred_label': prediction}).to_csv(
         args.output/'predictions.csv', index=False)
-    report = {'model_sha256': sha256(model_path), 'partition': args.partition,
+    report = {'model_sha256': sha256(model_path), 'weights_sha256': expected_weights,
+              'partition': args.partition,
               'input_sha256': input_sha, 'seed': seed,
               'rows': len(frame), 'feature_count': features.shape[1],
               'gpu': torch.cuda.get_device_name(), 'torch': torch.__version__}

@@ -87,6 +87,11 @@ uv run --locked --project models/tabpfn python models/tabpfn/inference.py \
 Use `tabpfn35_finetuned` for the fine-tuned model. For new featurized records,
 replace `--partition` with `--input features.csv`, containing `record_id`, `siRNA`
 and the 100 columns in the archived feature manifest. The model uses these plus
-76 guide one-hot features. Foundation and fitted TabPFN weights are not bundled;
-predictions and training outputs are archived on Zenodo. Cross-GPU reloads may
-have small floating-point differences.
+76 guide one-hot features.
+
+For downloaded fits, pass their directory with `--model-dir`. Fine-tuned fits
+expect `selected_weights.pth` alongside `model.tabpfn_fit` and `train_meta.json`.
+Use `--weights /path/to/checkpoint` to specify a different location, including
+the foundation checkpoint for frozen fits. Checksums are verified before loading.
+TabPFN checkpoints follow the [Prior Labs license](https://huggingface.co/Prior-Labs/tabpfn_3_5/blob/main/LICENSE).
+Cross-GPU reloads may have small floating-point differences.
