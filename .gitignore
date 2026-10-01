@@ -7,10 +7,8 @@ data/processed/
 data/sirnadiscovery/
 benchmark/predictors/data*/
 benchmark/predictors/models*/
-benchmark/predictors/results/
+benchmark/predictors/*results/
 benchmark/predictors/runs/
-benchmark/predictors/original_results/
-benchmark/predictors/updated_validation_results/
 benchmark/predictors/tools/*/*_src/
 benchmark/predictors/tools/*/checkpoints/
 benchmark/predictors/tools/ensirna/rosetta/
