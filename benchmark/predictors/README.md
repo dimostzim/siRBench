@@ -3,6 +3,8 @@
 Docker wrappers for OligoFormer, GNN4siRNA, siRNADiscovery, AttSiOff, BERT-siRNA
 and ENsiRNA. Use Linux x86-64 with Docker, NVIDIA Container Toolkit and a GPU.
 The setup scripts and Dockerfiles pin the source commits and package versions.
+Saved checkpoints are available in [Zenodo version 3](https://doi.org/10.5281/zenodo.23092108).
+The data archive's `models.csv` maps checkpoints to their splits and predictions.
 
 ## Setup
 

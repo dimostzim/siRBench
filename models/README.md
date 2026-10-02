@@ -3,6 +3,10 @@
 - `agentomics/fold_0` through `fold_4`: five selected Agentomics pipelines.
 - `tabpfn/`: frozen and fine-tuned TabPFN-3.5.
 
+Saved models are available in [Zenodo version 3](https://doi.org/10.5281/zenodo.23092108).
+TabPFN fits are split into grouped and random archives, with a separate shared
+foundation checkpoint archive.
+
 Each model directory has `train.py`, `inference.py`, `pyproject.toml` and `uv.lock`.
 Use Linux x86-64. TabPFN and Agentomics fold_0/fold_2 training require an NVIDIA
 GPU. All Agentomics models support CPU inference.

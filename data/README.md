@@ -11,6 +11,8 @@ uv run --locked --project data python data/scripts/download.py
 
 The archive is downloaded to `data/archive/`. Use `--zip /path/to/archive.zip`
 if it is already downloaded.
+The script uses the original version 2 snapshot for reconstruction. Ready-to-use
+data and saved models are also available in [version 3](https://doi.org/10.5281/zenodo.23092108).
 
 ## Prepare the dataset
 
