@@ -9,9 +9,7 @@ Data and code for benchmarking siRNA efficacy predictors.
 The published predictors use Docker. Data scripts, Agentomics and TabPFN use uv.
 
 Datasets, training outputs, predictions, fitted models and a code snapshot are in
-[Zenodo version 3](https://doi.org/10.5281/zenodo.23092108).
-The original experimental snapshot remains in
-[version 2](https://doi.org/10.5281/zenodo.23001225), used by the data and evaluation scripts.
+[Zenodo version 4](https://doi.org/10.5281/zenodo.23457018).
 
 First-party code is MIT licensed. External implementations, model weights and
 source datasets retain their original terms. TabPFN weights, OligoFormer source
